@@ -6,11 +6,9 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 
 @Entity
-@Getter
 @NoArgsConstructor
-@AllArgsConstructor
+@Getter
 @ToString
-@Builder
 public class User extends BaseTime {
 
     @Id @GeneratedValue
@@ -18,12 +16,12 @@ public class User extends BaseTime {
     private Long id;
 
     // 이름
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
     // 이메일
     @Email
-    @Column(unique = true)
+    @Column(unique = true, length = 100)
     private String email;
 
     // 비밀번호
@@ -32,7 +30,7 @@ public class User extends BaseTime {
     // 사용자 타입 - 미정의(기본값), 디자이너, 의뢰인
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    @Builder.Default
+//    @Builder.Default
     private UserTypeEnum userType = UserTypeEnum.UNDEFINED;
 
     // 로그인 provider 타입 - 로컬, 구글, 페이스북, 네이버, 카카오
@@ -45,9 +43,18 @@ public class User extends BaseTime {
     private String providerId;
 
     // 전화번호
-    @Column(name = "phone_number", length = 11, unique = true)
+    @Column(name = "phone_number", length = 11)
     private String phoneNumber;
 
+
+    @Builder
+    public User(String name, String email, String password, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.providerType = ProviderTypeEnum.LOCAL;
+    }
 
     public void setName(String name) {
         this.name = name;
