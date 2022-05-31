@@ -36,7 +36,10 @@ out/
 ### VS Code ###
 .vscode/
 
-application-*.yml
+application*.properties
+Secret.java
 
 ### test ###
 test/
+
+template.txt

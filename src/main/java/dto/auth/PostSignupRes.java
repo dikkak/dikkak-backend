@@ -1,4 +1,4 @@
-package dto;
+package dto.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,8 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 @Builder
-public class UserResponseDto {
+public class PostSignupRes {
 
-    private String email;
-    private String name;
+    private Long userId;
 }
