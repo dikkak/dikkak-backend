@@ -1,4 +1,4 @@
-package dto.auth;
+package com.dikkak.dto.auth;
 
 import lombok.*;
 
@@ -6,7 +6,6 @@ import lombok.*;
 @Data
 public class PostSigninRes {
 
-    private Long userId;
     private String accessToken;
     private String refreshToken;
 }

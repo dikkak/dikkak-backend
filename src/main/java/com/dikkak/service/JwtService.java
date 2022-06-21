@@ -2,7 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.entity.User;
 import com.dikkak.repository.UserRepository;
-import dto.common.BaseException;
+import com.dikkak.dto.common.BaseException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 
-import static dto.common.ResponseMessage.*;
+import static com.dikkak.dto.common.ResponseMessage.*;
 
 @Service
 @RequiredArgsConstructor

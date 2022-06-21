@@ -3,20 +3,20 @@ package com.dikkak.controller;
 import com.dikkak.entity.User;
 import com.dikkak.service.JwtService;
 import com.dikkak.service.UserService;
-import dto.auth.PostSigninReq;
-import dto.auth.PostSigninRes;
-import dto.auth.PostSignupReq;
-import dto.auth.PostSignupRes;
-import dto.common.BaseException;
-import dto.common.BaseResponse;
-import dto.common.ResponseMessage;
+import com.dikkak.dto.auth.PostSigninReq;
+import com.dikkak.dto.auth.PostSigninRes;
+import com.dikkak.dto.auth.PostSignupReq;
+import com.dikkak.dto.auth.PostSignupRes;
+import com.dikkak.dto.common.BaseException;
+import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.dto.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Pattern;
 
-import static dto.common.ResponseMessage.*;
+import static com.dikkak.dto.common.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -109,7 +109,6 @@ public class AuthController {
             userService.setUserRefreshToken(user, refreshToken);
 
             return getOkResponse(PostSigninRes.builder()
-                    .userId(user.getId())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build());

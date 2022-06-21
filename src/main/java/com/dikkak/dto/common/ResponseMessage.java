@@ -1,4 +1,4 @@
-package dto.common;
+package com.dikkak.dto.common;
 
 import lombok.Getter;
 

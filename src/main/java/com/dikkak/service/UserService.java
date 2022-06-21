@@ -1,9 +1,9 @@
 package com.dikkak.service;
 
 import com.dikkak.entity.User;
-import dto.auth.PostSignupRes;
-import dto.common.BaseException;
-import dto.common.ResponseMessage;
+import com.dikkak.dto.auth.PostSignupRes;
+import com.dikkak.dto.common.BaseException;
+import com.dikkak.dto.common.ResponseMessage;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;

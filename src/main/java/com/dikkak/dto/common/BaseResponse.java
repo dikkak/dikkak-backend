@@ -1,4 +1,4 @@
-package dto.common;
+package com.dikkak.dto.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

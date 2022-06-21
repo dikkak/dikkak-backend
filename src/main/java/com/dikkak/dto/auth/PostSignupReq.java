@@ -1,6 +1,5 @@
-package dto.auth;
+package com.dikkak.dto.auth;
 
-import com.dikkak.entity.UserTypeEnum;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

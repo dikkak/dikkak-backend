@@ -1,6 +1,6 @@
 package com.dikkak.entity;
 
-import dto.auth.PostSignupReq;
+import com.dikkak.dto.auth.PostSignupReq;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 import javax.persistence.*;

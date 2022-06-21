@@ -1,4 +1,4 @@
-package dto.auth;
+package com.dikkak.dto.auth;
 
 import lombok.Getter;
 

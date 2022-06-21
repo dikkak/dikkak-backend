@@ -12,9 +12,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        // 인증 구현 전
         http.csrf().disable().authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/users/signup").permitAll();
+                .antMatchers("/").permitAll();
     }
 }
