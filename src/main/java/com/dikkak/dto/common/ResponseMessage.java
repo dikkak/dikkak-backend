@@ -24,6 +24,10 @@ public enum ResponseMessage {
     INVALID_REFRESH_TOKEN("올바르지 않은 REFRESH TOKEN 입니다."),
     EXPIRED_TOKEN("만료된 토큰입니다."),
 
+    // 소셜 로그인
+    INVALID_PROVIDER("올바르지 않은 provider 입니다."),
+    LOGIN_FAILURE("로그인에 실패하였습니다."),
+
     DATABASE_ERROR("데이터베이스 오류입니다.");
 
     private final String message;
