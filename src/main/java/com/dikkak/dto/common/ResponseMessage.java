@@ -16,7 +16,8 @@ public enum ResponseMessage {
 
     INVALID_FORMAT_EMAIL("잘못된 형식의 이메일입니다."),
     INVALID_FORMAT_PASSWORD("잘못된 형식의 비밀번호입니다."),
-    INVALID_FORMAT_PHONENUMBER("잘못된 형식의 전화번호입니다."),
+    INVALID_FORMAT_PHONE_NUMBER("잘못된 형식의 전화번호입니다."),
+    WRONG_USER_ID("잘못된 회원 아이디입니다."),
 
     REQUIRED_ITEM_DISAGREE("필수 항목에 동의해야 합니다."),
 

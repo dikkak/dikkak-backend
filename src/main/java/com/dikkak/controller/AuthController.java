@@ -8,7 +8,6 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,6 @@ public class AuthController {
     private final JwtService jwtService;
     private final List<String> providerList = new ArrayList<>(Arrays.asList("kakao", "google", "facebook"));
     private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",Pattern.CASE_INSENSITIVE);
-    private static final Pattern PHONE_NUMBER = Pattern.compile("\\d{3}-\\d{4}-\\d{4}");
 
 
     /**
@@ -43,7 +41,6 @@ public class AuthController {
         try {
             if(providerList.contains(provider)) {
                 GetLoginRes res = oauthService.login(provider, code);
-                System.out.println("res = " + res);
                 return getOkResponse(res);
             } else {
                 return getBadRequestResponse(INVALID_PROVIDER);
@@ -103,9 +100,6 @@ public class AuthController {
 
     private boolean isRegexEmail(String email) {
         return EMAIL.matcher(email).find();
-    }
-    private boolean isRegexPhoneNumber(String phoneNumber) {
-        return PHONE_NUMBER.matcher(phoneNumber).find();
     }
 
 

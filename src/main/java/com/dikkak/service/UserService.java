@@ -1,5 +1,6 @@
 package com.dikkak.service;
 
+import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.entity.User;
 import com.dikkak.dto.auth.PostSignupRes;
 import com.dikkak.dto.common.BaseException;
@@ -11,7 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.dto.common.ResponseMessage.WRONG_USER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +72,25 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElse(null);
         if(user != null) return true;
         return false;
+    }
+
+    @Transactional
+    public void registerUser(Long userId, PostRegisterReq req) throws BaseException {
+        Optional<User> user;
+        try{
+            user = userRepository.findById(userId);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
+        if(!user.isPresent()) throw new BaseException(WRONG_USER_ID);
+
+        try{
+            user.get().register(req);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+
     }
 
     /**
