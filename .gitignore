@@ -38,6 +38,7 @@ out/
 
 application*
 Secret.java
+generated
 
 ### test ###
 test/

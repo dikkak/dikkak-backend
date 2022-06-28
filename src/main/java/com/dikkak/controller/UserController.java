@@ -4,6 +4,7 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.service.UserService;
+import com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,6 +34,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@AuthenticationPrincipal Long userId,
                                       @RequestBody PostRegisterReq req) {
+
+        if(userId == null)
+            return ResponseEntity.badRequest().body(new BaseResponse<>(INVALID_ACCESS_TOKEN));
+
         // 전화번호 형식 검사
         if(!isRegexPhoneNumber(req.getPhoneNumber()))
             return ResponseEntity.badRequest().body(new BaseResponse(INVALID_FORMAT_PHONE_NUMBER));
