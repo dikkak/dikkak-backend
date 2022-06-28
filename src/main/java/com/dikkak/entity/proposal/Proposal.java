@@ -1,7 +1,7 @@
 package com.dikkak.entity.proposal;
 
 import com.dikkak.entity.BaseTime;
-import com.dikkak.entity.User;
+import com.dikkak.entity.CategoryEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,8 +14,6 @@ import java.util.List;
 @Entity
 @Getter
 @NoArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DTYPE")
 public class Proposal extends BaseTime {
 
     @Id @GeneratedValue
@@ -26,9 +24,9 @@ public class Proposal extends BaseTime {
     /**
      * 공통 항목
      */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User client;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoryEnum category; // 카테고리
 
     @Column(nullable = false)
     private String title;   // 제목
@@ -51,7 +49,6 @@ public class Proposal extends BaseTime {
 
     // 추가 요청사항
     @Lob
-    @Column(nullable = false)
     private String requirements;
 
 

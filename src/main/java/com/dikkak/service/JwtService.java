@@ -4,6 +4,7 @@ import com.dikkak.entity.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.dto.common.BaseException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -50,13 +51,10 @@ public class JwtService {
         Claims claims;
         try {
             claims = extractClaims(token);
+        } catch (ExpiredJwtException e) {   // 토큰이 만료된 경우
+            throw new BaseException(EXPIRED_TOKEN);
         } catch (Exception e) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
-        // 토큰이 만료된 경우
-        if(claims.getExpiration().before(new Date())) {
-            throw new BaseException(EXPIRED_TOKEN);
         }
         return Long.parseLong(claims.getSubject());
     }

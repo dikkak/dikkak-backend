@@ -1,5 +1,6 @@
 package com.dikkak.entity;
 
+import com.dikkak.dto.user.PostRegisterReq;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -37,11 +38,11 @@ public class User extends BaseTime {
     @Column(name = "phone_number", length = 13)
     private String phoneNumber;
 
-    // 이용약관 동의 여부
+    // 이용약관 동의 여부 (필수)
     @Column(name = "terms_conditions")
     private boolean termsConditions;
 
-    // 개인정보 처리 방침 동의 여부
+    // 개인정보 처리 방침 동의 여부 (필수)
     @Column(name = "personal_data_processing_policy")
     private boolean dataPolicy;
 
@@ -61,6 +62,15 @@ public class User extends BaseTime {
         this.providerType = providerType;
     }
 
+    public void register(PostRegisterReq req) {
+        this.name = req.getUsername();
+        this.phoneNumber = req.getPhoneNumber();
+        this.termsConditions = req.isTermsConditions();
+        this.dataPolicy = req.isDataPolicy();
+        this.popUpMessage = req.isPopUpMessage();
+        this.marketingMessage = req.isMarketingMessage();
+    }
+
 
     public void setName(String name) {
         this.name = name;
@@ -76,5 +86,21 @@ public class User extends BaseTime {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void setTermsConditions(boolean termsConditions) {
+        this.termsConditions = termsConditions;
+    }
+
+    public void setDataPolicy(boolean dataPolicy) {
+        this.dataPolicy = dataPolicy;
+    }
+
+    public void setPopUpMessage(boolean popUpMessage) {
+        this.popUpMessage = popUpMessage;
+    }
+
+    public void setMarketingMessage(boolean marketingMessage) {
+        this.marketingMessage = marketingMessage;
     }
 }
