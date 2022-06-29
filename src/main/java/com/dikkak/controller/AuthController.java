@@ -8,9 +8,14 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,11 +42,25 @@ public class AuthController {
      */
     @GetMapping("/login/{provider}")
     @ResponseBody
-    public ResponseEntity<?> login(@PathVariable String provider, @RequestParam String code) {
+    public ResponseEntity<?> login(@PathVariable String provider, @RequestParam String code,
+                                   HttpServletResponse res) {
         try {
             if(providerList.contains(provider)) {
-                GetLoginRes res = oauthService.login(provider, code);
-                return getOkResponse(res);
+                GetLoginRes loginRes = oauthService.login(provider, code);
+
+                // refresh token을 cookie에 저장
+                String refreshToken = loginRes.getRefreshToken();
+                Cookie cookie = new Cookie("refresh_token", refreshToken);
+                cookie.setMaxAge(60 * 60 * 24 * 14); // 2주
+                cookie.setSecure(true);
+                cookie.setHttpOnly(true);
+                cookie.setPath("/"); // 모든 경로에서 접근 가능
+
+                res.addCookie(cookie);
+
+                // response body에서 refresh token 제거하기
+                loginRes.setRefreshToken(null);
+                return getOkResponse(loginRes);
             } else {
                 return getBadRequestResponse(INVALID_PROVIDER);
             }

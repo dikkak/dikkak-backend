@@ -11,7 +11,6 @@ public class GetLoginRes {
 
     private Long userId;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String accessToken;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
