@@ -1,10 +1,8 @@
 package com.dikkak.repository.proposal;
 
-import com.dikkak.dto.proposal.GetProposalRes;
-
-import java.util.List;
+import com.dikkak.dto.workplace.WorkplaceRes;
 
 public interface ProposalRepositoryCustom {
 
-    List<GetProposalRes> getByUserId(Long userId);
+    WorkplaceRes getByUserId(Long userId);
 }
