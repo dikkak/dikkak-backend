@@ -3,7 +3,8 @@ package com.dikkak.controller;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
-import com.dikkak.dto.user.UserNameRes;
+import com.dikkak.dto.user.UserInfoRes;
+import com.dikkak.entity.User;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -58,15 +59,20 @@ public class UserController {
 
     }
 
-    @GetMapping("/name")
+
+    /**
+     * 회원 정보 조회 API
+     * @return username, type
+     */
+    @GetMapping("/info")
     public ResponseEntity<?> getUsername(@AuthenticationPrincipal Long userId) {
 
         if(userId == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            String username = userService.getUser(userId).getName();
-            return ResponseEntity.ok().body(new UserNameRes(username));
+            User user = userService.getUser(userId);
+            return ResponseEntity.ok().body(new UserInfoRes(user.getName(), user.getUserType()));
 
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));

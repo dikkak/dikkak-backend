@@ -101,6 +101,24 @@ public class AuthController {
 
     }
 
+    /**
+     * 로그아웃 API
+     * 쿠키에 저장된 refresh_token을 null로 설정
+     */
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse res) {
+        try {
+            Cookie cookie = new Cookie("refresh_token", null);
+            res.addCookie(cookie);
+            System.out.println("cookie = " + cookie);
+            System.out.println("res = " + res);
+            return ResponseEntity.ok().body(null);
+        } catch (Exception e){
+            return ResponseEntity.badRequest().body(null);
+        }
+
+    }
+
 
     /**
      * 사용하지 않음
