@@ -25,24 +25,19 @@ public class UserService {
 
 //    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
-    @Transactional
-    public void setUserRefreshToken(User user, String refreshToken) throws BaseException {
-        try {
-            user.setRefreshToken(refreshToken);
-        } catch(Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
     public User create(User user) throws BaseException {
         try {
-            User savedUser = userRepository.save(user);
-            return savedUser;
+            return userRepository.save(user);
 
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
+    }
+
+    public User getUser(Long userId) throws BaseException {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()) throw new BaseException(WRONG_USER_ID);
+        return user.get();
     }
 
     /**
@@ -70,8 +65,7 @@ public class UserService {
 
     private boolean checkUserEmailExist(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
-        if(user != null) return true;
-        return false;
+        return user != null;
     }
 
     @Transactional
@@ -83,7 +77,7 @@ public class UserService {
             throw new BaseException(DATABASE_ERROR);
         }
 
-        if(!user.isPresent()) throw new BaseException(WRONG_USER_ID);
+        if(user.isEmpty()) throw new BaseException(WRONG_USER_ID);
 
         try{
             user.get().register(req);

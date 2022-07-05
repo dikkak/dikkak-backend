@@ -7,9 +7,7 @@ import lombok.*;
 @Data
 public class GetLoginRes {
 
-    private boolean newUser; // 새로운 회원 여부
-
-    private Long userId;
+    private String username;
 
     private String accessToken;
 

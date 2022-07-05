@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.Optional;
 
 import static com.dikkak.dto.common.ResponseMessage.*;
 
@@ -38,16 +39,17 @@ public class JwtService {
                 .compact();
     }
 
-    public String createRefreshToken() {
-        Key key = Keys.secretKeyFor(signatureAlgorithm);
+    public String createRefreshToken(Long userId) {
         Date now = new Date();
-        return Jwts.builder().setExpiration(new Date(now.getTime() + refreshTokenMs))
+        return Jwts.builder()
+                .setSubject(userId.toString())
+                .setExpiration(new Date(now.getTime() + refreshTokenMs))
                 .signWith(key)
                 .compact();
     }
 
     // access token 검사 및 userId 추출
-    public Long validateAccessToken(String token) throws BaseException {
+    public Long validateToken(String token) throws BaseException {
         Claims claims;
         try {
             claims = extractClaims(token);
@@ -59,6 +61,7 @@ public class JwtService {
         return Long.parseLong(claims.getSubject());
     }
 
+
     private Claims extractClaims(String token) {
         Claims claims;
         claims = Jwts.parserBuilder()
@@ -69,30 +72,16 @@ public class JwtService {
         return claims;
     }
 
-
-    // refresh token 검사 및 새로운 access token 발급
-    public String validateRefreshToken(String accessToken, String refreshToken) throws BaseException {
-
-        // 토큰이 만료된 경우
-        if(extractClaims(refreshToken).getExpiration().before(new Date())) {
-            throw new BaseException(EXPIRED_TOKEN);
-        }
-
-        Long userId;
-        try{
-            userId = Long.parseLong(extractClaims(accessToken).getSubject());
+    // 만료된 access token에서 userId 추출
+    private Long validateExpiredAccessToken(String token) throws BaseException {
+        Claims claims;
+        try {
+            claims = extractClaims(token);
+            return Long.parseLong(claims.getSubject());
+        } catch (ExpiredJwtException e) {
+            return Long.parseLong(e.getClaims().getSubject());
         } catch (Exception e) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
         }
-
-        User user = userRepository.findById(userId).orElse(null);
-        if(user == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-        if(!user.getRefreshToken().equals(refreshToken)) {
-            throw new BaseException(INVALID_REFRESH_TOKEN);
-        }
-
-        return createAccessToken(userId);
     }
 }

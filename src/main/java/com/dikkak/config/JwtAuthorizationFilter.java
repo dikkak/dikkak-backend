@@ -45,12 +45,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 토큰 검사 및 회원 아이디 추출
         Long userId = null;
         try {
-            userId = jwtService.validateAccessToken(token);
+            userId = jwtService.validateToken(token);
         } catch (BaseException e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().print(new ObjectMapper().writeValueAsString(new BaseResponse<>(e.getResponseMessage())));
+            response.getWriter().print(new ObjectMapper().writeValueAsString(new BaseResponse(e)));
             return;
         }
         Optional<User> user = userRepository.findById(userId);

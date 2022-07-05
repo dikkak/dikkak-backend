@@ -54,8 +54,6 @@ public class User extends BaseTime {
     @Column(name = "marketing_message")
     private boolean marketingMessage;
 
-    private String refreshToken;
-
     @Builder
     public User(String email, ProviderTypeEnum providerType) {
         this.email = email;
@@ -82,10 +80,6 @@ public class User extends BaseTime {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
     }
 
     public void setTermsConditions(boolean termsConditions) {

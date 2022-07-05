@@ -1,15 +1,13 @@
 package com.dikkak.controller;
 
 import com.dikkak.dto.auth.GetLoginRes;
+import com.dikkak.dto.auth.ReissueRes;
+import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.service.JwtService;
 import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;
 import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.BaseResponse;
-import com.dikkak.dto.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,6 +44,7 @@ public class AuthController {
                                    HttpServletResponse res) {
         try {
             if(providerList.contains(provider)) {
+
                 GetLoginRes loginRes = oauthService.login(provider, code);
 
                 // refresh token을 cookie에 저장
@@ -60,14 +59,46 @@ public class AuthController {
 
                 // response body에서 refresh token 제거하기
                 loginRes.setRefreshToken(null);
-                return getOkResponse(loginRes);
+                return ResponseEntity.ok().body(loginRes);
             } else {
-                return getBadRequestResponse(INVALID_PROVIDER);
+                return ResponseEntity.badRequest().body(new BaseResponse(INVALID_PROVIDER));
             }
 
         } catch (BaseException e){
-            return getBadRequestResponse(e.getResponseMessage());
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
+    }
+
+
+    /**
+     * @param refreshToken cookie에 저장되어 있는 refresh token
+     * @return 새로 발행한 access token
+     */
+    @GetMapping("/refresh")
+    @ResponseBody
+    public ResponseEntity<?> reIssue(
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+
+        // refresh token 없는 경우
+        if(refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_REFRESH_TOKEN));
+        }
+
+        // access token 재발급
+        try {
+            // refresh 토큰 유효성 검사 및 userId 추출
+            Long userId = jwtService.validateToken(refreshToken);
+
+            // 존재하는 회원인지 검사
+            userService.getUser(userId);
+
+            // access token 생성
+            String newAccessToken = jwtService.createAccessToken(userId);
+            return ResponseEntity.ok().body(new ReissueRes(newAccessToken));
+        } catch (BaseException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(e));
+        }
+
     }
 
 
@@ -108,14 +139,6 @@ public class AuthController {
 //            return getBadRequestResponse(e.getResponseMessage());
 //        }
 //    }
-
-    private ResponseEntity<BaseResponse<Object>> getOkResponse(Object data) {
-        return ResponseEntity.ok().body(new BaseResponse<>(data));
-    }
-
-    private ResponseEntity<BaseResponse<Object>> getBadRequestResponse(ResponseMessage message) {
-        return ResponseEntity.badRequest().body(new BaseResponse<>(message));
-    }
 
     private boolean isRegexEmail(String email) {
         return EMAIL.matcher(email).find();

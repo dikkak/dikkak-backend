@@ -4,8 +4,8 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.service.UserService;
-import com.fasterxml.jackson.databind.deser.std.ObjectArrayDeserializer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,14 +29,19 @@ public class UserController {
     /**
      * 최초 로그인 후, 회원 이름과 전화번호를 입력한다.
      * @param userId - access token으로부터 추출한 회원 아이디
-     * @RequestBody
      */
     @PostMapping("/register")
     public ResponseEntity<?> register(@AuthenticationPrincipal Long userId,
                                       @RequestBody PostRegisterReq req) {
 
         if(userId == null)
-            return ResponseEntity.badRequest().body(new BaseResponse<>(INVALID_ACCESS_TOKEN));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
+
+        if(req.getUsername() == null || req.getUsername().isEmpty())
+            return ResponseEntity.badRequest().body(new BaseResponse(EMPTY_USER_NAME));
+
+        if(req.getPhoneNumber() == null || req.getPhoneNumber().isEmpty())
+            return ResponseEntity.badRequest().body(new BaseResponse(EMPTY_PHONE_NUMBER));
 
         // 전화번호 형식 검사
         if(!isRegexPhoneNumber(req.getPhoneNumber()))
@@ -44,13 +49,13 @@ public class UserController {
 
         // 필수 항목 동의 여부 검사
         if(!req.isTermsConditions() || !req.isDataPolicy())
-            return ResponseEntity.badRequest().body(new BaseResponse<>(REQUIRED_ITEM_DISAGREE));
+            return ResponseEntity.badRequest().body(new BaseResponse(REQUIRED_ITEM_DISAGREE));
 
         try {
             userService.registerUser(userId, req);
-            return ResponseEntity.ok().body(new BaseResponse<>(SUCCESS));
+            return ResponseEntity.ok().body(null);
         } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse<>(e.getResponseMessage()));
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
 
     }

@@ -4,24 +4,16 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 @Getter
-public class BaseResponse<T> {
+public class BaseResponse {
 
-    private String message;
-
-    // null인 경우는 제외한다.
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private T data;
-
+    private final String message;
 
     public BaseResponse(ResponseMessage message) {
         this.message = message.getMessage();
     }
 
-    public BaseResponse(T data) {
-        this.message = ResponseMessage.SUCCESS.getMessage();
-        this.data = data;
+    public BaseResponse(BaseException e) {
+        this.message = e.getResponseMessage().getMessage();
     }
-
-
 
 }

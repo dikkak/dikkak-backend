@@ -77,14 +77,10 @@ public class OauthService {
 
         // 토큰 발급
         String accessToken = jwtService.createAccessToken(user.getId());
-        String refreshToken = jwtService.createRefreshToken();
-
-        // refreshToken db에 저장
-        userService.setUserRefreshToken(user, refreshToken);
+        String refreshToken = jwtService.createRefreshToken(user.getId());
 
         return GetLoginRes.builder()
-                .newUser(userByEmail.isPresent())
-                .userId(user.getId())
+                .username(user.getName())
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
