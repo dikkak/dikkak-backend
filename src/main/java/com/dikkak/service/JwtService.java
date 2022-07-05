@@ -56,7 +56,7 @@ public class JwtService {
         } catch (ExpiredJwtException e) {   // 토큰이 만료된 경우
             throw new BaseException(EXPIRED_TOKEN);
         } catch (Exception e) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
+            throw new BaseException(INVALID_TOKEN);
         }
         return Long.parseLong(claims.getSubject());
     }

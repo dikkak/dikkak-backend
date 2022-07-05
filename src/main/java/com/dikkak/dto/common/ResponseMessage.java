@@ -18,13 +18,14 @@ public enum ResponseMessage {
     INVALID_FORMAT_PASSWORD("잘못된 형식의 비밀번호입니다."),
     INVALID_FORMAT_PHONE_NUMBER("잘못된 형식의 전화번호입니다."),
     WRONG_USER_ID("잘못된 회원 아이디입니다."),
-    EMPTY_USER_NAME("이름을 입력하세요"),
-    EMPTY_PHONE_NUMBER("번호를 입력하세요"),
+    EMPTY_USER_NAME("이름을 입력하세요."),
+    EMPTY_PHONE_NUMBER("번호를 입력하세요."),
 
     REQUIRED_ITEM_DISAGREE("필수 항목에 동의해야 합니다."),
 
     INVALID_ACCESS_TOKEN("올바르지 않은 ACCESS TOKEN 입니다."),
     INVALID_REFRESH_TOKEN("올바르지 않은 REFRESH TOKEN 입니다."),
+    INVALID_TOKEN("올바르지 않은 토큰입니다."),
     EXPIRED_TOKEN("만료된 토큰입니다."),
 
     // 소셜 로그인
