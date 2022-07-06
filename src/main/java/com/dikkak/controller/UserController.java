@@ -4,9 +4,12 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.dto.user.UserInfoRes;
+import com.dikkak.dto.user.UserTypeReq;
 import com.dikkak.entity.User;
+import com.dikkak.entity.UserTypeEnum;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.usertype.UserType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -59,6 +62,25 @@ public class UserController {
 
     }
 
+    /**
+     * 회원 타입 설정 API
+     * @param req - type: CLIENT, DESIGNER
+     */
+    @PostMapping("/type")
+    @ResponseBody
+    public ResponseEntity<?> setUserType(@AuthenticationPrincipal Long userId,
+                                         @RequestBody UserTypeReq req) {
+
+        if(userId == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
+
+        try {
+            userService.setUserType(userId, req.getType());
+            return ResponseEntity.ok().body(null);
+        } catch (BaseException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
+        }
+    }
 
     /**
      * 회원 정보 조회 API
@@ -77,8 +99,6 @@ public class UserController {
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
-
-
     }
 
     private boolean isRegexPhoneNumber(String phoneNumber) {
