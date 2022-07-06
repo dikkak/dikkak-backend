@@ -10,6 +10,7 @@ import com.dikkak.dto.common.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -106,12 +107,17 @@ public class AuthController {
      * 쿠키에 저장된 refresh_token을 null로 설정
      */
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse res) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal Long userId, HttpServletResponse res) {
+
+        if(userId == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(INVALID_ACCESS_TOKEN);
+
         try {
+            // 쿠키 지우기
             Cookie cookie = new Cookie("refresh_token", null);
+            cookie.setMaxAge(0);
             res.addCookie(cookie);
-            System.out.println("cookie = " + cookie);
-            System.out.println("res = " + res);
+
             return ResponseEntity.ok().body(null);
         } catch (Exception e){
             return ResponseEntity.badRequest().body(null);
