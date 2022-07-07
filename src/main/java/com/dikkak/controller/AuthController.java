@@ -9,6 +9,7 @@ import com.dikkak.service.UserService;
 import com.dikkak.dto.common.BaseException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -50,13 +51,15 @@ public class AuthController {
 
                 // refresh token을 cookie에 저장
                 String refreshToken = loginRes.getRefreshToken();
-                Cookie cookie = new Cookie("refresh_token", refreshToken);
-                cookie.setMaxAge(60 * 60 * 24 * 14); // 2주
-                cookie.setSecure(true);
-                cookie.setHttpOnly(true);
-                cookie.setPath("/"); // 모든 경로에서 접근 가능
+                ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
+                        .maxAge(60 * 60 * 24 * 14)
+                        .path("/")
+                        .sameSite("none")
+                        .secure(true)
+                        .httpOnly(true)
+                        .build();
 
-                res.addCookie(cookie);
+                res.setHeader("Set-Cookie", cookie.toString());
 
                 // response body에서 refresh token 제거하기
                 loginRes.setRefreshToken(null);
@@ -114,9 +117,12 @@ public class AuthController {
 
         try {
             // 쿠키 지우기
-            Cookie cookie = new Cookie("refresh_token", null);
-            cookie.setMaxAge(0);
-            res.addCookie(cookie);
+            ResponseCookie cookie = ResponseCookie.from("refresh_token", null)
+                    .maxAge(0)
+                    .secure(true)
+                    .sameSite("none")
+                    .build();
+            res.setHeader("Set-Cookie", cookie.toString());
 
             return ResponseEntity.ok().body(null);
         } catch (Exception e){
