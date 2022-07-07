@@ -24,13 +24,13 @@ public class WorkplaceController {
     public ResponseEntity<?> getProposalList(@AuthenticationPrincipal Long userId) {
 
         if(userId == null)
-            return ResponseEntity.badRequest().body(new BaseResponse<>(INVALID_ACCESS_TOKEN));
+            return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
             WorkplaceRes workplace = proposalService.getUserWorkplace(userId);
-            return ResponseEntity.ok().body(new BaseResponse<>(workplace));
+            return ResponseEntity.ok().body(workplace);
         } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(e.getResponseMessage());
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
 
     }
