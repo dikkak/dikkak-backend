@@ -119,7 +119,9 @@ public class AuthController {
             // 쿠키 지우기
             ResponseCookie cookie = ResponseCookie.from("refresh_token", null)
                     .maxAge(0)
+                    .path("/")
                     .secure(true)
+                    .httpOnly(true)
                     .sameSite("none")
                     .build();
             res.setHeader("Set-Cookie", cookie.toString());
