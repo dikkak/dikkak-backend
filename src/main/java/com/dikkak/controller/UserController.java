@@ -23,7 +23,7 @@ import static com.dikkak.dto.common.ResponseMessage.*;
 public class UserController {
 
     private final UserService userService;
-    private static final Pattern PHONE_NUMBER = Pattern.compile("^010?:\\d{4}\\d{4}$");
+    private static final Pattern PHONE_NUMBER = Pattern.compile("^010(?:\\d{4})\\d{4}$");
 
 
     /**
