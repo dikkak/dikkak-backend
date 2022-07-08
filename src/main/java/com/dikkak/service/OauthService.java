@@ -23,8 +23,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.dikkak.dto.common.ResponseMessage.INVALID_PROVIDER;
-import static com.dikkak.dto.common.ResponseMessage.LOGIN_FAILURE;
+import static com.dikkak.dto.common.ResponseMessage.*;
 
 
 @Service
@@ -66,6 +65,12 @@ public class OauthService {
         // 존재하는 회원인 경우
         if(userByEmail.isPresent()) {
             user = userByEmail.get();
+            System.out.println("user.getProviderType().toString() = " + user.getProviderType().toString());
+
+            // 다른 provider로 등록되어 있는 경우
+            if (!user.getProviderType().toString().equals(providerName)) {
+                throw new BaseException(ALREADY_REGISTERED_SOCIAL_LOGIN);
+            }
         }
         // 존재하지 않는 회원인 경우 - 회원가입
         else {

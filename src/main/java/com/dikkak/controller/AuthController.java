@@ -1,8 +1,10 @@
 package com.dikkak.controller;
 
 import com.dikkak.dto.auth.GetLoginRes;
+import com.dikkak.dto.auth.LogoutRes;
 import com.dikkak.dto.auth.ReissueRes;
 import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.entity.User;
 import com.dikkak.service.JwtService;
 import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;
@@ -14,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,7 +70,9 @@ public class AuthController {
             }
 
         } catch (BaseException e){
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
+            if(e.getResponseMessage().equals(ALREADY_REGISTERED_SOCIAL_LOGIN))
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(e));
+            else return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
     }
 
@@ -108,6 +111,7 @@ public class AuthController {
     /**
      * 로그아웃 API
      * 쿠키에 저장된 refresh_token을 null로 설정
+     * @return provider 타입
      */
     @GetMapping("/logout")
     public ResponseEntity<?> logout(@AuthenticationPrincipal Long userId, HttpServletResponse res) {
@@ -126,7 +130,7 @@ public class AuthController {
                     .build();
             res.setHeader("Set-Cookie", cookie.toString());
 
-            return ResponseEntity.ok().body(null);
+            return ResponseEntity.ok().body(new LogoutRes(userService.getUser(userId).getProviderType()));
         } catch (Exception e){
             return ResponseEntity.badRequest().body(null);
         }

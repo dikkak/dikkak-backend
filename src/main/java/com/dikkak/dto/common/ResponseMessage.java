@@ -31,6 +31,7 @@ public enum ResponseMessage {
     // 소셜 로그인
     INVALID_PROVIDER("올바르지 않은 provider 입니다."),
     LOGIN_FAILURE("로그인에 실패하였습니다."),
+    ALREADY_REGISTERED_SOCIAL_LOGIN("다른 소셜로 등록된 email입니다."),
 
     DATABASE_ERROR("데이터베이스 오류입니다.");
 
