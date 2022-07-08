@@ -6,10 +6,8 @@ import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.dto.user.UserInfoRes;
 import com.dikkak.dto.user.UserTypeReq;
 import com.dikkak.entity.User;
-import com.dikkak.entity.UserTypeEnum;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.usertype.UserType;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +23,7 @@ import static com.dikkak.dto.common.ResponseMessage.*;
 public class UserController {
 
     private final UserService userService;
-    private static final Pattern PHONE_NUMBER = Pattern.compile("^01(?:0|1|[6-9])-(?:\\d{3}|\\d{4})-\\d{4}$");
+    private static final Pattern PHONE_NUMBER = Pattern.compile("^010?:\\d{4}\\d{4}$");
 
 
     /**
