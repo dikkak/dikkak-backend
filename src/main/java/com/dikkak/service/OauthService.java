@@ -65,10 +65,8 @@ public class OauthService {
         // 존재하는 회원인 경우
         if(userByEmail.isPresent()) {
             user = userByEmail.get();
-            System.out.println("user.getProviderType().toString() = " + user.getProviderType().toString());
-
             // 다른 provider로 등록되어 있는 경우
-            if (!user.getProviderType().toString().equals(providerName)) {
+            if (!user.getProviderType().toString().equals(providerName.toUpperCase())) {
                 throw new BaseException(ALREADY_REGISTERED_SOCIAL_LOGIN);
             }
         }
