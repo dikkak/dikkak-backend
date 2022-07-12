@@ -1,6 +1,8 @@
 package com.dikkak.entity;
 
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseTime {
+public abstract class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
@@ -22,4 +24,8 @@ public abstract class BaseTime {
     @LastModifiedDate
     @Column
     private LocalDateTime lastModifiedDate;
+
+    @Column
+    @ColumnDefault("'ACTIVE'")
+    private String status = "ACTIVE";
 }

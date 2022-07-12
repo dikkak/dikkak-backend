@@ -3,17 +3,18 @@ package com.dikkak.entity.proposal;
 import javax.persistence.*;
 
 @Entity
-public class Proposal_DesignKeyword {
+public class ProposalKeyword {
 
     @Id @GeneratedValue
-    @Column(name = "pd_id")
+    @Column(name = "proposal_keyword_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "keyword_id")
-    private DesignKeyword keyword;
+    private Keyword keyword;
+
 }

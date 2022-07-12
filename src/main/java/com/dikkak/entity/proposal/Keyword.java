@@ -1,11 +1,9 @@
 package com.dikkak.entity.proposal;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-public class DesignKeyword {
+public class Keyword {
 
     @Id @GeneratedValue
     @Column(name = "keyword_id")
@@ -13,8 +11,4 @@ public class DesignKeyword {
 
     @Column(unique = true)
     private String name;
-
-    @OneToMany(mappedBy = "keyword")
-    List<Proposal_DesignKeyword> proposals = new ArrayList<>();
-
 }
