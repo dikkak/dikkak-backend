@@ -1,5 +1,6 @@
-package com.dikkak.entity;
+package com.dikkak.entity.work;
 
+import com.dikkak.entity.BaseEntity;
 import com.dikkak.entity.proposal.Proposal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,10 +10,10 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Getter
-public class Work extends BaseTime {
+public class Coworking extends BaseEntity {
 
     @Id @GeneratedValue
-    @Column(name = "work_id")
+    @Column(name = "coworking_id")
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -22,7 +23,9 @@ public class Work extends BaseTime {
     @Column(nullable = false)
     private String title;
 
-    // 완료 여부
-    private boolean complete;
+    // 진행 스탭: 1~9
+    private Integer step = 1;
+
+
 
 }

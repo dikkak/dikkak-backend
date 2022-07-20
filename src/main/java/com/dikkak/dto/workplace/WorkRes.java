@@ -9,5 +9,4 @@ public class WorkRes {
 
     private Long id;
     private String title;
-    private boolean complete;
 }

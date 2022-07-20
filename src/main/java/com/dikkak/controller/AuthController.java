@@ -42,7 +42,6 @@ public class AuthController {
      * @param code 인가 코드
      */
     @GetMapping("/login/{provider}")
-    @ResponseBody
     public ResponseEntity<?> login(@PathVariable String provider, @RequestParam String code,
                                    HttpServletResponse res) {
         try {
@@ -82,7 +81,6 @@ public class AuthController {
      * @return 새로 발행한 access token
      */
     @GetMapping("/refresh")
-    @ResponseBody
     public ResponseEntity<?> reIssue(
             @CookieValue(name = "refresh_token", required = false) String refreshToken) {
 

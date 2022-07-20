@@ -9,7 +9,7 @@ import javax.validation.constraints.Email;
 @NoArgsConstructor
 @Getter
 @ToString
-public class User extends BaseTime {
+public class User extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "user_id")

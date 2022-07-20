@@ -65,7 +65,6 @@ public class UserController {
      * @param req - type: CLIENT, DESIGNER
      */
     @PostMapping("/type")
-    @ResponseBody
     public ResponseEntity<?> setUserType(@AuthenticationPrincipal Long userId,
                                          @RequestBody UserTypeReq req) {
 

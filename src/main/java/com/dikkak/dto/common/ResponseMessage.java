@@ -33,7 +33,11 @@ public enum ResponseMessage {
     LOGIN_FAILURE("로그인에 실패하였습니다."),
     ALREADY_REGISTERED_SOCIAL_LOGIN("다른 소셜로 등록된 email입니다."),
 
-    DATABASE_ERROR("데이터베이스 오류입니다.");
+    DATABASE_ERROR("데이터베이스 오류입니다."),
+
+    // 파일 업로드
+    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다.");
+
 
     private final String message;
 

@@ -1,14 +1,13 @@
 package com.dikkak.entity.proposal;
 
+import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.CategoryEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Getter
@@ -39,23 +38,9 @@ public class Proposal extends BaseEntity {
     @Column(nullable = false)
     private String purpose;
 
-    // 키워드
-    @OneToMany(mappedBy = "proposal")
-    private List<ProposalKeyword> keywords;        // ,로 구분
-
     // 마감일
     @Column(nullable = false)
     private LocalDateTime deadline;
-
-    // 레퍼런스 파일 (이미지 파일)
-    // 3개 ~ 5개
-    @OneToMany(mappedBy = "proposal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reference> references = new ArrayList<>();
-
-    // 기타 파일
-    // 최대 0개 ~ 5개
-    @OneToMany(mappedBy = "proposal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Otherfile> otherFiles = new ArrayList<>();
 
     // 메인 컬러
     @Column(name = "main_color", nullable = false)
@@ -63,15 +48,24 @@ public class Proposal extends BaseEntity {
 
     // 서브 컬러
     // 0개 ~ 5개
-    @OneToMany(mappedBy = "proposal", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubColor> subColors = new ArrayList<>();
+    private String subColors;
 
 
     // 추가 요청사항
     @Lob
     private String requirements;
 
-    public void setSubColors(List<SubColor> subColors) {
-        this.subColors = subColors;
+    public Proposal(PostProposalReq req) {
+        this.category = req.getCategory();
+        this.title = req.getTitle();
+        this.detail = req.getDetail();
+        this.purpose = req.getPurpose();
+        this.deadline = LocalDateTime.parse(req.getDeadline() +"T00:00", DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        this.mainColor = req.getMainColor();
+
+        if(req.getSubColors()!= null && !req.getSubColors().isEmpty())
+            this.subColors = String.join(",", req.getSubColors());
+
+        this.requirements = req.getRequirements();
     }
 }

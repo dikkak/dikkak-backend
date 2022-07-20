@@ -1,8 +1,11 @@
 package com.dikkak.entity.proposal;
 
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@NoArgsConstructor
 public class Keyword {
 
     @Id @GeneratedValue
@@ -11,4 +14,8 @@ public class Keyword {
 
     @Column(unique = true)
     private String name;
+
+    public Keyword(String name) {
+        this.name = name;
+    }
 }

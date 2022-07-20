@@ -1,6 +1,7 @@
 package com.dikkak.entity.proposal;
 
 import com.dikkak.entity.User;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -20,4 +21,10 @@ public class UserProposal {
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
 
+
+    @Builder
+    public UserProposal(User user, Proposal proposal) {
+        this.user = user;
+        this.proposal = proposal;
+    }
 }
