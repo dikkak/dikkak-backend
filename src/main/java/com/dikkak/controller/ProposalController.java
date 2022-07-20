@@ -3,6 +3,7 @@ package com.dikkak.controller;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.proposal.PostProposalReq;
+import com.dikkak.dto.proposal.PostProposalRes;
 import com.dikkak.entity.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.s3.S3Uploader;
@@ -36,9 +37,9 @@ public class ProposalController {
     @PostMapping("")
     public ResponseEntity<?> createProposal(
             @AuthenticationPrincipal Long userId,
-            @RequestBody PostProposalReq jsonData,
-            @RequestBody(required = false) List<MultipartFile> referenceFile,
-            @RequestBody(required = false) List<MultipartFile> etcFile) {
+            @RequestPart PostProposalReq jsonData,
+            @RequestPart(required = false) List<MultipartFile> referenceFile,
+            @RequestPart(required = false) List<MultipartFile> etcFile) {
 
         try {
 
@@ -90,12 +91,12 @@ public class ProposalController {
                     );
                 }
             }
+
+            return ResponseEntity.ok().body(new PostProposalRes(savedProposal.getId()));
         } catch (IOException e){
             return ResponseEntity.internalServerError().body(FILE_UPLOAD_FAILED);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
-        return ResponseEntity.ok().build();
-
     }
 }
