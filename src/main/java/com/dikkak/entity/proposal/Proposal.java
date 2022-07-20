@@ -66,6 +66,6 @@ public class Proposal extends BaseEntity {
         if(req.getSubColors()!= null && !req.getSubColors().isEmpty())
             this.subColors = String.join(",", req.getSubColors());
 
-        this.requirements = req.getRequirements();
+        this.requirements = req.getAdditionalDesc();
     }
 }

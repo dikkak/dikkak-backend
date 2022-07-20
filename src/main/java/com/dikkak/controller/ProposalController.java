@@ -36,9 +36,9 @@ public class ProposalController {
     @PostMapping("")
     public ResponseEntity<?> createProposal(
             @AuthenticationPrincipal Long userId,
-            @RequestPart(required = false) PostProposalReq jsonData,
-            @RequestPart(required = false) List<MultipartFile> referenceFile,
-            @RequestPart(required = false) List<MultipartFile> etcFile) {
+            @RequestBody PostProposalReq jsonData,
+            @RequestBody(required = false) List<MultipartFile> referenceFile,
+            @RequestBody(required = false) List<MultipartFile> etcFile) {
 
         try {
 
@@ -69,7 +69,7 @@ public class ProposalController {
                     referenceService.create(Reference.builder()
                                                     .proposal(savedProposal)
                                                     .fileUrl(url)
-                                                    .description(jsonData.getReferencesDesc().get(i))
+                                                    .description(jsonData.getReferenceDesc().get(i))
                                                     .build()
                     );
                 }
