@@ -39,6 +39,14 @@ public class UserService {
         return findUserById(userId);
     }
 
+    public User getUserByEmail(String email) throws BaseException {
+        try{
+            return userRepository.findByEmail(email).orElse(null);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
     @Transactional
     public void registerUser(Long userId, PostRegisterReq req) throws BaseException {
         User user = findUserById(userId);

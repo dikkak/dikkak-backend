@@ -1,5 +1,6 @@
 package com.dikkak.service;
 
+import com.dikkak.dto.admin.GetProposalsRes;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.WorkplaceRes;
@@ -14,8 +15,12 @@ import com.dikkak.repository.proposal.ProposalRepository;
 import com.dikkak.repository.proposal.UserProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
 
@@ -28,7 +33,6 @@ public class ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalKeywordRepository proposalKeywordRepository;
     private final KeywordRepository keywordRepository;
-
 
 
     public WorkplaceRes getUserWorkplace(Long userId) throws BaseException {
@@ -50,9 +54,9 @@ public class ProposalService {
 
             // 회원과 매핑
             userProposalRepository.save(UserProposal.builder()
-                                                    .user(user)
-                                                    .proposal(savedProposal)
-                                                    .build());
+                    .user(user)
+                    .proposal(savedProposal)
+                    .build());
             return savedProposal;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -61,7 +65,7 @@ public class ProposalService {
     }
 
     @Transactional
-    public void saveKeyword(Proposal proposal, String keywordName) throws BaseException{
+    public void saveKeyword(Proposal proposal, String keywordName) throws BaseException {
         try {
             // 키워드 찾기 or 저장
             Keyword keyword = keywordRepository.findByName(keywordName).orElseGet(() -> keywordRepository.save(new Keyword(keywordName)));
@@ -81,5 +85,10 @@ public class ProposalService {
 
     }
 
-
+    // 회원의 제안서 목록 조회
+    public List<GetProposalsRes> getProposalList(Long userId) {
+        return userProposalRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
+                .map(userProposal -> new GetProposalsRes(userProposal.getProposal()))
+                .collect(Collectors.toList());
+    }
 }

@@ -36,7 +36,10 @@ public enum ResponseMessage {
     DATABASE_ERROR("데이터베이스 오류입니다."),
 
     // 파일 업로드
-    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다.");
+    FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다."),
+
+    // admin
+    ADMIN_REQUIRED("관리자 계정으로 로그인하세요");
 
 
     private final String message;

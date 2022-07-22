@@ -16,7 +16,7 @@ public class Coworking extends BaseEntity {
     @Column(name = "coworking_id")
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
 

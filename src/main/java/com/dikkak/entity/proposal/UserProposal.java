@@ -1,14 +1,17 @@
 package com.dikkak.entity.proposal;
 
+import com.dikkak.entity.BaseEntity;
 import com.dikkak.entity.User;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
-public class UserProposal {
+@Getter
+public class UserProposal extends BaseEntity {
 
     @Id @GeneratedValue
     private Long id;

@@ -12,6 +12,10 @@ public class BaseResponse {
         this.message = message.getMessage();
     }
 
+    public BaseResponse(String message) {
+        this.message = message;
+    }
+
     public BaseResponse(BaseException e) {
         this.message = e.getResponseMessage().getMessage();
     }

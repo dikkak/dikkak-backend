@@ -19,11 +19,11 @@ public abstract class BaseEntity {
 
     @CreatedDate
     @Column(updatable = false)
-    private LocalDateTime createdDate;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column
-    private LocalDateTime lastModifiedDate;
+    private LocalDateTime lastModifiedAt;
 
     @Column
     @ColumnDefault("'ACTIVE'")
