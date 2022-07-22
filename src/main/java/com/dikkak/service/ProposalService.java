@@ -2,13 +2,11 @@ package com.dikkak.service;
 
 import com.dikkak.dto.admin.GetProposalsRes;
 import com.dikkak.dto.common.BaseException;
+import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.WorkplaceRes;
 import com.dikkak.entity.User;
-import com.dikkak.entity.proposal.Keyword;
-import com.dikkak.entity.proposal.Proposal;
-import com.dikkak.entity.proposal.ProposalKeyword;
-import com.dikkak.entity.proposal.UserProposal;
+import com.dikkak.entity.proposal.*;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
@@ -23,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.dto.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +32,8 @@ public class ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalKeywordRepository proposalKeywordRepository;
     private final KeywordRepository keywordRepository;
+    private final ReferenceService referenceService;
+    private final OtherFileService otherFileService;
 
 
     public WorkplaceRes getUserWorkplace(Long userId) throws BaseException {
@@ -90,5 +91,36 @@ public class ProposalService {
         return userProposalRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
                 .map(userProposal -> new GetProposalsRes(userProposal.getProposal()))
                 .collect(Collectors.toList());
+    }
+
+    // 제안서 조회
+    public GetProposalRes getProposal(Long proposalId) throws BaseException {
+
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
+
+        try {
+            GetProposalRes res = new GetProposalRes(proposal);
+            System.out.println("res = " + res);
+
+            referenceService.getRefList(proposalId).forEach(reference -> {
+                res.getReferenceFile().add(reference.getFileUrl());
+                res.getReferenceDesc().add(reference.getDescription());
+            });
+            System.out.println("res = " + res);
+            otherFileService.getOtherFileList(proposalId).forEach(otherfile -> {
+                res.getEtcFile().add(otherfile.getFileUrl());
+            });
+            System.out.println("res = " + res);
+
+            proposalKeywordRepository.findByProposalId(proposalId).forEach(proposalKeyword -> {
+                res.getKeywords().add(proposalKeyword.getKeyword().getName());
+            });
+            System.out.println("res = " + res);
+            return res;
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 }

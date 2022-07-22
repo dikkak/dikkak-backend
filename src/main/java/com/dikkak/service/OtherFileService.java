@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
 
 @Service
@@ -21,6 +23,14 @@ public class OtherFileService {
     public void create(Otherfile otherfile) throws BaseException {
         try {
             otherFileRepository.save(otherfile);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<Otherfile> getOtherFileList(Long proposalId) throws BaseException {
+        try {
+            return otherFileRepository.findByProposalId(proposalId);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

@@ -1,12 +1,14 @@
 package com.dikkak.entity.proposal;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class ProposalKeyword {
 
     @Id @GeneratedValue

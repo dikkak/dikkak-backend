@@ -99,4 +99,15 @@ public class ProposalController {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
     }
+
+    @GetMapping("/{proposalId}")
+    public ResponseEntity<?> getProposals(@PathVariable Long proposalId) {
+
+        try {
+            return ResponseEntity.ok().body(proposalService.getProposal(proposalId));
+        } catch (BaseException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
+        }
+
+    }
 }

@@ -39,7 +39,11 @@ public enum ResponseMessage {
     FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다."),
 
     // admin
-    ADMIN_REQUIRED("관리자 계정으로 로그인하세요");
+    ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),
+
+    WRONG_PROPOSAL_ID("잘못된 제안서 아이디입니다.");
+
+
 
 
     private final String message;

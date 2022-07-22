@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
 
 @Service
@@ -19,6 +21,14 @@ public class ReferenceService {
     public void create(Reference reference) throws BaseException {
         try {
             referenceRepository.save(reference);
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    public List<Reference> getRefList(Long proposalId) throws BaseException {
+        try {
+            return referenceRepository.findByProposalId(proposalId);
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }

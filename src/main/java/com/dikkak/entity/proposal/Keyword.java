@@ -1,11 +1,13 @@
 package com.dikkak.entity.proposal;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
+@Getter
 public class Keyword {
 
     @Id @GeneratedValue
