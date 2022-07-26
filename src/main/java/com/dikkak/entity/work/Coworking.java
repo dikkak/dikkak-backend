@@ -1,7 +1,7 @@
 package com.dikkak.entity.work;
 
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.proposal.Proposal;
+import com.dikkak.entity.proposal.UserProposal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,16 +16,14 @@ public class Coworking extends BaseEntity {
     @Column(name = "coworking_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposal_id")
-    private Proposal proposal;
-
-    @Column(nullable = false)
-    private String title;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_proposal_id")
+    private UserProposal proposal;
 
     // 진행 스탭: 1~9
     private Integer step = 1;
 
-
-
+    public Coworking(UserProposal proposal) {
+        this.proposal = proposal;
+    }
 }

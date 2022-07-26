@@ -34,6 +34,13 @@ public class ProposalController {
     private final OtherFileService otherFileService;
     private final S3Uploader s3Uploader;
 
+    /**
+     * 제안서 생성 api
+     * @param userId 회원 id
+     * @param jsonData 제안서 정보
+     * @param referenceFile 레퍼런스 파일
+     * @param etcFile 기타 파일
+     */
     @PostMapping("")
     public ResponseEntity<?> createProposal(
             @AuthenticationPrincipal Long userId,
@@ -100,6 +107,10 @@ public class ProposalController {
         }
     }
 
+    /**
+     * 제안서 상세 조회 api
+     * @param proposalId 제안서 id
+     */
     @GetMapping("/{proposalId}")
     public ResponseEntity<?> getProposals(@PathVariable Long proposalId) {
 

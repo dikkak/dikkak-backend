@@ -44,3 +44,4 @@ generated
 test/
 
 template.txt
+.DS_Store

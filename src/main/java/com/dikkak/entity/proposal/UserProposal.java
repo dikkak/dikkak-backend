@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class UserProposal extends BaseEntity {
 
     @Id @GeneratedValue
+    @Column(name = "user_proposal_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

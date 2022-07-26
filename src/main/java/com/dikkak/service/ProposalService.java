@@ -7,6 +7,8 @@ import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.WorkplaceRes;
 import com.dikkak.entity.User;
 import com.dikkak.entity.proposal.*;
+import com.dikkak.entity.work.Coworking;
+import com.dikkak.repository.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
@@ -34,6 +36,7 @@ public class ProposalService {
     private final KeywordRepository keywordRepository;
     private final ReferenceService referenceService;
     private final OtherFileService otherFileService;
+    private final CoworkingRepository coworkingRepository;
 
 
     public WorkplaceRes getUserWorkplace(Long userId) throws BaseException {
@@ -59,6 +62,32 @@ public class ProposalService {
                     .proposal(savedProposal)
                     .build());
             return savedProposal;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    @Transactional
+    public void create(User user, Long proposalId) throws BaseException {
+        try {
+            // 제안서 조회
+            Proposal proposal = proposalRepository.findById(proposalId).orElse(null);
+            if(proposal == null)
+                throw new BaseException(WRONG_PROPOSAL_ID);
+
+            // 회원과 매핑
+            UserProposal userProposal = userProposalRepository.save(UserProposal.builder()
+                    .user(user)
+                    .proposal(proposal)
+                    .build());
+
+            // 외주 작업실 저장
+            coworkingRepository.save(new Coworking(userProposal));
+
+        } catch (BaseException e) {
+            log.error(e.getMessage());
+            throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
@@ -93,6 +122,9 @@ public class ProposalService {
                 .collect(Collectors.toList());
     }
 
+    public boolean existUserProposal(User user, Long proposalId) {
+        return userProposalRepository.findByUserAndProposalId(user, proposalId).isPresent();
+    }
     // 제안서 조회
     public GetProposalRes getProposal(Long proposalId) throws BaseException {
 
@@ -101,22 +133,18 @@ public class ProposalService {
 
         try {
             GetProposalRes res = new GetProposalRes(proposal);
-            System.out.println("res = " + res);
 
             referenceService.getRefList(proposalId).forEach(reference -> {
                 res.getReferenceFile().add(reference.getFileUrl());
                 res.getReferenceDesc().add(reference.getDescription());
             });
-            System.out.println("res = " + res);
             otherFileService.getOtherFileList(proposalId).forEach(otherfile -> {
                 res.getEtcFile().add(otherfile.getFileUrl());
             });
-            System.out.println("res = " + res);
 
             proposalKeywordRepository.findByProposalId(proposalId).forEach(proposalKeyword -> {
                 res.getKeywords().add(proposalKeyword.getKeyword().getName());
             });
-            System.out.println("res = " + res);
             return res;
         } catch (Exception e) {
             log.info(e.getMessage());
