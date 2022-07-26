@@ -81,7 +81,7 @@ public class UserController {
 
     /**
      * 회원 정보 조회 API
-     * @return username, type
+     * @return username, type, provider
      */
     @GetMapping("/info")
     public ResponseEntity<?> getUsername(@AuthenticationPrincipal Long userId) {
@@ -91,7 +91,7 @@ public class UserController {
 
         try {
             User user = userService.getUser(userId);
-            return ResponseEntity.ok().body(new UserInfoRes(user.getName(), user.getUserType()));
+            return ResponseEntity.ok().body(new UserInfoRes(user.getName(), user.getUserType(), user.getProviderType()));
 
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
