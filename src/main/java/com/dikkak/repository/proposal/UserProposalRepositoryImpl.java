@@ -2,6 +2,7 @@ package com.dikkak.repository.proposal;
 
 import com.dikkak.dto.workplace.ProposalRes;
 import com.dikkak.dto.workplace.QProposalRes;
+import com.dikkak.entity.UserTypeEnum;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
@@ -28,5 +29,17 @@ public class UserProposalRepositoryImpl implements UserProposalRepositoryCustom 
                         userProposal.user.id.eq(userId)
                 )
                 .fetch();
+    }
+
+    @Override
+    public String findClientByProposalId(Long proposalId) {
+        return queryFactory
+                .select(userProposal.user.name)
+                .from(userProposal)
+                .where(
+                        userProposal.proposal.id.eq(proposalId),
+                        userProposal.user.userType.eq(UserTypeEnum.CLIENT)
+                )
+                .fetch().get(0);
     }
 }

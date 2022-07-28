@@ -7,4 +7,5 @@ import java.util.List;
 public interface UserProposalRepositoryCustom {
 
     List<ProposalRes> getByUserId(Long userId);
+    String findClientByProposalId(Long proposalId);
 }

@@ -125,6 +125,7 @@ public class ProposalService {
     public boolean existUserProposal(User user, Long proposalId) {
         return userProposalRepository.findByUserAndProposalId(user, proposalId).isPresent();
     }
+
     // 제안서 조회
     public GetProposalRes getProposal(Long proposalId) throws BaseException {
 
@@ -132,7 +133,8 @@ public class ProposalService {
                 .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
 
         try {
-            GetProposalRes res = new GetProposalRes(proposal);
+            String clientName = userProposalRepository.findClientByProposalId(proposalId);
+            GetProposalRes res = new GetProposalRes(proposal, clientName);
 
             referenceService.getRefList(proposalId).forEach(reference -> {
                 res.getReferenceFile().add(reference.getFileUrl());
@@ -148,6 +150,7 @@ public class ProposalService {
             return res;
         } catch (Exception e) {
             log.info(e.getMessage());
+            e.printStackTrace();
             throw new BaseException(DATABASE_ERROR);
         }
     }
