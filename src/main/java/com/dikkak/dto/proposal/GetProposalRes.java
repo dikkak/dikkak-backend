@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -33,7 +34,9 @@ public class GetProposalRes {
         this.deadline = proposal.getDeadline();
         this.purpose = proposal.getPurpose();
         this.mainColor = proposal.getMainColor();
-        if(!subColors.isEmpty()) this.subColors.addAll(List.of(proposal.getSubColors().split(",")));
+        if(proposal.getSubColors() != null && !proposal.getSubColors().isEmpty()) {
+            this.subColors.addAll(List.of(proposal.getSubColors().split(",")));
+        }
         this.additionalDesc = proposal.getRequirements();
     }
 }
