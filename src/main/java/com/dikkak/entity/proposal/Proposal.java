@@ -31,7 +31,6 @@ public class Proposal extends BaseEntity {
     private String title;
 
     // 세부사항
-    @Column(nullable = false)
     private String detail;
 
     // 용도, 목적

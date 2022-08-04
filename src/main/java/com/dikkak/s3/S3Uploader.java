@@ -42,7 +42,6 @@ public class S3Uploader {
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             PutObjectResult putObjectResult = amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, objectMetadata));
-            System.out.println("putObjectResult = " + putObjectResult);
             return getFileUrl(fileName);
         } catch (IOException e) {
             throw new FileUploadException();
