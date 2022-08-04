@@ -19,13 +19,16 @@ public class Otherfile {
     @Column(length = 500)
     private String fileUrl;
 
+    private String fileName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "proposal_id")
     private Proposal proposal;
 
     @Builder
-    public Otherfile(String fileUrl, Proposal proposal) {
+    public Otherfile(String fileUrl, String fileName, Proposal proposal) {
         this.fileUrl = fileUrl;
+        this.fileName = fileName;
         this.proposal = proposal;
     }
 }

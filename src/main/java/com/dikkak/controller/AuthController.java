@@ -4,7 +4,6 @@ import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.LogoutRes;
 import com.dikkak.dto.auth.ReissueRes;
 import com.dikkak.dto.common.BaseResponse;
-import com.dikkak.entity.User;
 import com.dikkak.service.JwtService;
 import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;

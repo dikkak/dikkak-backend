@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.dikkak.dto.common.ResponseMessage.FILE_UPLOAD_FAILED;
 import static com.dikkak.dto.common.ResponseMessage.INVALID_ACCESS_TOKEN;
@@ -70,13 +71,14 @@ public class ProposalController {
             if(referenceFile != null && !referenceFile.isEmpty()) {
                 // s3에 파일 업로드
                 List<String> referenceUrls = s3Uploader.uploadFiles(referenceFile, "reference");
+                List<String> referenceNames = referenceFile.stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList());
 
                 // db에 저장
                 for(int i=0; i<referenceUrls.size(); i++) {
-                    String url = referenceUrls.get(i);
                     referenceService.create(Reference.builder()
                                                     .proposal(savedProposal)
-                                                    .fileUrl(url)
+                                                    .fileUrl(referenceUrls.get(i))
+                                                    .fileName(referenceNames.get(i))
                                                     .description(jsonData.getReferenceDesc().get(i))
                                                     .build()
                     );
@@ -88,12 +90,14 @@ public class ProposalController {
             if(etcFile != null && !etcFile.isEmpty()) {
                 // s3에 파일 업로드
                 List<String> otherUrls = s3Uploader.uploadFiles(etcFile, "otherFile");
+                List<String> names = etcFile.stream().map(MultipartFile::getOriginalFilename).collect(Collectors.toList());
 
                 // db에 저장
-                for (String url : otherUrls) {
+                for (int i=0; i< etcFile.size(); i++) {
                     otherFileService.create(Otherfile.builder()
                             .proposal(savedProposal)
-                            .fileUrl(url)
+                            .fileUrl(otherUrls.get(i))
+                            .fileName(names.get(i))
                             .build()
                     );
                 }
@@ -113,7 +117,6 @@ public class ProposalController {
      */
     @GetMapping("/{proposalId}")
     public ResponseEntity<?> getProposals(@PathVariable Long proposalId) {
-
         try {
             return ResponseEntity.ok().body(proposalService.getProposal(proposalId));
         } catch (BaseException e) {

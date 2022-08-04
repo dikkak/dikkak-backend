@@ -136,14 +136,13 @@ public class ProposalService {
             String clientName = userProposalRepository.findClientByProposalId(proposalId);
             GetProposalRes res = new GetProposalRes(proposal, clientName);
 
-            referenceService.getRefList(proposalId).forEach(reference -> {
-                res.getReferenceFile().add(reference.getFileUrl());
-                res.getReferenceDesc().add(reference.getDescription());
-            });
-            otherFileService.getOtherFileList(proposalId).forEach(otherfile -> {
-                res.getEtcFile().add(otherfile.getFileUrl());
-            });
+            // reference file 조회
+            referenceService.getRefList(proposalId).forEach(res::addReferenceFile);
 
+            // etc file 조회
+            otherFileService.getOtherFileList(proposalId).forEach(res::addEtcFile);
+
+            // keyword 조회
             proposalKeywordRepository.findByProposalId(proposalId).forEach(proposalKeyword -> {
                 res.getKeywords().add(proposalKeyword.getKeyword().getName());
             });

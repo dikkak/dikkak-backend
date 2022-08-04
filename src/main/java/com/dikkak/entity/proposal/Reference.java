@@ -18,6 +18,8 @@ public class Reference {
     @Column(length = 500)
     private String fileUrl;
 
+    private String fileName;
+
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,8 +27,9 @@ public class Reference {
     private Proposal proposal;
 
     @Builder
-    public Reference(String fileUrl, String description, Proposal proposal) {
+    public Reference(String fileUrl, String fileName, String description, Proposal proposal) {
         this.fileUrl = fileUrl;
+        this.fileName = fileName;
         this.description = description;
         this.proposal = proposal;
     }
