@@ -4,7 +4,7 @@ import com.dikkak.dto.admin.GetProposalsRes;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
-import com.dikkak.dto.workplace.WorkplaceRes;
+import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.entity.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.entity.work.Coworking;
@@ -36,9 +36,9 @@ public class ProposalService {
     private final CoworkingRepository coworkingRepository;
 
 
-    public List<WorkplaceRes> getUserWorkplace(Long userId) throws BaseException {
+    public List<ClientWorkplaceRes> getUserWorkplace(Long userId) throws BaseException {
         try {
-            return null;
+            return proposalRepository.getClientWorkplace(userId);
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new BaseException(DATABASE_ERROR);

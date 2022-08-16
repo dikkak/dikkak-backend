@@ -2,7 +2,7 @@ package com.dikkak.controller;
 
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
-import com.dikkak.dto.workplace.WorkplaceRes;
+import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +22,18 @@ public class WorkplaceController {
 
     private final ProposalService proposalService;
 
-    @GetMapping("/list")
+    /**
+     * 클라이언트 작업실 조회 API
+     * @return proposalId, proposalTitle, coworkingId, coworkingDesigner, coworkingStep
+     */
+    @GetMapping("/client/list")
     public ResponseEntity<?> getProposalList(@AuthenticationPrincipal Long userId) {
 
         if(userId == null)
             return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            List<WorkplaceRes> workplace = proposalService.getUserWorkplace(userId);
+            List<ClientWorkplaceRes> workplace = proposalService.getUserWorkplace(userId);
             return ResponseEntity.ok().body(workplace);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
