@@ -28,8 +28,8 @@ public class GetProposalRes {
     private List<EtcFile> etcFile = new ArrayList<>();
     private String additionalDesc;
 
-    public GetProposalRes(Proposal proposal, String clientName) {
-        this.client = clientName;
+    public GetProposalRes(Proposal proposal) {
+        this.client = proposal.getClient().getName();
         this.title = proposal.getTitle();
         this.category = proposal.getCategory();
         this.detail = proposal.getDetail();

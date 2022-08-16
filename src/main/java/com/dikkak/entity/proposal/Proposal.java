@@ -2,6 +2,7 @@ package com.dikkak.entity.proposal;
 
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.BaseEntity;
+import com.dikkak.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,6 +22,11 @@ public class Proposal extends BaseEntity {
     /**
      * 공통 항목
      */
+    // 클라이언트
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User client;
+
     // 카테고리
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -54,7 +60,8 @@ public class Proposal extends BaseEntity {
     @Lob
     private String requirements;
 
-    public Proposal(PostProposalReq req) {
+    public Proposal(User client, PostProposalReq req) {
+        this.client = client;
         this.category = req.getCategory();
         this.title = req.getTitle();
         this.detail = req.getDetail();

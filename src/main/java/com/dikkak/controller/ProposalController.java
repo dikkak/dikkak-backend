@@ -50,7 +50,6 @@ public class ProposalController {
             @RequestPart(required = false) List<MultipartFile> etcFile) {
 
         try {
-
             if(userId == null)
                 throw new BaseException(INVALID_ACCESS_TOKEN);
             User user = userService.getUser(userId);

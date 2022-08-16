@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 import static com.dikkak.dto.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 
 @RequestMapping("/workplace")
@@ -27,7 +29,7 @@ public class WorkplaceController {
             return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            WorkplaceRes workplace = proposalService.getUserWorkplace(userId);
+            List<WorkplaceRes> workplace = proposalService.getUserWorkplace(userId);
             return ResponseEntity.ok().body(workplace);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));

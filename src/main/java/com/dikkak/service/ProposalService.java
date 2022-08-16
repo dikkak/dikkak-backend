@@ -12,7 +12,6 @@ import com.dikkak.repository.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
-import com.dikkak.repository.proposal.UserProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -29,8 +28,6 @@ import static com.dikkak.dto.common.ResponseMessage.WRONG_PROPOSAL_ID;
 @RequiredArgsConstructor
 @Slf4j
 public class ProposalService {
-
-    private final UserProposalRepository userProposalRepository;
     private final ProposalRepository proposalRepository;
     private final ProposalKeywordRepository proposalKeywordRepository;
     private final KeywordRepository keywordRepository;
@@ -39,11 +36,9 @@ public class ProposalService {
     private final CoworkingRepository coworkingRepository;
 
 
-    public WorkplaceRes getUserWorkplace(Long userId) throws BaseException {
+    public List<WorkplaceRes> getUserWorkplace(Long userId) throws BaseException {
         try {
-            WorkplaceRes workplaceRes = new WorkplaceRes();
-            workplaceRes.setProposals(userProposalRepository.getByUserId(userId));
-            return workplaceRes;
+            return null;
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
@@ -51,17 +46,10 @@ public class ProposalService {
     }
 
     @Transactional
-    public Proposal create(User user, PostProposalReq req) throws BaseException {
+    public Proposal create(User client, PostProposalReq req) throws BaseException {
         try {
             // 제안서 저장
-            Proposal savedProposal = proposalRepository.save(new Proposal(req));
-
-            // 회원과 매핑
-            userProposalRepository.save(UserProposal.builder()
-                    .user(user)
-                    .proposal(savedProposal)
-                    .build());
-            return savedProposal;
+            return proposalRepository.save(new Proposal(client, req));
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
@@ -69,22 +57,13 @@ public class ProposalService {
     }
 
     @Transactional
-    public void create(User user, Long proposalId) throws BaseException {
+    public void create(User designer, Long proposalId) throws BaseException {
         try {
             // 제안서 조회
-            Proposal proposal = proposalRepository.findById(proposalId).orElse(null);
-            if(proposal == null)
-                throw new BaseException(WRONG_PROPOSAL_ID);
-
-            // 회원과 매핑
-            UserProposal userProposal = userProposalRepository.save(UserProposal.builder()
-                    .user(user)
-                    .proposal(proposal)
-                    .build());
-
+            Proposal proposal = proposalRepository.findById(proposalId)
+                    .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
             // 외주 작업실 저장
-            coworkingRepository.save(new Coworking(userProposal));
-
+            coworkingRepository.save(new Coworking(proposal, designer));
         } catch (BaseException e) {
             log.error(e.getMessage());
             throw e;
@@ -117,13 +96,12 @@ public class ProposalService {
 
     // 회원의 제안서 목록 조회
     public List<GetProposalsRes> getProposalList(Long userId) {
-        return userProposalRepository.findByUserId(userId, Sort.by(Sort.Direction.DESC, "createdAt")).stream()
-                .map(userProposal -> new GetProposalsRes(userProposal.getProposal()))
-                .collect(Collectors.toList());
+        return proposalRepository.findByClientId(userId, Sort.by(Sort.Direction.DESC, "createdAt"))
+                .stream().map(GetProposalsRes::new).collect(Collectors.toList());
     }
 
-    public boolean existUserProposal(User user, Long proposalId) {
-        return userProposalRepository.findByUserAndProposalId(user, proposalId).isPresent();
+    public boolean existUserProposal(User designer, Long proposalId) {
+        return coworkingRepository.findByProposalIdAndDesigner(proposalId, designer).isPresent();
     }
 
     // 제안서 조회
@@ -133,8 +111,7 @@ public class ProposalService {
                 .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
 
         try {
-            String clientName = userProposalRepository.findClientByProposalId(proposalId);
-            GetProposalRes res = new GetProposalRes(proposal, clientName);
+            GetProposalRes res = new GetProposalRes(proposal);
 
             // reference file 조회
             referenceService.getRefList(proposalId).forEach(res::addReferenceFile);
