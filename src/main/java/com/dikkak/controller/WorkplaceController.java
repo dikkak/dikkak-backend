@@ -5,6 +5,7 @@ import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.service.ProposalService;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,7 +35,9 @@ public class WorkplaceController {
 
         try {
             List<ClientWorkplaceRes> workplace = proposalService.getUserWorkplace(userId);
-            return ResponseEntity.ok().body(workplace);
+            JSONObject res = new JSONObject();
+            res.put("clientWorkplace", workplace);
+            return ResponseEntity.ok().body(res);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
