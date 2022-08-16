@@ -5,6 +5,8 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
+import com.dikkak.dto.workplace.DesignerWorkplaceRes;
+import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
 import com.dikkak.entity.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.entity.work.Coworking;
@@ -36,11 +38,27 @@ public class ProposalService {
     private final CoworkingRepository coworkingRepository;
 
 
-    public List<ClientWorkplaceRes> getUserWorkplace(Long userId) throws BaseException {
+    // 클라이언트 작업실 목록 조회
+    public List<ClientWorkplaceRes> getClientWorkplace(Long userId) throws BaseException {
         try {
             return proposalRepository.getClientWorkplace(userId);
         } catch (Exception e) {
             log.info(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // 디자이너 작업실 목록 조회
+    public DesignerWorkplaceRes getDesignerWorkplace(Long designerId) throws BaseException{
+        try {
+            DesignerWorkplaceRes res = new DesignerWorkplaceRes();
+            for (WorkInfo workInfo : proposalRepository.getDesignerWorkplace(designerId)) {
+                if(workInfo.getCoworkingStep() == 11) res.getComplete().add(workInfo);
+                else res.getProgress().add(workInfo);
+            }
+            return res;
+        } catch (Exception e) {
+            log.error(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
         }
     }
@@ -130,4 +148,6 @@ public class ProposalService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
+
 }
