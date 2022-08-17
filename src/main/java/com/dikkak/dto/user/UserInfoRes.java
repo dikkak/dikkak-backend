@@ -9,6 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class UserInfoRes {
 
+    private String email;
     private String username;
     private UserTypeEnum type;
     private ProviderTypeEnum provider;
