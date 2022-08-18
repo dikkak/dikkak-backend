@@ -5,6 +5,7 @@ import com.dikkak.dto.auth.token.TokenResponse;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.entity.ProviderTypeEnum;
 import com.dikkak.entity.User;
+import com.dikkak.redis.RedisService;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class OauthService {
     private final UserRepository userRepository;
     private final UserService userService;
     private final JwtService jwtService;
+    private final RedisService redisService;
 
 
     /**
@@ -45,6 +47,7 @@ public class OauthService {
      * 1. 인가 코드로 토큰을 받아오고
      * 2. 토큰을 통해 회원 정보를 받아온다.
      * 3. 회원 정보를 통해 로그인 및 회원가입을 진행한다.
+     * 4. Redis에 토큰 저장
      */
     @Transactional
     public GetLoginRes login(String providerName, String code) throws BaseException {
@@ -53,6 +56,7 @@ public class OauthService {
 
         // 1. 토큰을 받아온다.
         TokenResponse token = getToken(code, provider, providerName);
+
 
         // 2. 회원 정보를 받아온다.
         Map<String, Object> userProfile = getUserProfile(provider, token);
@@ -78,6 +82,10 @@ public class OauthService {
                     .build());
         }
 
+        // 4. Redis에 토큰 저장
+        redisService.saveSocialToken(user.getId(), token.getAccessToken());
+
+
         // 토큰 발급
         String accessToken = jwtService.createAccessToken(user.getId());
         String refreshToken = jwtService.createRefreshToken(user.getId());
@@ -87,7 +95,25 @@ public class OauthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
 
+    /**
+     * 소셜 로그아웃
+     */
+    public void logout(Long userId) throws BaseException {
+        String token = redisService.getToken(userId);
+
+        // 구글 로그아웃 (이후에 카카오, 페이스북 추가 필요)
+        String res = WebClient.create()
+                .post()
+                .uri("https://oauth2.googleapis.com/revoke?token=" + token)
+                .headers(header -> {
+                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+                })
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
     }
 
     /**

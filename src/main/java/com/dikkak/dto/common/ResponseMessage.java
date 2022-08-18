@@ -41,7 +41,8 @@ public enum ResponseMessage {
     // admin
     ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),
 
-    WRONG_PROPOSAL_ID("잘못된 제안서 아이디입니다.");
+    WRONG_PROPOSAL_ID("잘못된 제안서 아이디입니다."),
+    REDIS_ERROR("레디스 오류입니다.");
 
 
 

@@ -9,6 +9,8 @@ import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;
 import com.dikkak.dto.common.BaseException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 
 import static com.dikkak.dto.common.ResponseMessage.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
@@ -108,6 +111,7 @@ public class AuthController {
     /**
      * 로그아웃 API
      * 쿠키에 저장된 refresh_token을 null로 설정
+     * 소셜 로그아웃 요청
      * @return provider 타입
      */
     @GetMapping("/logout")
@@ -127,8 +131,12 @@ public class AuthController {
                     .build();
             res.setHeader("Set-Cookie", cookie.toString());
 
+            // 소셜 로그아웃
+            oauthService.logout(userId);
+
             return ResponseEntity.ok().body(new LogoutRes(userService.getUser(userId).getProviderType()));
         } catch (Exception e){
+            log.info(e.getMessage());
             return ResponseEntity.badRequest().body(null);
         }
 
