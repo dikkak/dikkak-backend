@@ -13,4 +13,8 @@ public class UserInfoRes {
     private String username;
     private UserTypeEnum type;
     private ProviderTypeEnum provider;
+
+    private String phoneNumber;
+    private boolean marketingMessage;
+    private boolean popUpMessage;
 }

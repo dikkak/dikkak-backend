@@ -91,8 +91,8 @@ public class UserController {
 
         try {
             User user = userService.getUser(userId);
-            return ResponseEntity.ok().body(new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType()));
-
+            return ResponseEntity.ok().body(new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),
+                    user.getPhoneNumber(), user.isMarketingMessage(), user.isPopUpMessage()));
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
