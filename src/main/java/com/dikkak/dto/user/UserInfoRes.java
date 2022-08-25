@@ -1,6 +1,6 @@
 package com.dikkak.dto.user;
 
-import com.dikkak.entity.ProviderTypeEnum;
+import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.UserTypeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;

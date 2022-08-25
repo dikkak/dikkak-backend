@@ -3,7 +3,7 @@ package com.dikkak.service;
 import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.token.TokenResponse;
 import com.dikkak.dto.common.BaseException;
-import com.dikkak.entity.ProviderTypeEnum;
+import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
 import com.dikkak.redis.RedisService;
 import com.dikkak.redis.SocialToken;

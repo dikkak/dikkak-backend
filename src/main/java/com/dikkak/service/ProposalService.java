@@ -7,6 +7,7 @@ import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
+import com.dikkak.entity.StatusType;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.repository.CoworkingRepository;
@@ -96,7 +97,7 @@ public class ProposalService {
 
     // 회원의 제안서 목록 조회
     public List<GetProposalsRes> getProposalList(Long userId) {
-        return proposalRepository.findByClientId(userId, Sort.by(Sort.Direction.DESC, "createdAt"))
+        return proposalRepository.findByClientIdAndStatus(userId, StatusType.ACTIVE ,Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream().map(GetProposalsRes::new).collect(Collectors.toList());
     }
 

@@ -1,6 +1,5 @@
 package com.dikkak.entity;
 
-import com.dikkak.entity.user.StatusType;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;

@@ -4,7 +4,7 @@ import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.QClientWorkplaceRes;
 import com.dikkak.dto.workplace.QDesignerWorkplaceRes_WorkInfo;
-import com.dikkak.entity.user.StatusType;
+import com.dikkak.entity.StatusType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
@@ -31,7 +31,10 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
                 .from(proposal)
                 .leftJoin(coworking).on(coworking.proposal.eq(proposal))
                 .leftJoin(user).on(user.eq(coworking.designer))
-                .where(proposal.client.id.eq(clientId))
+                .where(
+                        proposal.client.id.eq(clientId),
+                        proposal.status.eq(StatusType.ACTIVE)
+                )
                 .fetch();
     }
 

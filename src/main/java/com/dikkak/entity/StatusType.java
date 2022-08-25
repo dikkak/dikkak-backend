@@ -1,4 +1,4 @@
-package com.dikkak.entity.user;
+package com.dikkak.entity;
 
 public enum StatusType {
     ACTIVE,

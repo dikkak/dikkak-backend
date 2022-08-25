@@ -1,4 +1,4 @@
-package com.dikkak.entity;
+package com.dikkak.entity.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
