@@ -82,7 +82,7 @@ public class OauthService {
         }
 
         // 4. Redis에 토큰 저장
-        redisService.saveSocialToken(user.getId(), token);
+        redisService.saveSocialToken(user.getId(), user.getProviderType(), token);
 
 
         // 토큰 발급
@@ -104,17 +104,27 @@ public class OauthService {
         SocialToken token = redisService.getToken(userId);
 
         try {
-            // 구글 로그아웃 (이후에 카카오, 페이스북 추가 필요)
-            WebClient.create()
-                    .post()
-                    .uri("https://oauth2.googleapis.com/revoke?token=" + token.getToken())
-                    .headers(header -> {
-                        header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                        header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-                    })
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+            // 구글 로그아웃
+            if(token.getProvider().equals(ProviderTypeEnum.GOOGLE)) {
+                WebClient.create()
+                        .post()
+                        .uri("https://oauth2.googleapis.com/revoke?token=" + token.getToken())
+                        .headers(header -> {
+                            header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                            header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+                        })
+                        .retrieve()
+                        .bodyToMono(String.class)
+                        .block();
+            }
+            // 카카오 로그아웃 (이후 추가)
+            else if (token.getProvider().equals(ProviderTypeEnum.KAKAO)) {
+
+            }
+            // 페이스북 로그아웃 (이후 추가)
+            else if (token.getProvider().equals(ProviderTypeEnum.FACEBOOK)) {
+
+            }
 
             // 토큰 삭제
             redisService.deleteToken(token);

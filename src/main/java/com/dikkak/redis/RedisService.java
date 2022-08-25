@@ -2,6 +2,7 @@ package com.dikkak.redis;
 
 import com.dikkak.dto.auth.token.TokenResponse;
 import com.dikkak.dto.common.BaseException;
+import com.dikkak.entity.user.ProviderTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,10 +19,11 @@ public class RedisService {
 
     // redis에 token 저장
     @Transactional
-    public void saveSocialToken(Long userId, TokenResponse token) throws BaseException {
+    public void saveSocialToken(Long userId, ProviderTypeEnum provider, TokenResponse token) throws BaseException {
         try {
             socialTokenRedisRepository.save(SocialToken.builder()
                     .user_id(userId)
+                    .provider(provider)
                     .token(token.getAccessToken())
                     .expiration(token.getExpiresIn())
                     .build());
