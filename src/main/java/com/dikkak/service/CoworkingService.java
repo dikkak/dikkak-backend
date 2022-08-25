@@ -1,7 +1,7 @@
 package com.dikkak.service;
 
 import com.dikkak.dto.common.BaseException;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.work.Coworking;
 import com.dikkak.repository.CoworkingRepository;

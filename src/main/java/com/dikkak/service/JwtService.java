@@ -1,6 +1,5 @@
 package com.dikkak.service;
 
-import com.dikkak.entity.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.dto.common.BaseException;
 import io.jsonwebtoken.Claims;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.Optional;
 
 import static com.dikkak.dto.common.ResponseMessage.*;
 

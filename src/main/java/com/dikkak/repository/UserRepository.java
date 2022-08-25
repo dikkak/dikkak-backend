@@ -1,6 +1,6 @@
 package com.dikkak.repository;
 
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

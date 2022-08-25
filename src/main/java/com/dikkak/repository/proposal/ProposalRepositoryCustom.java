@@ -8,6 +8,7 @@ import java.util.List;
 public interface ProposalRepositoryCustom {
     List<ClientWorkplaceRes> getClientWorkplace(Long clientId);
     List<WorkInfo> getDesignerWorkplace(Long designerId);
+    long updateProposalsInactive(Long clientId, List<Long> proposalList);
 
 
 }

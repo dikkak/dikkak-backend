@@ -1,15 +1,11 @@
 package com.dikkak.service;
 
 import com.dikkak.dto.user.PostRegisterReq;
-import com.dikkak.entity.User;
-import com.dikkak.dto.auth.PostSignupRes;
+import com.dikkak.entity.user.User;
 import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.ResponseMessage;
-import com.dikkak.entity.UserTypeEnum;
+import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

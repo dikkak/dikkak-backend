@@ -1,4 +1,4 @@
-package com.dikkak.entity;
+package com.dikkak.entity.user;
 
 public enum UserTypeEnum {
     UNDEFINED,

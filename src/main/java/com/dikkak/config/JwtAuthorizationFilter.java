@@ -2,7 +2,7 @@ package com.dikkak.config;
 
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;

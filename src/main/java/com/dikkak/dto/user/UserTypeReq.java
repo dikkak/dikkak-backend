@@ -1,6 +1,6 @@
 package com.dikkak.dto.user;
 
-import com.dikkak.entity.UserTypeEnum;
+import com.dikkak.entity.user.UserTypeEnum;
 import lombok.Data;
 
 @Data

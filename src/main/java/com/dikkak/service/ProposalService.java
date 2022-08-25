@@ -7,7 +7,7 @@ import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.repository.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
@@ -131,5 +131,16 @@ public class ProposalService {
         }
     }
 
+    // 제안서 목록 삭제
+    @Transactional
+    public long deleteProposalList(List<Long> proposalList, Long clientId) throws BaseException {
+        try {
+            return proposalRepository.updateProposalsInactive(clientId, proposalList);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 
 }

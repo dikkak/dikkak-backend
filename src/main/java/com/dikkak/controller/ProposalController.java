@@ -2,9 +2,10 @@ package com.dikkak.controller;
 
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.dto.proposal.DeleteProposalReq;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.proposal.PostProposalRes;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.s3.S3Uploader;
 import com.dikkak.service.OtherFileService;
@@ -12,6 +13,7 @@ import com.dikkak.service.ProposalService;
 import com.dikkak.service.ReferenceService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.dikkak.dto.common.ResponseMessage.FILE_UPLOAD_FAILED;
@@ -121,6 +124,19 @@ public class ProposalController {
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
         }
+    }
 
+    @PatchMapping("/inactive")
+    public ResponseEntity<?> deleteProposals(
+            @AuthenticationPrincipal Long userId,
+            @RequestBody DeleteProposalReq req) {
+        try {
+            if(userId == null || req.getProposalList() == null || req.getProposalList().isEmpty())
+                return ResponseEntity.badRequest().build();
+            long count = proposalService.deleteProposalList(req.getProposalList(), userId);
+            return ResponseEntity.ok().body(Map.of("count", count));
+        } catch (BaseException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
+        }
     }
 }

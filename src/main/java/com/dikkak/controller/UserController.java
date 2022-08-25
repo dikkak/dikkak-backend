@@ -5,7 +5,7 @@ import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.dto.user.UserInfoRes;
 import com.dikkak.dto.user.UserTypeReq;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

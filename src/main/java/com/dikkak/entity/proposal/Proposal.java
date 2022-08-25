@@ -2,7 +2,7 @@ package com.dikkak.entity.proposal;
 
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

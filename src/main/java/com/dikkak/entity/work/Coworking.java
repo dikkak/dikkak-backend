@@ -1,7 +1,7 @@
 package com.dikkak.entity.work;
 
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.User;
+import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

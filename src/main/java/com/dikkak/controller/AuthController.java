@@ -1,7 +1,6 @@
 package com.dikkak.controller;
 
 import com.dikkak.dto.auth.GetLoginRes;
-import com.dikkak.dto.auth.LogoutRes;
 import com.dikkak.dto.auth.ReissueRes;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.service.JwtService;
@@ -10,7 +9,6 @@ import com.dikkak.service.UserService;
 import com.dikkak.dto.common.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;

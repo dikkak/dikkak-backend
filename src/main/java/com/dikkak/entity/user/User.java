@@ -1,6 +1,8 @@
-package com.dikkak.entity;
+package com.dikkak.entity.user;
 
 import com.dikkak.dto.user.PostRegisterReq;
+import com.dikkak.entity.BaseEntity;
+import com.dikkak.entity.ProviderTypeEnum;
 import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;

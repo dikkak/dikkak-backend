@@ -4,13 +4,14 @@ import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.QClientWorkplaceRes;
 import com.dikkak.dto.workplace.QDesignerWorkplaceRes_WorkInfo;
+import com.dikkak.entity.user.StatusType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
-import static com.dikkak.entity.QUser.user;
 import static com.dikkak.entity.proposal.QProposal.proposal;
+import static com.dikkak.entity.user.QUser.user;
 import static com.dikkak.entity.work.QCoworking.coworking;
 
 public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
@@ -44,5 +45,16 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
                 .join(proposal).on(coworking.proposal.eq(proposal))
                 .where(coworking.designer.id.eq(designerId))
                 .fetch();
+    }
+
+    // 제안서 삭제 - status 를 inactive 로 변경
+    @Override
+    public long updateProposalsInactive(Long clientId, List<Long> proposalList) {
+        return queryFactory
+                .update(proposal)
+                .set(proposal.status, StatusType.INACTIVE)
+                .where(proposal.client.id.eq(clientId),
+                        proposal.id.in(proposalList))
+                .execute();
     }
 }
