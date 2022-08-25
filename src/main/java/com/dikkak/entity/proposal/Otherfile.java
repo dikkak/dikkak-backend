@@ -16,14 +16,14 @@ public class Otherfile {
     @Column(name = "file_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proposal_id")
+    private Proposal proposal;
+
     @Column(length = 500)
     private String fileUrl;
 
     private String fileName;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposal_id")
-    private Proposal proposal;
 
     @Builder
     public Otherfile(String fileUrl, String fileName, Proposal proposal) {

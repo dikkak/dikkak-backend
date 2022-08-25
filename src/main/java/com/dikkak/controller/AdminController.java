@@ -6,6 +6,7 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.entity.User;
 import com.dikkak.entity.UserTypeEnum;
+import com.dikkak.service.CoworkingService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AdminController {
 
     private final UserService userService;
     private final ProposalService proposalService;
+    private final CoworkingService coworkingService;
     private static final Pattern EMAIL = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$",Pattern.CASE_INSENSITIVE);
 
     /**
@@ -98,7 +100,7 @@ public class AdminController {
             if(proposalService.existUserProposal(designer, req.getProposalId()))
                 return ResponseEntity.badRequest().body(new BaseResponse("이미 매칭된 디자이너입니다."));
 
-            proposalService.create(designer, req.getProposalId());
+            coworkingService.create(designer, req.getProposalId());
             return ResponseEntity.ok().build();
 
         } catch (BaseException e) {

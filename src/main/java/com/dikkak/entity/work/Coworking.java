@@ -22,7 +22,7 @@ public class Coworking extends BaseEntity {
     private Proposal proposal;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "designer_id")
     private User designer;
 
     // 진행 스탭: 1~10

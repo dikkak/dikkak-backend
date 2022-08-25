@@ -24,7 +24,7 @@ public class Proposal extends BaseEntity {
      */
     // 클라이언트
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "client_id")
     private User client;
 
     // 카테고리

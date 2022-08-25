@@ -15,16 +15,16 @@ public class Reference {
     @Column(name = "reference_id")
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "proposal_id")
+    private Proposal proposal;
+
     @Column(length = 500)
     private String fileUrl;
 
     private String fileName;
 
     private String description;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "proposal_id")
-    private Proposal proposal;
 
     @Builder
     public Reference(String fileUrl, String fileName, String description, Proposal proposal) {

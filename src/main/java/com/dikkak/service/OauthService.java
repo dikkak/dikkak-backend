@@ -6,6 +6,7 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.entity.ProviderTypeEnum;
 import com.dikkak.entity.User;
 import com.dikkak.redis.RedisService;
+import com.dikkak.redis.SocialToken;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
@@ -57,7 +57,6 @@ public class OauthService {
         // 1. 토큰을 받아온다.
         TokenResponse token = getToken(code, provider, providerName);
 
-
         // 2. 회원 정보를 받아온다.
         Map<String, Object> userProfile = getUserProfile(provider, token);
         String email = getEmail(providerName, userProfile);
@@ -83,7 +82,7 @@ public class OauthService {
         }
 
         // 4. Redis에 토큰 저장
-        redisService.saveSocialToken(user.getId(), token.getAccessToken());
+        redisService.saveSocialToken(user.getId(), token);
 
 
         // 토큰 발급
@@ -101,20 +100,34 @@ public class OauthService {
      * 소셜 로그아웃
      */
     public void logout(Long userId) throws BaseException {
-        String token = redisService.getToken(userId);
 
-        // 구글 로그아웃 (이후에 카카오, 페이스북 추가 필요)
-        String res = WebClient.create()
-                .post()
-                .uri("https://oauth2.googleapis.com/revoke?token=" + token)
-                .headers(header -> {
-                    header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                    header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
-                })
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        SocialToken token = redisService.getToken(userId);
+
+        try {
+            // 구글 로그아웃 (이후에 카카오, 페이스북 추가 필요)
+            WebClient.create()
+                    .post()
+                    .uri("https://oauth2.googleapis.com/revoke?token=" + token.getToken())
+                    .headers(header -> {
+                        header.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                        header.setAcceptCharset(Collections.singletonList(StandardCharsets.UTF_8));
+                    })
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            // 토큰 삭제
+            redisService.deleteToken(token);
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new BaseException(EXPIRED_TOKEN);
+        }
+
+
     }
+
 
     /**
      * TOKEN URI에 인가 코드로 토큰을 요청한다.
@@ -135,6 +148,7 @@ public class OauthService {
                         .block();
             }
             else {  //나머지는 post 방식
+                System.out.println("url = " + provider.getProviderDetails().getTokenUri());
                 return WebClient.create()
                         .post()
                         .uri(provider.getProviderDetails().getTokenUri())

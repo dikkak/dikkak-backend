@@ -9,7 +9,6 @@ import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
 import com.dikkak.entity.User;
 import com.dikkak.entity.proposal.*;
-import com.dikkak.entity.work.Coworking;
 import com.dikkak.repository.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
@@ -68,23 +67,6 @@ public class ProposalService {
         try {
             // 제안서 저장
             return proposalRepository.save(new Proposal(client, req));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    @Transactional
-    public void create(User designer, Long proposalId) throws BaseException {
-        try {
-            // 제안서 조회
-            Proposal proposal = proposalRepository.findById(proposalId)
-                    .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
-            // 외주 작업실 저장
-            coworkingRepository.save(new Coworking(proposal, designer));
-        } catch (BaseException e) {
-            log.error(e.getMessage());
-            throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new BaseException(DATABASE_ERROR);

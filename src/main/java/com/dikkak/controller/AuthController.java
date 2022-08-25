@@ -134,12 +134,10 @@ public class AuthController {
             // 소셜 로그아웃
             oauthService.logout(userId);
 
-            return ResponseEntity.ok().body(new LogoutRes(userService.getUser(userId).getProviderType()));
-        } catch (Exception e){
-            log.info(e.getMessage());
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.ok().build();
+        } catch (BaseException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse(e.getResponseMessage()));
         }
-
     }
 
 
