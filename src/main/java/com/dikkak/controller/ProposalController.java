@@ -158,7 +158,7 @@ public class ProposalController {
     public ResponseEntity<?> getReferenceFile(@PathVariable String fileName) {
         try {
             byte[] bytes = s3Downloader.downloadFile("reference/" + fileName);
-            return ResponseEntity.ok().body(new SerialBlob(bytes));
+            return ResponseEntity.ok().body(bytes);
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(new BaseResponse("레퍼런스 파일 다운로드에 실패하였습니다."));
@@ -174,7 +174,7 @@ public class ProposalController {
     public ResponseEntity<?> getOtherFile(@PathVariable String fileName) {
         try {
             byte[] bytes = s3Downloader.downloadFile("otherFile/" + fileName);
-            return ResponseEntity.ok().body(new SerialBlob(bytes));
+            return ResponseEntity.ok().body(bytes);
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(new BaseResponse("기타 파일 다운로드에 실패하였습니다."));
