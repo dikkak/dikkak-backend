@@ -7,19 +7,23 @@ import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.proposal.PostProposalRes;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
+import com.dikkak.s3.S3Downloader;
 import com.dikkak.s3.S3Uploader;
 import com.dikkak.service.OtherFileService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.ReferenceService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -30,6 +34,7 @@ import static com.dikkak.dto.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 @RestController
 @RequestMapping("/proposal")
 @RequiredArgsConstructor
+@Slf4j
 public class ProposalController {
 
     private final ProposalService proposalService;
@@ -37,6 +42,7 @@ public class ProposalController {
     private final ReferenceService referenceService;
     private final OtherFileService otherFileService;
     private final S3Uploader s3Uploader;
+    private final S3Downloader s3Downloader;
 
     /**
      * 제안서 생성 api
@@ -126,6 +132,9 @@ public class ProposalController {
         }
     }
 
+    /**
+     * 제안서 삭제 API
+     */
     @PatchMapping("/inactive")
     public ResponseEntity<?> deleteProposals(
             @AuthenticationPrincipal Long userId,
@@ -137,6 +146,38 @@ public class ProposalController {
             return ResponseEntity.ok().body(Map.of("count", count));
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
+        }
+    }
+
+    /**
+     * 레퍼런스 파일 다운로드 API
+     * @param fileName 레퍼런스 파일 이름
+     * @return blob
+     */
+    @GetMapping("/file/reference/{fileName}")
+    public ResponseEntity<?> getReferenceFile(@PathVariable String fileName) {
+        try {
+            byte[] bytes = s3Downloader.downloadFile("reference/" + fileName);
+            return ResponseEntity.ok().body(new SerialBlob(bytes));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(new BaseResponse("레퍼런스 파일 다운로드에 실패하였습니다."));
+        }
+    }
+
+    /**
+     * 기타 파일 다운로드 API
+     * @param fileName 기타 파일 이름
+     * @return blob
+     */
+    @GetMapping("/file/otherFile/{fileName}")
+    public ResponseEntity<?> getOtherFile(@PathVariable String fileName) {
+        try {
+            byte[] bytes = s3Downloader.downloadFile("otherFile/" + fileName);
+            return ResponseEntity.ok().body(new SerialBlob(bytes));
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(new BaseResponse("기타 파일 다운로드에 실패하였습니다."));
         }
     }
 }
