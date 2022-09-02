@@ -83,8 +83,9 @@ public class OauthService {
         }
 
         // 4. Redis에 토큰 저장
-        redisService.saveSocialToken(user.getId(), user.getProviderType(), token,
-                userProfile.get("id").toString());
+        if(userProfile.get("id") != null)
+            redisService.saveSocialToken(user.getId(), user.getProviderType(), token, userProfile.get("id").toString());
+        else redisService.saveSocialToken(user.getId(), user.getProviderType(), token, null);
 
 
         // 토큰 발급
@@ -183,7 +184,7 @@ public class OauthService {
                         .block();
             }
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getMessage());
             throw new BaseException(LOGIN_FAILURE);
         }
     }
