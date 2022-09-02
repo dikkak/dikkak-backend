@@ -6,13 +6,16 @@ import lombok.Getter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.lang.Nullable;
 
 @Getter
 @RedisHash("token")
 public class SocialToken {
     @Id
-    Long user_id;
+    Long userId;
     String token;
+
+    String providerUserId; // 페이스북 로그아웃을 위한 userId
 
     ProviderTypeEnum provider;
 
@@ -20,10 +23,13 @@ public class SocialToken {
     Integer expiration;
 
     @Builder
-    public SocialToken(Long user_id, ProviderTypeEnum provider, String token, Integer expiration) {
-        this.user_id = user_id;
+    public SocialToken(Long userId, ProviderTypeEnum provider, String token, Integer expiration,
+                       @Nullable String providerUserId) {
+        this.userId = userId;
         this.provider = provider;
         this.token = token;
         this.expiration = expiration;
+        this.providerUserId = providerUserId;
+
     }
 }

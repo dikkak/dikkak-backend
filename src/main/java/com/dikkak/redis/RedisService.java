@@ -5,6 +5,7 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +20,15 @@ public class RedisService {
 
     // redis에 token 저장
     @Transactional
-    public void saveSocialToken(Long userId, ProviderTypeEnum provider, TokenResponse token) throws BaseException {
+    public void saveSocialToken(Long userId, ProviderTypeEnum provider, TokenResponse token,
+                                @Nullable String providerUserId) throws BaseException {
         try {
             socialTokenRedisRepository.save(SocialToken.builder()
-                    .user_id(userId)
+                    .userId(userId)
                     .provider(provider)
                     .token(token.getAccessToken())
                     .expiration(token.getExpiresIn())
+                    .providerUserId(providerUserId)
                     .build());
         } catch (Exception e) {
             log.error(e.getMessage());

@@ -22,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.dikkak.dto.common.ResponseMessage.*;
@@ -82,7 +83,8 @@ public class OauthService {
         }
 
         // 4. Redis에 토큰 저장
-        redisService.saveSocialToken(user.getId(), user.getProviderType(), token);
+        redisService.saveSocialToken(user.getId(), user.getProviderType(), token,
+                userProfile.get("id").toString());
 
 
         // 토큰 발급
@@ -117,18 +119,27 @@ public class OauthService {
                         .bodyToMono(String.class)
                         .block();
             }
-            // 카카오 로그아웃 (이후 추가)
-            else if (token.getProvider().equals(ProviderTypeEnum.KAKAO)) {
-
-            }
-            // 페이스북 로그아웃 (이후 추가)
+            // 페이스북 로그아웃
             else if (token.getProvider().equals(ProviderTypeEnum.FACEBOOK)) {
+                String providerUserId = token.getProviderUserId();
+                Boolean success = Objects.requireNonNull(
+                        WebClient.create()
+                                .delete()
+                                .uri("https://graph.facebook.com/" + providerUserId + "/permissions?access_token=" + token.getToken())
+                                .retrieve()
+                                .bodyToMono(new ParameterizedTypeReference<Map<String, Boolean>>() {})
+                                .block())
+                        .get("success");
 
+                if (!success) //로그아웃 실패
+                    throw new BaseException(LOGOUT_FAILURE);
             }
 
             // 토큰 삭제
             redisService.deleteToken(token);
 
+        } catch (BaseException e) {
+            throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
             e.printStackTrace();
@@ -146,7 +157,8 @@ public class OauthService {
     private TokenResponse getToken(String code, ClientRegistration provider, String providerName) throws BaseException {
         try {
             if (providerName.equals("facebook")) { // facebook은 get 방식
-                return WebClient.create()
+                return WebClient
+                        .create()
                         .get()
                         .uri(getUri(code, provider))
                         .headers(header -> {
@@ -158,7 +170,6 @@ public class OauthService {
                         .block();
             }
             else {  //나머지는 post 방식
-                System.out.println("url = " + provider.getProviderDetails().getTokenUri());
                 return WebClient.create()
                         .post()
                         .uri(provider.getProviderDetails().getTokenUri())

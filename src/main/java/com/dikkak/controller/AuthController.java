@@ -129,7 +129,7 @@ public class AuthController {
                     .build();
             res.setHeader("Set-Cookie", cookie.toString());
 
-            // 소셜 로그아웃
+            // 소셜 로그아웃 - 구글, 페이스북만
             oauthService.logout(userId);
 
             return ResponseEntity.ok().build();
