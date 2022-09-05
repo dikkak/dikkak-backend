@@ -1,0 +1,86 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Spring Boot & Gradle CI/CD 
+
+on:
+  push:
+    branches: [ "develop" ]
+
+permissions:
+  contents: read
+
+env:
+  S3_BUCKET_NAME: dikkak-jar-deploy
+  PROJECT_NAME: dikkak
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # jdk setting
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    # gradle caching
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    # properties 파일 생성
+    - name: make application.properties
+      if: contains(github.ref, 'main')
+      run: |
+        if [ ! -d ./src/main/resources ]; then
+          mkdir ./src/main/resources
+        fi
+        cd ./src/main/resources
+        touch ./application.properties
+        echo "${{ secrets.PROPERTIES_PROD }}" > ./application.properties
+      shell: bash
+
+    - name: make application.properties
+      if: contains(github.ref, 'develop')
+      run: |
+        if [ ! -d ./src/main/resources ]; then
+          mkdir ./src/main/resources
+        fi
+        cd ./src/main/resources
+        touch ./application.properties
+        echo "${{ secrets.PROPERTIES_DEV }}" > ./application.properties
+      shell: bash
+
+    # 빌드
+    - name: Build with Gradle
+      run: ./gradlew clean build
+
+    # AWS 설정
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+        aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+        aws-region: ${{secrets.AWS_REGION}}
+        
+    # jar 파일 S3에 업로드
+    - name: Upload to S3
+      if: contains(github.ref, 'develop')
+      run: aws s3 cp --region ap-northeast-2 ./build/libs/dikkak-0.0.1-SNAPSHOT.jar s3://$BUCKET_NAME/$PROJECT_NAME/dikkak-0.0.1-SNAPSHOT.jar
+
+      
