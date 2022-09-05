@@ -80,18 +80,25 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build
 
-    # AWS 설정
+    # zip 파일로 압축
+    - name: Make zip file
+      run: zip -qq -r ./$GITHUB_SHA.zip .
+      shell: bash
+
+
+      # AWS 설정
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
-        
+
+
     # jar 파일 S3에 업로드
     - name: Upload to S3
       if: contains(github.ref, 'develop')
-      run: aws s3 cp --region ap-northeast-2 ./build/libs/dikkak-0.0.1-SNAPSHOT.jar s3://$S3_BUCKET_NAME/$PROJECT_NAME/dikkak-0.0.1-SNAPSHOT.jar
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://$S3_BUCKET_NAME/$PROJECT_NAME/$GITHUB_SHA.zip
 
     # CodeDeploy 배포
     - name: Code Deploy (dev)
@@ -100,4 +107,4 @@ jobs:
         --application-name dikkak-dev-deploy \
         --deployment-config-name CodeDeployDefault.AllAtOnce \
         --deployment-group-name dikkak-dev-deploy \
-        --s3-location bucket=$S3_BUCKET_NAME,bundleType=jar,key=$PROJECT_NAME/dikkak-0.0.1-SNAPSHOT.jar
+        --s3-location bucket=$S3_BUCKET_NAME,bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
