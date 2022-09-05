@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/ec2-user/dikkak-deploy/
+    destination: /home/ec2-user/dikkak-deploy
     overwrite: yes
 
 permissions:
@@ -10,3 +10,9 @@ permissions:
     pattern: "**"
     owner: ec2-user
     group: ec2-user
+
+hooks:
+  ApplicationStart:
+    - location: scripts/run.sh
+      timeout: 180
+      runas: ec2-user
