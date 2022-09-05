@@ -66,6 +66,16 @@ jobs:
         echo "${{ secrets.PROPERTIES_DEV }}" > ./application.properties
       shell: bash
 
+    - name: make applicatioin-oauth.yml
+      run: |
+        if [ ! -d ./src/main/resources ]; then
+          mkdir ./src/main/resources
+        fi
+        cd ./src/main/resources
+        touch ./application-oauth.yml
+        echo "${{ secrets.PROPERTIES_OAUTH }}" > ./application-oauth.yml
+      shell: bash
+
     # 빌드
     - name: Build with Gradle
       run: ./gradlew clean build
@@ -82,5 +92,3 @@ jobs:
     - name: Upload to S3
       if: contains(github.ref, 'develop')
       run: aws s3 cp --region ap-northeast-2 ./build/libs/dikkak-0.0.1-SNAPSHOT.jar s3://$BUCKET_NAME/$PROJECT_NAME/dikkak-0.0.1-SNAPSHOT.jar
-
-      
