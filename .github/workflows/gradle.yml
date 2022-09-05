@@ -9,7 +9,7 @@ name: Spring Boot & Gradle CI/CD
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "main" ]
 
 permissions:
   contents: read
