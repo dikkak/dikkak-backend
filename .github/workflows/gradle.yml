@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 env:
-  PROJECT_NAME: dikkak
+  PROJECT_NAME: dikkak-server
   
 jobs:
   build:
@@ -77,7 +77,7 @@ jobs:
 
     # zip 파일로 압축
     - name: Make zip file
-      run: zip -qq -r ./$GITHUB_SHA.zip .
+      run: zip -qq -r ./$GITHUB_SHA.zip ./build/libs/dikkak-0.0.1-SNAPSHOT.jar appspec.yml ./scripts/*
       shell: bash
 
       # AWS 설정
