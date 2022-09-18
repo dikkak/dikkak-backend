@@ -1,6 +1,7 @@
 package com.dikkak.service;
 
-import com.dikkak.dto.admin.GetProposalsRes;
+import com.dikkak.dto.admin.GetProposalListRes;
+import com.dikkak.dto.admin.GetUserProposalsRes;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
@@ -16,6 +17,8 @@ import com.dikkak.repository.proposal.ProposalKeywordRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -96,9 +99,26 @@ public class ProposalService {
     }
 
     // 회원의 제안서 목록 조회
-    public List<GetProposalsRes> getProposalList(Long userId) {
+    public List<GetUserProposalsRes> getUserProposalList(Long userId) {
         return proposalRepository.findByClientIdAndStatus(userId, StatusType.ACTIVE ,Sort.by(Sort.Direction.DESC, "createdAt"))
-                .stream().map(GetProposalsRes::new).collect(Collectors.toList());
+                .stream().map(GetUserProposalsRes::new).collect(Collectors.toList());
+    }
+
+    // 제안서 목록 조회
+    public GetProposalListRes getProposalList(int page, int size) throws BaseException {
+        try {
+            Page<Proposal> proposalPage = proposalRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "createdAt"));
+            return GetProposalListRes.builder()
+                    .totalPages(proposalPage.getTotalPages())
+                    .totalCount(proposalPage.getTotalElements())
+                    .page(proposalPage.getNumber())
+                    .size(proposalPage.getSize())
+                    .contents(proposalPage.getContent())
+                    .build();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
     }
 
     public boolean existUserProposal(User designer, Long proposalId) {
@@ -143,5 +163,6 @@ public class ProposalService {
             throw new BaseException(DATABASE_ERROR);
         }
     }
+
 
 }

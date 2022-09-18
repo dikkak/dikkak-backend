@@ -6,13 +6,13 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class GetProposalsRes {
+public class GetUserProposalsRes {
 
     private Long id;
     private String title;
     private LocalDateTime createdAt;
 
-    public GetProposalsRes(Proposal proposal) {
+    public GetUserProposalsRes(Proposal proposal) {
         this.id = proposal.getId();
         this.title = proposal.getTitle();
         this.createdAt = proposal.getCreatedAt();
