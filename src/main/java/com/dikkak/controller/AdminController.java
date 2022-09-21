@@ -115,7 +115,7 @@ public class AdminController {
     @GetMapping("/proposal/list")
     public ResponseEntity<?> getProposalList(@AuthenticationPrincipal Long userId,
                                              @RequestParam(defaultValue = "0") int page,
-                                             @RequestParam(defaultValue = "20") int size) {
+                                             @RequestParam(defaultValue = "15") int size) {
         try {
             // admin 계정이 아닌 경우
             if (!isAdminUser(userId))

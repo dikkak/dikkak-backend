@@ -22,13 +22,15 @@ public class GetProposalListRes {
     @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
     private static class ProposalInfo {
         private final Long proposalId;
-        private final Long clientId;
+        private final String email;
+        private final String nickname;
         private final String title;
         private final LocalDateTime createdAt;
 
         public ProposalInfo(Proposal proposal) {
             this.proposalId = proposal.getId();
-            this.clientId = proposal.getClient().getId();
+            this.email = proposal.getClient().getEmail();
+            this.nickname = proposal.getClient().getName();
             this.title = proposal.getTitle();
             this.createdAt = proposal.getCreatedAt();
         }
