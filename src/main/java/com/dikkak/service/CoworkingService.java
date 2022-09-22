@@ -1,9 +1,9 @@
 package com.dikkak.service;
 
 import com.dikkak.dto.common.BaseException;
+import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
-import com.dikkak.entity.work.Coworking;
 import com.dikkak.repository.CoworkingRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
