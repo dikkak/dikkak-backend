@@ -2,6 +2,7 @@ package com.dikkak.entity.coworking;
 
 import com.dikkak.entity.BaseEntity;
 import com.dikkak.entity.user.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class CoworkingMessage extends BaseEntity {
 
     @Id @GeneratedValue

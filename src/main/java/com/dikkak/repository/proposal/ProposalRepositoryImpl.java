@@ -10,9 +10,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static com.dikkak.entity.coworking.QCoworking.coworking;
 import static com.dikkak.entity.proposal.QProposal.proposal;
 import static com.dikkak.entity.user.QUser.user;
-import static com.dikkak.entity.work.QCoworking.coworking;
 
 public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
 
@@ -26,7 +26,7 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
     @Override
     public List<ClientWorkplaceRes> getClientWorkplace(Long clientId) {
         return queryFactory.select(new QClientWorkplaceRes(
-                    proposal.id, proposal.title, coworking.id, user.name, coworking.step
+                    proposal.id, proposal.title, coworking.id, user.name, coworking.progress
                 ))
                 .from(proposal)
                 .leftJoin(coworking).on(coworking.proposal.eq(proposal))
@@ -42,7 +42,7 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
     @Override
     public List<DesignerWorkplaceRes.WorkInfo> getDesignerWorkplace(Long designerId) {
         return queryFactory.select(new QDesignerWorkplaceRes_WorkInfo(
-                        proposal.id, proposal.title, proposal.client.name, coworking.id, coworking.step
+                        proposal.id, proposal.title, proposal.client.name, coworking.id, coworking.progress
                  ))
                 .from(coworking)
                 .join(proposal).on(coworking.proposal.eq(proposal))

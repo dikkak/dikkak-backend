@@ -42,12 +42,16 @@ public enum ResponseMessage {
     // 파일 업로드
     FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다."),
 
+    // 외주 작업실
+    WRONG_COWORKING_ID("잘못된 외주작업실 아이디입니다."),
+
     // admin
     ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),
 
     WRONG_PROPOSAL_ID("잘못된 제안서 아이디입니다."),
-    REDIS_ERROR("레디스 오류입니다.");
+    REDIS_ERROR("레디스 오류입니다."),
 
+    UNAUTHORIZED_REQUEST("권한이 없습니다.");
 
 
 

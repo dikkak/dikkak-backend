@@ -3,7 +3,6 @@ package com.dikkak.entity.coworking;
 import com.dikkak.entity.BaseEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
