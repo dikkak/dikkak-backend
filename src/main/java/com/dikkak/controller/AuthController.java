@@ -1,5 +1,6 @@
 package com.dikkak.controller;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.ReissueRes;
 import com.dikkak.dto.common.BaseResponse;
@@ -113,9 +114,9 @@ public class AuthController {
      * @return provider 타입
      */
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal Long userId, HttpServletResponse res) {
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserPrincipal principal, HttpServletResponse res) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(INVALID_ACCESS_TOKEN);
 
         try {
@@ -130,7 +131,7 @@ public class AuthController {
             res.setHeader("Set-Cookie", cookie.toString());
 
             // 소셜 로그아웃 - 구글, 페이스북만
-            oauthService.logout(userId);
+            oauthService.logout(principal.getUserId());
 
             return ResponseEntity.ok().build();
         } catch (BaseException e) {

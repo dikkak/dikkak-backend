@@ -1,5 +1,6 @@
 package com.dikkak.controller;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.proposal.DeleteProposalReq;
@@ -20,10 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.sql.rowset.serial.SerialBlob;
-import javax.sql.rowset.serial.SerialException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,22 +44,22 @@ public class ProposalController {
 
     /**
      * 제안서 생성 api
-     * @param userId 회원 id
+     * @param principal 회원 id, 타입
      * @param jsonData 제안서 정보
      * @param referenceFile 레퍼런스 파일
      * @param etcFile 기타 파일
      */
     @PostMapping("")
     public ResponseEntity<?> createProposal(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal UserPrincipal principal,
             @RequestPart PostProposalReq jsonData,
             @RequestPart(required = false) List<MultipartFile> referenceFile,
             @RequestPart(required = false) List<MultipartFile> etcFile) {
 
         try {
-            if(userId == null)
+            if(principal == null)
                 throw new BaseException(INVALID_ACCESS_TOKEN);
-            User user = userService.getUser(userId);
+            User user = userService.getUser(principal.getUserId());
 
             // 제안서 저장
             Proposal savedProposal = proposalService.create(user, jsonData);
@@ -137,12 +135,12 @@ public class ProposalController {
      */
     @PatchMapping("/inactive")
     public ResponseEntity<?> deleteProposals(
-            @AuthenticationPrincipal Long userId,
+            @AuthenticationPrincipal UserPrincipal principal,
             @RequestBody DeleteProposalReq req) {
         try {
-            if(userId == null || req.getProposalList() == null || req.getProposalList().isEmpty())
+            if(principal == null || req.getProposalList() == null || req.getProposalList().isEmpty())
                 return ResponseEntity.badRequest().build();
-            long count = proposalService.deleteProposalList(req.getProposalList(), userId);
+            long count = proposalService.deleteProposalList(req.getProposalList(), principal.getUserId());
             return ResponseEntity.ok().body(Map.of("count", count));
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));

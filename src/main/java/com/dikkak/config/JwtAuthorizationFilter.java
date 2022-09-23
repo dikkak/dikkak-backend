@@ -56,7 +56,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         Optional<User> user = userRepository.findById(userId);
         if(user.isPresent()) {
             Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    userId, null, AuthorityUtils.NO_AUTHORITIES
+                    new UserPrincipal(user.get()), null, AuthorityUtils.NO_AUTHORITIES
             );
             // 시큐리티 세션에 회원 아이디를 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);

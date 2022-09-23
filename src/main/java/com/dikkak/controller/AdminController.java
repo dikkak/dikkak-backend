@@ -1,10 +1,10 @@
 package com.dikkak.controller;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.admin.GetUserProposalsRes;
 import com.dikkak.dto.admin.MatchingReq;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
-import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.service.CoworkingService;
@@ -12,7 +12,6 @@ import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,17 +37,17 @@ public class AdminController {
 
     /**
      * 클라이언트 제안서 목록 조회 api
-     * @param userId admin 계정 id
+     * @param principal 회원 id, 타입
      * @param req 클라이언트 email
      * @return 제안서 목록
      */
     @PostMapping("/user/proposals")
-    public ResponseEntity<?> getProposals(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> getProposals(@AuthenticationPrincipal UserPrincipal principal,
                                           @RequestBody Map<String, String> req) {
 
         try {
             // admin 계정이 아닌 경우
-            if(!isAdminUser(userId))
+            if(!isAdminUser(principal))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
 
             // client email 유효성 검사
@@ -74,12 +73,18 @@ public class AdminController {
 
     }
 
+    /**
+     * 클라이언트와 디자이너 매칭 API
+     * @param principal 회원 id, 타입
+     * @param req 제안서 id, 디자이너 email
+     * @return
+     */
     @PostMapping("/proposal/designer")
-    public ResponseEntity<?> matching(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> matching(@AuthenticationPrincipal UserPrincipal principal,
                                       @RequestBody MatchingReq req) {
         try {
             // admin 계정이 아닌 경우
-            if (!isAdminUser(userId))
+            if (!isAdminUser(principal))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
 
             // email 유효성 검사
@@ -108,17 +113,17 @@ public class AdminController {
 
     /**
      * 제안서 목록 조회
-     * @param userId 관리자 id
+     * @param principal 회원 id, 타입
      * @param page 페이지 번호
      * @param size 페이지당 제안서 개수
      */
     @GetMapping("/proposal/list")
-    public ResponseEntity<?> getProposalList(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> getProposalList(@AuthenticationPrincipal UserPrincipal principal,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "15") int size) {
         try {
             // admin 계정이 아닌 경우
-            if (!isAdminUser(userId))
+            if (!isAdminUser(principal))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
 
             return ResponseEntity.ok().body(proposalService.getProposalList(page, size));
@@ -132,8 +137,7 @@ public class AdminController {
         return EMAIL.matcher(email).find();
     }
 
-    private boolean isAdminUser(Long userId) throws BaseException {
-        User user = userService.getUser(userId);
-        return user.getUserType().equals(UserTypeEnum.ADMIN);
+    private boolean isAdminUser(UserPrincipal principal) throws BaseException {
+        return principal.getType().equals(UserTypeEnum.ADMIN);
     }
 }
