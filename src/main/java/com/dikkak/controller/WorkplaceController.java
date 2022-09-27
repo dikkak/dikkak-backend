@@ -1,5 +1,6 @@
 package com.dikkak.controller;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
@@ -29,13 +30,13 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, coworkingId, coworkingDesigner, coworkingStep
      */
     @GetMapping("/client/list")
-    public ResponseEntity<?> getClientWorkplace(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<?> getClientWorkplace(@AuthenticationPrincipal UserPrincipal principal) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            List<ClientWorkplaceRes> workplace = proposalService.getClientWorkplace(userId);
+            List<ClientWorkplaceRes> workplace = proposalService.getClientWorkplace(principal.getUserId());
             JSONObject res = new JSONObject();
             res.put("clientWorkplace", workplace);
             return ResponseEntity.ok().body(res);
@@ -49,12 +50,12 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, clientName, coworkingId, coworkingStep
      */
     @GetMapping("/designer/list")
-    public ResponseEntity<?> getDesignerWorkplace(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<?> getDesignerWorkplace(@AuthenticationPrincipal UserPrincipal principal) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
         try {
-            DesignerWorkplaceRes workplace = proposalService.getDesignerWorkplace(userId);
+            DesignerWorkplaceRes workplace = proposalService.getDesignerWorkplace(principal.getUserId());
             return ResponseEntity.ok().body(workplace);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));

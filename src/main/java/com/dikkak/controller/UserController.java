@@ -1,5 +1,6 @@
 package com.dikkak.controller;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.user.PostRegisterReq;
@@ -28,13 +29,13 @@ public class UserController {
 
     /**
      * 최초 로그인 후, 회원 이름과 전화번호를 입력한다.
-     * @param userId - access token으로부터 추출한 회원 아이디
+     * @param principal 회원 id, 타입
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> register(@AuthenticationPrincipal UserPrincipal principal,
                                       @RequestBody PostRegisterReq req) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         if(req.getUsername() == null || req.getUsername().isEmpty())
@@ -52,7 +53,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(new BaseResponse(REQUIRED_ITEM_DISAGREE));
 
         try {
-            userService.registerUser(userId, req);
+            userService.registerUser(principal.getUserId(), req);
             return ResponseEntity.ok().body(null);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
@@ -65,14 +66,14 @@ public class UserController {
      * @param req - type: CLIENT, DESIGNER
      */
     @PostMapping("/type")
-    public ResponseEntity<?> setUserType(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> setUserType(@AuthenticationPrincipal UserPrincipal principal,
                                          @RequestBody UserTypeReq req) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            userService.setUserType(userId, req.getType());
+            userService.setUserType(principal.getUserId(), req.getType());
             return ResponseEntity.ok().body(null);
         } catch (BaseException e) {
             return ResponseEntity.badRequest().body(new BaseResponse(e));
@@ -84,13 +85,13 @@ public class UserController {
      * @return email, username, type, provider
      */
     @GetMapping("/info")
-    public ResponseEntity<?> getUsername(@AuthenticationPrincipal Long userId) {
+    public ResponseEntity<?> getUsername(@AuthenticationPrincipal UserPrincipal principal) {
 
-        if(userId == null)
+        if(principal == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
 
         try {
-            User user = userService.getUser(userId);
+            User user = userService.getUser(principal.getUserId());
             return ResponseEntity.ok().body(new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),
                     user.getPhoneNumber(), user.isMarketingMessage(), user.isPopUpMessage()));
         } catch (BaseException e) {

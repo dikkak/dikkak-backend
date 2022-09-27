@@ -1,6 +1,7 @@
 package com.dikkak.controller;
 
-import com.dikkak.dto.admin.GetProposalsRes;
+import com.dikkak.config.UserPrincipal;
+import com.dikkak.dto.admin.GetUserProposalsRes;
 import com.dikkak.dto.admin.MatchingReq;
 import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
@@ -10,6 +11,7 @@ import com.dikkak.service.CoworkingService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,7 @@ import static com.dikkak.dto.common.ResponseMessage.ADMIN_REQUIRED;
 import static com.dikkak.dto.common.ResponseMessage.INVALID_FORMAT_EMAIL;
 
 @RequestMapping("/admin")
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class AdminController {
@@ -34,25 +37,21 @@ public class AdminController {
 
     /**
      * 클라이언트 제안서 목록 조회 api
-     * @param userId admin 계정 id
+     * @param principal 회원 id, 타입
      * @param req 클라이언트 email
      * @return 제안서 목록
      */
     @PostMapping("/user/proposals")
-    public ResponseEntity<?> getProposals(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> getProposals(@AuthenticationPrincipal UserPrincipal principal,
                                           @RequestBody Map<String, String> req) {
 
         try {
-            User user = userService.getUser(userId);
-
-            String email = req.get("email");
-
             // admin 계정이 아닌 경우
-            if(!user.getUserType().equals(UserTypeEnum.ADMIN)) {
+            if(!isAdminUser(principal))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
-            }
 
             // client email 유효성 검사
+            String email = req.get("email");
             if(email == null || !isRegexEmail(email)) {
                 throw new BaseException(INVALID_FORMAT_EMAIL);
             }
@@ -64,7 +63,7 @@ public class AdminController {
                 return  ResponseEntity.badRequest().body(new BaseResponse("존재하지 않는 클라이언트 이메일입니다."));
 
             // 회원의 전체 제안서 목록
-            List<GetProposalsRes> proposalList = proposalService.getProposalList(client.getId());
+            List<GetUserProposalsRes> proposalList = proposalService.getUserProposalList(client.getId());
 
             return ResponseEntity.ok().body(proposalList);
 
@@ -74,16 +73,19 @@ public class AdminController {
 
     }
 
+    /**
+     * 클라이언트와 디자이너 매칭 API
+     * @param principal 회원 id, 타입
+     * @param req 제안서 id, 디자이너 email
+     * @return
+     */
     @PostMapping("/proposal/designer")
-    public ResponseEntity<?> matching(@AuthenticationPrincipal Long userId,
+    public ResponseEntity<?> matching(@AuthenticationPrincipal UserPrincipal principal,
                                       @RequestBody MatchingReq req) {
         try {
-
             // admin 계정이 아닌 경우
-            User user = userService.getUser(userId);
-            if (!user.getUserType().equals(UserTypeEnum.ADMIN)) {
+            if (!isAdminUser(principal))
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
-            }
 
             // email 유효성 검사
             String email = req.getDesignerEmail();
@@ -109,8 +111,33 @@ public class AdminController {
 
     }
 
+    /**
+     * 제안서 목록 조회
+     * @param principal 회원 id, 타입
+     * @param page 페이지 번호
+     * @param size 페이지당 제안서 개수
+     */
+    @GetMapping("/proposal/list")
+    public ResponseEntity<?> getProposalList(@AuthenticationPrincipal UserPrincipal principal,
+                                             @RequestParam(defaultValue = "0") int page,
+                                             @RequestParam(defaultValue = "15") int size) {
+        try {
+            // admin 계정이 아닌 경우
+            if (!isAdminUser(principal))
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(ADMIN_REQUIRED));
+
+            return ResponseEntity.ok().body(proposalService.getProposalList(page, size));
+
+        } catch (BaseException e) {
+            return ResponseEntity.badRequest().body(new BaseResponse(e));
+        }
+    }
+
     private boolean isRegexEmail(String email) {
         return EMAIL.matcher(email).find();
     }
 
+    private boolean isAdminUser(UserPrincipal principal) throws BaseException {
+        return principal.getType().equals(UserTypeEnum.ADMIN);
+    }
 }
