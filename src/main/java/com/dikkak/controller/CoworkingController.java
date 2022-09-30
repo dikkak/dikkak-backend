@@ -36,8 +36,8 @@ public class CoworkingController {
                                          @RequestParam Long coworkingId,
                                          @RequestParam int step) {
         try {
-            if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-            if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+//            if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+//            if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
             List<GetChattingRes> chatList = coworkingService.getMessageList(coworkingId, step);
             return ResponseEntity.ok().body(Map.of("data", chatList));

@@ -1,15 +1,16 @@
-package com.dikkak.repository;
+package com.dikkak.repository.coworking;
 
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.QGetChattingRes;
-import com.dikkak.entity.coworking.CoworkingMessage;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import javax.persistence.EntityManager;
 import java.util.List;
 
+import static com.dikkak.entity.coworking.QCoworkingFile.coworkingFile;
 import static com.dikkak.entity.coworking.QCoworkingMessage.coworkingMessage;
 import static com.dikkak.entity.coworking.QCoworkingStep.coworkingStep;
+import static com.dikkak.entity.user.QUser.user;
 
 public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositoryCustom {
 
@@ -24,12 +25,19 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
     public List<GetChattingRes> getCoworkingStepMessage(Long coworkingId, int step) {
         return queryFactory
                 .select(new QGetChattingRes(
-                        coworkingMessage.id, coworkingMessage.user.id, coworkingMessage.content, coworkingMessage.fileUrl, coworkingMessage.createdAt
+                        user.email, coworkingMessage.content,
+                        coworkingFile.fileName, coworkingFile.fileUrl, coworkingMessage.createdAt
                 ))
                 .from(coworkingMessage)
+                .join(user).on(
+                        coworkingMessage.user.id.eq(user.id)
+                )
                 .join(coworkingStep).on(
                         coworkingStep.coworking.id.eq(coworkingId),
                         coworkingStep.step.eq(step)
+                )
+                .leftJoin(coworkingFile).on(
+                        coworkingMessage.coworkingFile.id.eq(coworkingFile.id)
                 )
                 .fetch();
     }

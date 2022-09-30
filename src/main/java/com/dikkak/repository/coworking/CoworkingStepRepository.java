@@ -1,4 +1,4 @@
-package com.dikkak.repository;
+package com.dikkak.repository.coworking;
 
 import com.dikkak.entity.coworking.CoworkingStep;
 import org.springframework.data.jpa.repository.JpaRepository;

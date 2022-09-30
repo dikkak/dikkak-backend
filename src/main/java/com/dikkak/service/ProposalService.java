@@ -11,7 +11,7 @@ import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
 import com.dikkak.entity.StatusType;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
-import com.dikkak.repository.CoworkingRepository;
+import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
 import com.dikkak.repository.proposal.ProposalRepository;

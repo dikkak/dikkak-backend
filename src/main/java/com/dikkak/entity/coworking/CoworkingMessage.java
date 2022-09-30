@@ -26,9 +26,10 @@ public class CoworkingMessage extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coworking_file_id")
+    private CoworkingFile coworkingFile;
+
     @Column(length = 1000)
     private String content;
-
-    @Column(length = 500)
-    private String fileUrl;
 }
