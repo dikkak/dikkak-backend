@@ -5,6 +5,7 @@ import com.dikkak.dto.common.BaseException;
 import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.service.CoworkingService;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +30,15 @@ public class CoworkingController {
      * 외주작업실의 해당 step의 채팅 목록 조회
      * @param principal 회원 id, 타입
      * @param coworkingId 외주작업실 id
-     * @param step step 번호 (0~9)
+     * @param step 외주 작업 step
      */
     @GetMapping("/chat")
     public ResponseEntity<?> getChatList(@AuthenticationPrincipal UserPrincipal principal,
                                          @RequestParam Long coworkingId,
-                                         @RequestParam int step) {
+                                         @RequestParam StepType step) {
         try {
-//            if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-//            if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+            if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+            if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
             List<GetChattingRes> chatList = coworkingService.getMessageList(coworkingId, step);
             return ResponseEntity.ok().body(Map.of("data", chatList));

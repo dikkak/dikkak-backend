@@ -9,6 +9,7 @@ import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
 import com.dikkak.entity.StatusType;
+import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.*;
 import com.dikkak.repository.coworking.CoworkingRepository;
@@ -56,7 +57,8 @@ public class ProposalService {
         try {
             DesignerWorkplaceRes res = new DesignerWorkplaceRes();
             for (WorkInfo workInfo : proposalRepository.getDesignerWorkplace(designerId)) {
-                if(workInfo.getCoworkingStep() == 11) res.getComplete().add(workInfo);
+                if(workInfo.getCoworkingStep() == StepType.TERMINATION) // 완료된 작업
+                    res.getComplete().add(workInfo);
                 else res.getProgress().add(workInfo);
             }
             return res;

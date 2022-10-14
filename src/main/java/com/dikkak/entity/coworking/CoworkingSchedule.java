@@ -20,8 +20,9 @@ public class CoworkingSchedule {
     @JoinColumn(name = "coworking_id")
     private Coworking coworking;
 
-    // 0 1차 컨펌, 1 2차 컨펌, 2 3차 컨펌, 3 최종
-    private int step;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coworking_step_id")
+    private CoworkingStep coworkingStep;
 
     @Column(length = 520)
     private String clientSchedule;
