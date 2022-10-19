@@ -1,22 +1,20 @@
 package com.dikkak.controller;
 
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
 import com.dikkak.dto.workplace.DesignerWorkplaceRes;
 import com.dikkak.service.ProposalService;
 import lombok.RequiredArgsConstructor;
-import net.minidev.json.JSONObject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
-import static com.dikkak.dto.common.ResponseMessage.INVALID_ACCESS_TOKEN;
+import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 
 @RequestMapping("/workplace")
 @RestController
@@ -30,19 +28,14 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, coworkingId, coworkingDesigner, coworkingStep
      */
     @GetMapping("/client/list")
-    public ResponseEntity<?> getClientWorkplace(@AuthenticationPrincipal UserPrincipal principal) {
+    public Map<String, List<ClientWorkplaceRes>> getClientWorkplace(@AuthenticationPrincipal UserPrincipal principal)
+            throws BaseException {
 
         if(principal == null)
-            return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        try {
-            List<ClientWorkplaceRes> workplace = proposalService.getClientWorkplace(principal.getUserId());
-            JSONObject res = new JSONObject();
-            res.put("clientWorkplace", workplace);
-            return ResponseEntity.ok().body(res);
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
+        List<ClientWorkplaceRes> workplace = proposalService.getClientWorkplace(principal.getUserId());
+        return Map.of("clientWorkplace", workplace);
     }
 
     /**
@@ -50,16 +43,12 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, clientName, coworkingId, coworkingStep
      */
     @GetMapping("/designer/list")
-    public ResponseEntity<?> getDesignerWorkplace(@AuthenticationPrincipal UserPrincipal principal) {
+    public DesignerWorkplaceRes getDesignerWorkplace(@AuthenticationPrincipal UserPrincipal principal)
+            throws BaseException {
 
         if(principal == null)
-            return ResponseEntity.badRequest().body(new BaseResponse(INVALID_ACCESS_TOKEN));
-        try {
-            DesignerWorkplaceRes workplace = proposalService.getDesignerWorkplace(principal.getUserId());
-            return ResponseEntity.ok().body(workplace);
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
+        return proposalService.getDesignerWorkplace(principal.getUserId());
     }
 }

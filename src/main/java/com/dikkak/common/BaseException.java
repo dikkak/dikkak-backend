@@ -1,10 +1,12 @@
-package com.dikkak.dto.common;
+package com.dikkak.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter @AllArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
 public class BaseException extends Exception{
 
     private ResponseMessage responseMessage;

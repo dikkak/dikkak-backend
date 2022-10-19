@@ -1,13 +1,12 @@
 package com.dikkak.config;
 
-import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.common.BaseException;
+import com.dikkak.common.BaseResponse;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

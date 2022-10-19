@@ -1,23 +1,21 @@
 package com.dikkak.controller;
 
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.common.BaseException;
+import com.dikkak.common.BaseResponse;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.service.CoworkingService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
-import static com.dikkak.dto.common.ResponseMessage.INVALID_ACCESS_TOKEN;
-import static com.dikkak.dto.common.ResponseMessage.UNAUTHORIZED_REQUEST;
+import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
+import static com.dikkak.common.ResponseMessage.UNAUTHORIZED_REQUEST;
 
 @RestController
 @RequestMapping("/coworking")
@@ -33,19 +31,16 @@ public class CoworkingController {
      * @param step 외주 작업 step
      */
     @GetMapping("/chat")
-    public ResponseEntity<?> getChatList(@AuthenticationPrincipal UserPrincipal principal,
-                                         @RequestParam Long coworkingId,
-                                         @RequestParam StepType step) {
-        try {
-            if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-            if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+    public BaseResponse<List<GetChattingRes>> getChatList(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @RequestParam Long coworkingId,
+            @RequestParam StepType step) throws BaseException {
 
-            List<GetChattingRes> chatList = coworkingService.getMessageList(coworkingId, step);
-            return ResponseEntity.ok().body(Map.of("data", chatList));
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
+        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
+        List<GetChattingRes> chatList = coworkingService.getMessageList(coworkingId, step);
+        return new BaseResponse<>(chatList);
     }
 
     // 작업실 접근권한이 있는 회원인지 검사

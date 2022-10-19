@@ -1,6 +1,6 @@
 package com.dikkak.service;
 
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.entity.proposal.Reference;
 import com.dikkak.repository.proposal.ReferenceRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
 
 @Service
 @RequiredArgsConstructor

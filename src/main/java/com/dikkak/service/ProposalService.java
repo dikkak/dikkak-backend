@@ -2,7 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.dto.admin.GetProposalListRes;
 import com.dikkak.dto.admin.GetUserProposalsRes;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.workplace.ClientWorkplaceRes;
@@ -27,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
-import static com.dikkak.dto.common.ResponseMessage.WRONG_PROPOSAL_ID;
+import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
 @RequiredArgsConstructor

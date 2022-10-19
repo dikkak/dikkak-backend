@@ -2,7 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.token.TokenResponse;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
 import com.dikkak.redis.RedisService;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.dikkak.dto.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.*;
 
 
 @Service

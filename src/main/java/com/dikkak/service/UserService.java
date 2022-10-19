@@ -2,7 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.entity.user.User;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
-import static com.dikkak.dto.common.ResponseMessage.WRONG_USER_ID;
+import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.common.ResponseMessage.WRONG_USER_ID;
 
 @Service
 @RequiredArgsConstructor

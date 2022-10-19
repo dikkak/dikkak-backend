@@ -1,7 +1,7 @@
 package com.dikkak.redis;
 
 import com.dikkak.dto.auth.token.TokenResponse;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +9,8 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.dikkak.dto.common.ResponseMessage.REDIS_ERROR;
-import static com.dikkak.dto.common.ResponseMessage.WRONG_USER_ID;
+import static com.dikkak.common.ResponseMessage.REDIS_ERROR;
+import static com.dikkak.common.ResponseMessage.WRONG_USER_ID;
 
 @Service
 @RequiredArgsConstructor

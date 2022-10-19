@@ -1,7 +1,7 @@
 package com.dikkak.service;
 
 import com.dikkak.repository.UserRepository;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.security.Key;
 import java.util.Date;
 
-import static com.dikkak.dto.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.*;
 
 @Service
 @RequiredArgsConstructor

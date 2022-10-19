@@ -3,16 +3,13 @@ package com.dikkak.controller;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.ReissueRes;
-import com.dikkak.dto.common.BaseResponse;
 import com.dikkak.service.JwtService;
 import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.dikkak.dto.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.*;
 
 @Slf4j
 @RestController
@@ -43,38 +40,31 @@ public class AuthController {
      * @param code 인가 코드
      */
     @GetMapping("/login/{provider}")
-    public ResponseEntity<?> login(@PathVariable String provider, @RequestParam String code,
-                                   HttpServletResponse res) {
-        try {
-            if(providerList.contains(provider)) {
+    public GetLoginRes login(@PathVariable String provider, @RequestParam String code,
+                                   HttpServletResponse res) throws BaseException {
+        if (providerList.contains(provider)) {
+            GetLoginRes loginRes = oauthService.login(provider, code);
 
-                GetLoginRes loginRes = oauthService.login(provider, code);
+            // refresh token을 cookie에 저장
+            String refreshToken = loginRes.getRefreshToken();
+            ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
+                    .maxAge(60 * 60 * 24 * 14)
+                    .path("/")
+                    .sameSite("none")
+                    .secure(true)
+                    .httpOnly(true)
+                    .build();
 
-                // refresh token을 cookie에 저장
-                String refreshToken = loginRes.getRefreshToken();
-                ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
-                        .maxAge(60 * 60 * 24 * 14)
-                        .path("/")
-                        .sameSite("none")
-                        .secure(true)
-                        .httpOnly(true)
-                        .build();
+            res.setHeader("Set-Cookie", cookie.toString());
 
-                res.setHeader("Set-Cookie", cookie.toString());
-
-                // response body에서 refresh token 제거하기
-                loginRes.setRefreshToken(null);
-                return ResponseEntity.ok().body(loginRes);
-            } else {
-                return ResponseEntity.badRequest().body(new BaseResponse(INVALID_PROVIDER));
-            }
-
-        } catch (BaseException e){
-            if(e.getResponseMessage().equals(ALREADY_REGISTERED_SOCIAL_LOGIN))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new BaseResponse(e));
-            else return ResponseEntity.badRequest().body(new BaseResponse(e));
+            // response body에서 refresh token 제거하기
+            loginRes.setRefreshToken(null);
+            return loginRes;
+        } else {
+            throw new BaseException(INVALID_PROVIDER);
         }
     }
+
 
 
     /**
@@ -82,61 +72,47 @@ public class AuthController {
      * @return 새로 발행한 access token
      */
     @GetMapping("/refresh")
-    public ResponseEntity<?> reIssue(
-            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
+    public ReissueRes reIssue(
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) throws BaseException {
 
         // refresh token 없는 경우
-        if(refreshToken == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_REFRESH_TOKEN));
-        }
+        if(refreshToken == null)
+            throw new BaseException(INVALID_REFRESH_TOKEN);
+
+        // refresh 토큰 유효성 검사 및 userId 추출
+        Long userId = jwtService.validateToken(refreshToken);
+
+        // 존재하는 회원인지 검사
+        userService.getUser(userId);
 
         // access token 재발급
-        try {
-            // refresh 토큰 유효성 검사 및 userId 추출
-            Long userId = jwtService.validateToken(refreshToken);
-
-            // 존재하는 회원인지 검사
-            userService.getUser(userId);
-
-            // access token 생성
-            String newAccessToken = jwtService.createAccessToken(userId);
-            return ResponseEntity.ok().body(new ReissueRes(newAccessToken));
-        } catch (BaseException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(e));
-        }
-
+        String newAccessToken = jwtService.createAccessToken(userId);
+        return new ReissueRes(newAccessToken);
     }
 
     /**
      * 로그아웃 API
      * 쿠키에 저장된 refresh_token을 null로 설정
      * 소셜 로그아웃 요청
-     * @return provider 타입
      */
     @GetMapping("/logout")
-    public ResponseEntity<?> logout(@AuthenticationPrincipal UserPrincipal principal, HttpServletResponse res) {
+    public void logout(@AuthenticationPrincipal UserPrincipal principal, HttpServletResponse res) throws BaseException {
 
         if(principal == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(INVALID_ACCESS_TOKEN);
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        try {
-            // 쿠키 지우기
-            ResponseCookie cookie = ResponseCookie.from("refresh_token", null)
-                    .maxAge(0)
-                    .path("/")
-                    .secure(true)
-                    .httpOnly(true)
-                    .sameSite("none")
-                    .build();
-            res.setHeader("Set-Cookie", cookie.toString());
+        // 쿠키 지우기
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", null)
+                .maxAge(0)
+                .path("/")
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("none")
+                .build();
+        res.setHeader("Set-Cookie", cookie.toString());
 
-            // 소셜 로그아웃 - 구글, 페이스북만
-            oauthService.logout(principal.getUserId());
-
-            return ResponseEntity.ok().build();
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e.getResponseMessage()));
-        }
+        // 소셜 로그아웃 - 구글, 페이스북만
+        oauthService.logout(principal.getUserId());
     }
 
 

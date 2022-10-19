@@ -1,15 +1,20 @@
-package com.dikkak.dto.common;
+package com.dikkak.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 
 @Getter
-public class BaseResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class BaseResponse<T> {
 
-    private final String message;
+    private String message;
+    private T data;
 
     public BaseResponse(ResponseMessage message) {
         this.message = message.getMessage();
+    }
+    public BaseResponse(T data) {
+        this.data = data;
     }
 
     public BaseResponse(String message) {

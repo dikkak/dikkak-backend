@@ -1,22 +1,19 @@
 package com.dikkak.controller;
 
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.common.BaseException;
-import com.dikkak.dto.common.BaseResponse;
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.dto.user.UserInfoRes;
 import com.dikkak.dto.user.UserTypeReq;
 import com.dikkak.entity.user.User;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.regex.Pattern;
 
-import static com.dikkak.dto.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,33 +29,27 @@ public class UserController {
      * @param principal 회원 id, 타입
      */
     @PostMapping("/register")
-    public ResponseEntity<?> register(@AuthenticationPrincipal UserPrincipal principal,
-                                      @RequestBody PostRegisterReq req) {
+    public void register(@AuthenticationPrincipal UserPrincipal principal,
+                                      @RequestBody PostRegisterReq req) throws BaseException {
 
         if(principal == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
         if(req.getUsername() == null || req.getUsername().isEmpty())
-            return ResponseEntity.badRequest().body(new BaseResponse(EMPTY_USER_NAME));
+            throw new BaseException(EMPTY_USER_NAME);
 
         if(req.getPhoneNumber() == null || req.getPhoneNumber().isEmpty())
-            return ResponseEntity.badRequest().body(new BaseResponse(EMPTY_PHONE_NUMBER));
+            throw new BaseException(EMPTY_PHONE_NUMBER);
 
         // 전화번호 형식 검사
         if(!isRegexPhoneNumber(req.getPhoneNumber()))
-            return ResponseEntity.badRequest().body(new BaseResponse(INVALID_FORMAT_PHONE_NUMBER));
+            throw new BaseException(INVALID_FORMAT_PHONE_NUMBER);
 
         // 필수 항목 동의 여부 검사
         if(!req.isTermsConditions() || !req.isDataPolicy())
-            return ResponseEntity.badRequest().body(new BaseResponse(REQUIRED_ITEM_DISAGREE));
+            throw new BaseException(REQUIRED_ITEM_DISAGREE);
 
-        try {
-            userService.registerUser(principal.getUserId(), req);
-            return ResponseEntity.ok().body(null);
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
-
+        userService.registerUser(principal.getUserId(), req);
     }
 
     /**
@@ -66,18 +57,12 @@ public class UserController {
      * @param req - type: CLIENT, DESIGNER
      */
     @PostMapping("/type")
-    public ResponseEntity<?> setUserType(@AuthenticationPrincipal UserPrincipal principal,
-                                         @RequestBody UserTypeReq req) {
-
+    public void setUserType(@AuthenticationPrincipal UserPrincipal principal,
+                                         @RequestBody UserTypeReq req) throws BaseException {
         if(principal == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        try {
-            userService.setUserType(principal.getUserId(), req.getType());
-            return ResponseEntity.ok().body(null);
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
+        userService.setUserType(principal.getUserId(), req.getType());
     }
 
     /**
@@ -85,18 +70,14 @@ public class UserController {
      * @return email, username, type, provider
      */
     @GetMapping("/info")
-    public ResponseEntity<?> getUsername(@AuthenticationPrincipal UserPrincipal principal) {
+    public UserInfoRes getUsername(@AuthenticationPrincipal UserPrincipal principal) throws BaseException {
 
         if(principal == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new BaseResponse(INVALID_ACCESS_TOKEN));
+            throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        try {
-            User user = userService.getUser(principal.getUserId());
-            return ResponseEntity.ok().body(new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),
-                    user.getPhoneNumber(), user.isMarketingMessage(), user.isPopUpMessage()));
-        } catch (BaseException e) {
-            return ResponseEntity.badRequest().body(new BaseResponse(e));
-        }
+        User user = userService.getUser(principal.getUserId());
+        return new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),
+                user.getPhoneNumber(), user.isMarketingMessage(), user.isPopUpMessage());
     }
 
     private boolean isRegexPhoneNumber(String phoneNumber) {

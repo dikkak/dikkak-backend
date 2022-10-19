@@ -1,6 +1,6 @@
 package com.dikkak.service;
 
-import com.dikkak.dto.common.BaseException;
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.StepType;
@@ -16,9 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.dikkak.dto.common.ResponseMessage.*;
-import static com.dikkak.dto.common.ResponseMessage.DATABASE_ERROR;
-import static com.dikkak.dto.common.ResponseMessage.WRONG_PROPOSAL_ID;
+import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
+import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -31,13 +31,13 @@ public class CoworkingService {
 
     // 외주작업실 생성, 디자이너 매칭
     @Transactional
-    public void create(User designer, Long proposalId) throws BaseException {
+    public Coworking create(User designer, Long proposalId) throws BaseException {
         try {
             // 제안서 조회
             Proposal proposal = proposalRepository.findById(proposalId)
                     .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
             // 외주 작업실 생성
-            coworkingRepository.save(new Coworking(proposal, designer));
+            return coworkingRepository.save(new Coworking(proposal, designer));
         } catch (BaseException e) {
             log.error(e.getMessage());
             throw e;

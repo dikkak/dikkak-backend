@@ -1,4 +1,4 @@
-package com.dikkak.dto.common;
+package com.dikkak.common;
 
 import lombok.Getter;
 
@@ -9,6 +9,7 @@ import lombok.Getter;
 public enum ResponseMessage {
 
     SUCCESS("요청에 성공하였습니다."),
+    REQUEST_ERROR("입력값을 확인해주세요."),
 
     DUPLICATED_USER_EMAIL("중복된 이메일입니다."),
     NON_EXISTENT_EMAIL("존재하지 않는 이메일입니다."),
@@ -39,11 +40,13 @@ public enum ResponseMessage {
 
     DATABASE_ERROR("데이터베이스 오류입니다."),
 
-    // 파일 업로드
+    // 파일 업로드/다운로드
     FILE_UPLOAD_FAILED("파일 업로드에 실패하였습니다."),
+    FILE_DOWNLOAD_FAILED("파일 다운로드에 실패하였습니다."),
 
     // 외주 작업실
     WRONG_COWORKING_ID("잘못된 외주작업실 아이디입니다."),
+    DUPLICATED_DESIGNER("이미 매칭된 디자이너입니다."),
 
     // admin
     ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),
