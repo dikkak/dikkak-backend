@@ -1,6 +1,8 @@
 package com.dikkak.entity.coworking;
 
 import com.dikkak.entity.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,6 +11,8 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CoworkingFile extends BaseEntity {
 
     @Id

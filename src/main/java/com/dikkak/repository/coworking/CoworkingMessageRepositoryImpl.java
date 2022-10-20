@@ -40,6 +40,7 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
                 .leftJoin(coworkingFile).on(
                         coworkingMessage.coworkingFile.id.eq(coworkingFile.id)
                 )
+                .orderBy(coworkingMessage.createdAt.asc())
                 .fetch();
     }
 }
