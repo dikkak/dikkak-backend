@@ -40,7 +40,7 @@ public class CoworkingController {
             @RequestParam StepType step) throws BaseException {
 
         if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
         return coworkingService.getMessageList(coworkingId, step);
     }
