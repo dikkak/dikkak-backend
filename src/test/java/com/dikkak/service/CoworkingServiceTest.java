@@ -2,6 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.GetChattingRes;
+import com.dikkak.dto.coworking.Message;
 import com.dikkak.entity.coworking.*;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
@@ -71,7 +72,10 @@ class CoworkingServiceTest {
                 .providerType(ProviderTypeEnum.KAKAO)
                 .build());
         CoworkingStep coworkingStep = stepRepository.findById(1L).get();
+
         CoworkingMessage message1 = messageRepository.save(new CoworkingMessage(1L, user1, null, "텍스트 메시지1", coworkingStep));
+        Thread.sleep(1000);
+
         CoworkingMessage message2 = messageRepository.save(new CoworkingMessage(2L, user2, null, "텍스트 메시지2", coworkingStep));
 
 
@@ -80,19 +84,20 @@ class CoworkingServiceTest {
         CoworkingMessage message3 = messageRepository.save(new CoworkingMessage(3L, user1, file, null, coworkingStep));
 
         //when
-        List<GetChattingRes> messageList = coworkingService.getMessageList(1L, StepType.CHECK_PROPOSAL);
+        List<Message<GetChattingRes>> messageList = coworkingService.getMessageList(1L, StepType.CHECK_PROPOSAL);
 
         //then
-        for (int i=0; i<messageList.size(); i++)
+        for (int i=messageList.size()-3; i<messageList.size(); i++)
             System.out.println(i + " = " + messageList.get(i));
 
-        assertThat(messageList.size()).isEqualTo(3);
-        assertThat(messageList.get(0).getEmail()).isEqualTo(user1.getEmail());
-        assertThat(messageList.get(0).getContent()).isEqualTo(message1.getContent());
-        assertThat(messageList.get(1).getEmail()).isEqualTo(user2.getEmail());
-        assertThat(messageList.get(1).getContent()).isEqualTo(message2.getContent());
-        assertThat(messageList.get(2).getEmail()).isEqualTo(user1.getEmail());
-        assertThat(messageList.get(2).getFileUrl()).isEqualTo(message3.getCoworkingFile().getFileUrl());
-        assertThat(messageList.get(2).getFileName()).isEqualTo(message3.getCoworkingFile().getFileName());
+        assertThat(messageList.get(messageList.size()-3).getData().getEmail()).isEqualTo(user1.getEmail());
+        assertThat(messageList.get(messageList.size()-3).getData().getContent()).isEqualTo(message1.getContent());
+
+        assertThat(messageList.get(messageList.size()-2).getData().getEmail()).isEqualTo(user2.getEmail());
+        assertThat(messageList.get(messageList.size()-2).getData().getContent()).isEqualTo(message2.getContent());
+
+        assertThat(messageList.get(messageList.size()-1).getData().getEmail()).isEqualTo(user1.getEmail());
+        assertThat(messageList.get(messageList.size()-1).getData().getFileUrl()).isEqualTo(message3.getCoworkingFile().getFileUrl());
+        assertThat(messageList.get(messageList.size()-1).getData().getFileName()).isEqualTo(message3.getCoworkingFile().getFileName());
     }
 }
