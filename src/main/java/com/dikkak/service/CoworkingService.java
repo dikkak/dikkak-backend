@@ -2,6 +2,7 @@ package com.dikkak.service;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.GetChattingRes;
+import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.Message;
 import com.dikkak.dto.coworking.MessageType;
 import com.dikkak.entity.coworking.Coworking;
@@ -10,6 +11,7 @@ import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.repository.coworking.CoworkingMessageRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
+import com.dikkak.repository.coworking.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class CoworkingService {
     private final ProposalRepository proposalRepository;
     private final CoworkingRepository coworkingRepository;
     private final CoworkingMessageRepository messageRepository;
+    private final CoworkingTaskRepository taskRepository;
 
     // 외주작업실 생성, 디자이너 매칭
     @Transactional
@@ -64,6 +67,23 @@ public class CoworkingService {
                                 .coworkingId(coworkingId)
                                 .data(res)
                                 .build())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // task 목록 조회
+    public List<Message<GetTaskRes>> getTaskList(Long coworkingId) throws BaseException {
+        try {
+            return taskRepository.getCoworkingTask(coworkingId)
+                    .stream().map(res ->
+                            Message.<GetTaskRes>builder()
+                                    .type(MessageType.TASK)
+                                    .coworkingId(coworkingId)
+                                    .data(res)
+                                    .build())
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error(e.getMessage());
