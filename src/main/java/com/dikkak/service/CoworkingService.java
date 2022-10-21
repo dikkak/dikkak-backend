@@ -2,6 +2,8 @@ package com.dikkak.service;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.GetChattingRes;
+import com.dikkak.dto.coworking.Message;
+import com.dikkak.dto.coworking.MessageType;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.User;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.dikkak.common.ResponseMessage.*;
 import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
@@ -52,9 +55,16 @@ public class CoworkingService {
     }
 
     // 채팅 목록 조회
-    public List<GetChattingRes> getMessageList(Long coworkingId, StepType step) throws BaseException {
+    public List<Message<GetChattingRes>> getMessageList(Long coworkingId, StepType step) throws BaseException {
         try {
-            return messageRepository.getCoworkingStepMessage(coworkingId, step);
+            return messageRepository.getCoworkingStepMessage(coworkingId, step)
+                    .stream().map(res ->
+                            Message.<GetChattingRes>builder()
+                                .type((res.getFileName() == null) ? MessageType.TEXT : MessageType.FILE)
+                                .coworkingId(coworkingId)
+                                .data(res)
+                                .build())
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
