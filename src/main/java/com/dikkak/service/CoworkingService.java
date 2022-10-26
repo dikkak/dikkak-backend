@@ -6,11 +6,13 @@ import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.Message;
 import com.dikkak.dto.coworking.MessageType;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.coworking.CoworkingStep;
 import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.repository.coworking.CoworkingMessageRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
+import com.dikkak.repository.coworking.CoworkingStepRepository;
 import com.dikkak.repository.coworking.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,7 @@ public class CoworkingService {
 
     private final ProposalRepository proposalRepository;
     private final CoworkingRepository coworkingRepository;
+    private final CoworkingStepRepository stepRepository;
     private final CoworkingMessageRepository messageRepository;
     private final CoworkingTaskRepository taskRepository;
 
@@ -43,7 +46,17 @@ public class CoworkingService {
             Proposal proposal = proposalRepository.findById(proposalId)
                     .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
             // 외주 작업실 생성
-            return coworkingRepository.save(new Coworking(proposal, designer));
+            Coworking coworking = coworkingRepository.save(new Coworking(proposal, designer));
+            // step 생성
+            stepRepository.save(
+                    CoworkingStep
+                            .builder()
+                            .coworking(coworking)
+                            .type(coworking.getProgress())
+                            .build()
+            );
+            return coworking;
+
         } catch (BaseException e) {
             log.error(e.getMessage());
             throw e;

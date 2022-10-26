@@ -1,5 +1,6 @@
 package com.dikkak.entity.coworking;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,10 @@ public class CoworkingStep {
 
     @Enumerated(EnumType.STRING)
     private StepType type;
+
+    @Builder
+    public CoworkingStep(Coworking coworking, StepType type) {
+        this.coworking = coworking;
+        this.type = type;
+    }
 }
