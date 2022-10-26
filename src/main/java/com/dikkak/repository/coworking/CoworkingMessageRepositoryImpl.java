@@ -41,7 +41,7 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
                         coworkingMessage.coworkingFile.id.eq(coworkingFile.id)
                 )
                 .orderBy(coworkingMessage.createdAt.asc())
-                .where(coworkingMessage.coworkingStep)
+                .where(coworkingMessage.coworkingStep.eq(coworkingStep))
                 .fetch();
     }
 }
