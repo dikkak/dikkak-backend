@@ -1,6 +1,7 @@
 package com.dikkak.dto.coworking;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class GetChattingRes {
     // 파일 메시지
     private String fileName;
     private String fileUrl;
+    @JsonProperty("isImageFile")
     private boolean isImageFile;
 
     @QueryProjection
