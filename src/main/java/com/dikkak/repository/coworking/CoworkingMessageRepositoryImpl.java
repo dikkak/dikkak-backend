@@ -27,7 +27,8 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
         return queryFactory
                 .select(new QGetChattingRes(
                         user.email, coworkingMessage.content,
-                        coworkingFile.fileName, coworkingFile.fileUrl, coworkingMessage.createdAt
+                        coworkingFile.fileName, coworkingFile.fileUrl, coworkingFile.isImageFile,
+                        coworkingMessage.createdAt
                 ))
                 .from(coworkingMessage)
                 .join(user).on(

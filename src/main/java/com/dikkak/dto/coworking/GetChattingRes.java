@@ -18,14 +18,17 @@ public class GetChattingRes {
     // 파일 메시지
     private String fileName;
     private String fileUrl;
+    private boolean isImageFile;
 
     @QueryProjection
     public GetChattingRes(String email, String content,
-                          String fileName, String fileUrl, LocalDateTime createdAt) {
+                          String fileName, String fileUrl, boolean isImageFile,
+                          LocalDateTime createdAt) {
         this.email = email;
         this.content = content;
         this.fileName = fileName;
         this.fileUrl = fileUrl;
+        this.isImageFile = isImageFile;
         this.createdAt = createdAt;
     }
 }

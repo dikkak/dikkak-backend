@@ -28,4 +28,6 @@ public class CoworkingFile extends BaseEntity {
 
     @Column(length = 500)
     private String fileUrl;
+
+    private boolean isImageFile;
 }
