@@ -3,6 +3,7 @@ package com.dikkak.controller;
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.coworking.GetChattingRes;
+import com.dikkak.dto.coworking.GetFileRes;
 import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.Message;
 import com.dikkak.entity.coworking.Coworking;
@@ -10,6 +11,8 @@ import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.service.CoworkingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
 @RequestMapping("/coworking")
@@ -49,12 +54,29 @@ public class CoworkingController {
      * @param coworkingId 외주작업실 id
      */
     @GetMapping("/task")
-    public List<Message<GetTaskRes>> getTask( @AuthenticationPrincipal UserPrincipal principal,
-                                              @RequestParam Long coworkingId) throws BaseException {
+    public List<Message<GetTaskRes>> getTask(@AuthenticationPrincipal UserPrincipal principal,
+                                             @RequestParam Long coworkingId) throws BaseException {
 //        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
 //        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
         return coworkingService.getTaskList(coworkingId);
+    }
+
+    /**
+     * 외주작업실 파일 목록 조회
+     * @param principal 회원 id, 타입
+     * @param coworkingId 외주작업실 id
+     * @param pageable page, size, sort
+     */
+    @GetMapping("/file")
+    public List<GetFileRes> getFile(@AuthenticationPrincipal UserPrincipal principal,
+                                    @RequestParam Long coworkingId,
+                                    @PageableDefault(
+                                            size=10, page=0,
+                                            sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
+//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        return coworkingService.getFileList(coworkingId, pageable);
     }
 
     // 작업실 접근권한이 있는 회원인지 검사

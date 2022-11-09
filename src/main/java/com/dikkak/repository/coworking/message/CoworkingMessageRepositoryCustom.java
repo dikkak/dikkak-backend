@@ -1,4 +1,4 @@
-package com.dikkak.repository.coworking;
+package com.dikkak.repository.coworking.message;
 
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.entity.coworking.StepType;

@@ -1,22 +1,19 @@
-package com.dikkak.repository.coworking;
+package com.dikkak.repository.coworking.task;
 
 import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.QGetTaskRes;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 
 import static com.dikkak.entity.coworking.QCoworkingStep.coworkingStep;
 import static com.dikkak.entity.coworking.QCoworkingTask.coworkingTask;
 
+@RequiredArgsConstructor
 public class CoworkingTaskRepositoryImpl implements CoworkingTaskRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
-
-    public CoworkingTaskRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
 
     @Override
     public List<GetTaskRes> getCoworkingTask(Long coworkingId) {

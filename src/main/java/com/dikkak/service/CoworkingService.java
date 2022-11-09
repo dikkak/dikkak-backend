@@ -1,22 +1,21 @@
 package com.dikkak.service;
 
 import com.dikkak.common.BaseException;
-import com.dikkak.dto.coworking.GetChattingRes;
-import com.dikkak.dto.coworking.GetTaskRes;
-import com.dikkak.dto.coworking.Message;
-import com.dikkak.dto.coworking.MessageType;
+import com.dikkak.dto.coworking.*;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingStep;
 import com.dikkak.entity.coworking.StepType;
-import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
-import com.dikkak.repository.coworking.CoworkingMessageRepository;
+import com.dikkak.entity.user.User;
 import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.coworking.CoworkingStepRepository;
-import com.dikkak.repository.coworking.CoworkingTaskRepository;
+import com.dikkak.repository.coworking.file.CoworkingFileRepository;
+import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
+import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.dikkak.common.ResponseMessage.*;
-import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
-import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +34,7 @@ public class CoworkingService {
     private final CoworkingStepRepository stepRepository;
     private final CoworkingMessageRepository messageRepository;
     private final CoworkingTaskRepository taskRepository;
+    private final CoworkingFileRepository fileRepository;
 
     // 외주작업실 생성, 디자이너 매칭
     @Transactional
@@ -100,6 +98,15 @@ public class CoworkingService {
                     .collect(Collectors.toList());
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
+
+    // file 목록 조회
+    public List<GetFileRes> getFileList(Long coworkingId, Pageable pageable) throws BaseException {
+        try {
+            return fileRepository.getFileList(coworkingId, pageable);
+        } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
     }

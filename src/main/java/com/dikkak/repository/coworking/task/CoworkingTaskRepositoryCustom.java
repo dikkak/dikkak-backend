@@ -1,4 +1,4 @@
-package com.dikkak.repository.coworking;
+package com.dikkak.repository.coworking.task;
 
 import com.dikkak.dto.coworking.GetTaskRes;
 
