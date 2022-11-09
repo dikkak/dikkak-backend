@@ -9,15 +9,13 @@ import com.dikkak.dto.coworking.Message;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.UserTypeEnum;
+import com.dikkak.s3.S3Downloader;
 import com.dikkak.service.CoworkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +27,7 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 public class CoworkingController {
 
     private final CoworkingService coworkingService;
+    private final S3Downloader s3Downloader;
 
     /**
      * 외주작업실의 해당 step의 채팅 목록 조회
@@ -69,7 +68,7 @@ public class CoworkingController {
      * @param pageable page, size, sort
      */
     @GetMapping("/file")
-    public List<GetFileRes> getFile(@AuthenticationPrincipal UserPrincipal principal,
+    public List<GetFileRes> getFileList(@AuthenticationPrincipal UserPrincipal principal,
                                     @RequestParam Long coworkingId,
                                     @PageableDefault(
                                             size=10, page=0,
@@ -77,6 +76,15 @@ public class CoworkingController {
 //        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
 //        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
         return coworkingService.getFileList(coworkingId, pageable);
+    }
+
+    /**
+     * 외주작업실 파일 다운로드
+     * @param fileName 파일 이름
+     */
+    @GetMapping("/file/{fileName}")
+    public byte[] getFile(@PathVariable String fileName) throws BaseException {
+        return s3Downloader.downloadFile("coworking/" + fileName);
     }
 
     // 작업실 접근권한이 있는 회원인지 검사

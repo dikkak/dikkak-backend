@@ -23,7 +23,7 @@ public class CoworkingFileRepositoryImpl implements CoworkingFileRepositoryCusto
     public List<GetFileRes> getFileList(Long coworkingId, Pageable pageable) {
 
         JPAQuery<GetFileRes> query = queryFactory
-                .select(new QGetFileRes(coworkingFile.id, coworkingFile.fileName, coworkingFile.fileName, coworkingFile.isImageFile, coworkingStep.type))
+                .select(new QGetFileRes(coworkingFile.id, coworkingFile.fileName, coworkingFile.fileUrl, coworkingFile.isImageFile, coworkingStep.type))
                 .from(coworkingFile)
                 .join(coworkingFile.coworkingStep, coworkingStep)
                 .on(coworkingStep.coworking.id.eq(coworkingId))
