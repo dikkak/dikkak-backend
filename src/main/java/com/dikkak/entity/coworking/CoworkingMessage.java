@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class CoworkingMessage extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coworking_message_id")
     private Long id;
 
