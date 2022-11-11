@@ -1,18 +1,20 @@
 package com.dikkak.service;
 
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.entity.user.User;
-import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
 import static com.dikkak.common.ResponseMessage.WRONG_USER_ID;
+import static com.dikkak.entity.user.UserTypeEnum.ADMIN;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,6 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-//    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public User create(User user) throws BaseException {
         try {
@@ -78,6 +79,11 @@ public class UserService {
 
         if(user.isEmpty()) throw new BaseException(WRONG_USER_ID);
         return user.get();
+    }
+
+    // 관리자 이메일 목록 조회
+    public List<String> getAdminEmail() {
+        return userRepository.findByUserType(ADMIN);
     }
 
     /**

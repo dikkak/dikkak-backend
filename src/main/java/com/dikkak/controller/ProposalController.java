@@ -1,21 +1,22 @@
 package com.dikkak.controller;
 
-import com.dikkak.config.UserPrincipal;
 import com.dikkak.common.BaseException;
+import com.dikkak.config.UserPrincipal;
+import com.dikkak.dto.MailDto;
 import com.dikkak.dto.proposal.DeleteProposalReq;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.dto.proposal.PostProposalRes;
+import com.dikkak.entity.proposal.Otherfile;
+import com.dikkak.entity.proposal.Proposal;
+import com.dikkak.entity.proposal.Reference;
 import com.dikkak.entity.user.User;
-import com.dikkak.entity.proposal.*;
 import com.dikkak.s3.S3Downloader;
 import com.dikkak.s3.S3Uploader;
-import com.dikkak.service.OtherFileService;
-import com.dikkak.service.ProposalService;
-import com.dikkak.service.ReferenceService;
-import com.dikkak.service.UserService;
+import com.dikkak.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,6 +40,10 @@ public class ProposalController {
     private final OtherFileService otherFileService;
     private final S3Uploader s3Uploader;
     private final S3Downloader s3Downloader;
+    private final MailService mailService;
+
+    @Value("${dikkak.proposal.url}")
+    private String proposalUrl;
 
     /**
      * 제안서 생성 api
@@ -108,11 +113,30 @@ public class ProposalController {
                 }
             }
 
+            // 관리자에게 메일 전송
+            sendMailToAdmin(savedProposal);
+
             return new PostProposalRes(savedProposal.getId());
 
         } catch (IOException e) {
             throw new BaseException(FILE_UPLOAD_FAILED);
         }
+    }
+
+    // 관리자에게 메일 전송
+    private void sendMailToAdmin(Proposal proposal) {
+        mailService.sendMail(
+                MailDto.builder()
+                        .emailList(userService.getAdminEmail())
+                        .title("[제안서 생성] "+ proposal.getTitle())
+                        .content(
+                                "클라이언트 이름 : " + proposal.getClient().getName() + "\n" +
+                                "클라이언트 이메일 : " + proposal.getClient().getEmail() + "\n" +
+                                "클라이언트 연락처 : " + proposal.getClient().getPhoneNumber() + "\n" +
+                                "제안서가 생성되었습니다.\n" +
+                                proposalUrl+ proposal.getId())
+                        .build()
+        );
     }
 
     /**
