@@ -2,10 +2,7 @@ package com.dikkak.controller;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.coworking.GetChattingRes;
-import com.dikkak.dto.coworking.GetFileRes;
-import com.dikkak.dto.coworking.GetTaskRes;
-import com.dikkak.dto.coworking.Message;
+import com.dikkak.dto.coworking.*;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.user.UserTypeEnum;
@@ -69,10 +66,10 @@ public class CoworkingController {
      */
     @GetMapping("/file")
     public List<GetFileRes> getFileList(@AuthenticationPrincipal UserPrincipal principal,
-                                    @RequestParam Long coworkingId,
-                                    @PageableDefault(
-                                            size=10, page=0,
-                                            sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
+                                        @RequestParam Long coworkingId,
+                                        @PageableDefault(
+                                                size=10, page=0,
+                                                sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
 //        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
 //        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
         return coworkingService.getFileList(coworkingId, pageable);
@@ -86,6 +83,23 @@ public class CoworkingController {
     public byte[] getFile(@PathVariable String fileName) throws BaseException {
         return s3Downloader.downloadFile("coworking/" + fileName);
     }
+
+
+    /**
+     * 외주작업실 schedule 조회
+     * @param principal 회원 id, 타입
+     * @param coworkingId 외주작업실 id
+     * @param step 외주 작업 step
+     */
+    @GetMapping("/schedule")
+    public GetScheduleRes getSchedule(@AuthenticationPrincipal UserPrincipal principal,
+                                      @RequestParam Long coworkingId,
+                                      @RequestParam StepType step) throws BaseException {
+//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        return coworkingService.getSchedule(coworkingId, step);
+    }
+
 
     // 작업실 접근권한이 있는 회원인지 검사
     private boolean checkUser(UserPrincipal principal, Long coworkingId) throws BaseException {

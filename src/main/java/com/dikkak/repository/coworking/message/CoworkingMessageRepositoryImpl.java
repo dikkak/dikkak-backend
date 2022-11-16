@@ -18,6 +18,7 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
 
     private final JPAQueryFactory queryFactory;
 
+
     // 외주 작업실 step의 채팅 조회
     @Override
     public List<GetChattingRes> getCoworkingStepMessage(Long coworkingId, StepType step) {

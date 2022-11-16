@@ -8,6 +8,7 @@ import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.coworking.CoworkingRepository;
+import com.dikkak.repository.coworking.schedule.CoworkingScheduleRepository;
 import com.dikkak.repository.coworking.CoworkingStepRepository;
 import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
@@ -35,6 +36,7 @@ public class CoworkingService {
     private final CoworkingMessageRepository messageRepository;
     private final CoworkingTaskRepository taskRepository;
     private final CoworkingFileRepository fileRepository;
+    private final CoworkingScheduleRepository scheduleRepository;
 
     // 외주작업실 생성, 디자이너 매칭
     @Transactional
@@ -111,5 +113,12 @@ public class CoworkingService {
         }
     }
 
-
+    // 일정 조회
+    public GetScheduleRes getSchedule(Long coworkingId, StepType step) throws BaseException {
+        try {
+            return scheduleRepository.getCoworkingScheduleByStep(coworkingId, step).toDto();
+        } catch (Exception e) {
+            throw new BaseException(DATABASE_ERROR);
+        }
+    }
 }
