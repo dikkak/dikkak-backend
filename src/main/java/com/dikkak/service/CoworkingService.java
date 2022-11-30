@@ -116,6 +116,9 @@ public class CoworkingService {
     // 일정 조회
     public GetScheduleRes getSchedule(Long coworkingId, StepType step) throws BaseException {
         try {
+            if (step.getScheduleStep() != null) {
+                return scheduleRepository.getCoworkingScheduleByStep(coworkingId, step.getScheduleStep()).toDto();
+            }
             return scheduleRepository.getCoworkingScheduleByStep(coworkingId, step).toDto();
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);

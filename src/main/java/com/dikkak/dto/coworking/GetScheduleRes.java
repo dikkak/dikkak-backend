@@ -3,12 +3,14 @@ package com.dikkak.dto.coworking;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 public class GetScheduleRes {
 
     private List<List<Schedule>> schedules;
+    private LocalDateTime deadline;
 
     @Data
     public static class Schedule {
@@ -22,9 +24,8 @@ public class GetScheduleRes {
     }
 
     @Builder
-    public GetScheduleRes(List<List<Schedule>> schedules) {
+    public GetScheduleRes(List<List<Schedule>> schedules, LocalDateTime deadline) {
         this.schedules = schedules;
+        this.deadline = deadline;
     }
-
-
 }

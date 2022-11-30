@@ -38,7 +38,7 @@ public class CoworkingSchedule {
     private LocalDateTime deadline;
 
     public GetScheduleRes toDto() {
-        return GetScheduleRes.builder().schedules(getScheduleList()).build();
+        return GetScheduleRes.builder().schedules(getScheduleList()).deadline(deadline).build();
     }
 
     // 문자열을 2차원 배열로 변환
