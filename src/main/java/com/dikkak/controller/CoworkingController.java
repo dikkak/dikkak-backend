@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
+import static com.dikkak.common.ResponseMessage.UNAUTHORIZED_REQUEST;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -38,8 +40,8 @@ public class CoworkingController {
             @RequestParam Long coworkingId,
             @RequestParam StepType step) throws BaseException {
 
-//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
         return coworkingService.getMessageList(coworkingId, step);
     }
@@ -52,8 +54,8 @@ public class CoworkingController {
     @GetMapping("/task")
     public List<Message<GetTaskRes>> getTask(@AuthenticationPrincipal UserPrincipal principal,
                                              @RequestParam Long coworkingId) throws BaseException {
-//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
         return coworkingService.getTaskList(coworkingId);
     }
@@ -70,8 +72,8 @@ public class CoworkingController {
                                         @PageableDefault(
                                                 size=10, page=0,
                                                 sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
-//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
         return coworkingService.getFileList(coworkingId, pageable);
     }
 
@@ -95,8 +97,8 @@ public class CoworkingController {
     public GetScheduleRes getSchedule(@AuthenticationPrincipal UserPrincipal principal,
                                       @RequestParam Long coworkingId,
                                       @RequestParam StepType step) throws BaseException {
-//        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-//        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+        if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
         return coworkingService.getSchedule(coworkingId, step);
     }
 
