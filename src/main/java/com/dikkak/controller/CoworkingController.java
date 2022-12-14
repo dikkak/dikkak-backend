@@ -32,18 +32,16 @@ public class CoworkingController {
      * 외주작업실의 해당 step의 채팅 목록 조회
      * @param principal 회원 id, 타입
      * @param coworkingId 외주작업실 id
-     * @param step 외주 작업 step
      */
     @GetMapping("/chat")
     public List<Message<GetChattingRes>> getChatList(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam Long coworkingId,
-            @RequestParam StepType step) throws BaseException {
+            @RequestParam Long coworkingId) throws BaseException {
 
         if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
         if(!checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
 
-        return coworkingService.getMessageList(coworkingId, step);
+        return coworkingService.getMessageList(coworkingId);
     }
 
     /**

@@ -8,6 +8,7 @@ import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
+import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
 import com.dikkak.repository.coworking.CoworkingStepRepository;
@@ -26,6 +27,9 @@ class CoworkingServiceTest {
 
     @Autowired
     CoworkingService coworkingService;
+
+    @Autowired
+    CoworkingRepository coworkingRepository;
 
     @Autowired
     CoworkingMessageRepository messageRepository;
@@ -71,20 +75,20 @@ class CoworkingServiceTest {
                 .email("user2@naver.com")
                 .providerType(ProviderTypeEnum.KAKAO)
                 .build());
-        CoworkingStep coworkingStep = stepRepository.findById(1L).get();
+        Coworking coworking  = coworkingRepository.findById(1L).get();
 
-        CoworkingMessage message1 = messageRepository.save(new CoworkingMessage(1L, user1, null, "텍스트 메시지1", coworkingStep));
+        CoworkingMessage message1 = messageRepository.save(new CoworkingMessage(1L, user1, null, "텍스트 메시지1", coworking));
         Thread.sleep(1000);
 
-        CoworkingMessage message2 = messageRepository.save(new CoworkingMessage(2L, user2, null, "텍스트 메시지2", coworkingStep));
+        CoworkingMessage message2 = messageRepository.save(new CoworkingMessage(2L, user2, null, "텍스트 메시지2", coworking));
 
 
         Thread.sleep(1000);
-        CoworkingFile file = fileRepository.save(CoworkingFile.builder().fileUrl("url1").fileName("파일 이름").coworkingStep(coworkingStep).build());
-        CoworkingMessage message3 = messageRepository.save(new CoworkingMessage(3L, user1, file, null, coworkingStep));
+        CoworkingFile file = fileRepository.save(CoworkingFile.builder().fileUrl("url1").fileName("파일 이름").coworking(coworking).build());
+        CoworkingMessage message3 = messageRepository.save(new CoworkingMessage(3L, user1, file, null, coworking));
 
         //when
-        List<Message<GetChattingRes>> messageList = coworkingService.getMessageList(1L, StepType.CHECK_PROPOSAL);
+        List<Message<GetChattingRes>> messageList = coworkingService.getMessageList(1L);
 
         //then
         for (int i=messageList.size()-3; i<messageList.size(); i++)

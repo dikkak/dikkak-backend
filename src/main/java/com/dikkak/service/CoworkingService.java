@@ -61,9 +61,9 @@ public class CoworkingService {
     }
 
     // 채팅 목록 조회
-    public List<Message<GetChattingRes>> getMessageList(Long coworkingId, StepType step) throws BaseException {
+    public List<Message<GetChattingRes>> getMessageList(Long coworkingId) throws BaseException {
         try {
-            return messageRepository.getCoworkingStepMessage(coworkingId, step)
+            return messageRepository.getCoworkingStepMessage(coworkingId)
                     .stream().map(res ->
                             Message.<GetChattingRes>builder()
                                 .type((res.getFileName() == null) ? MessageType.TEXT : MessageType.FILE)
