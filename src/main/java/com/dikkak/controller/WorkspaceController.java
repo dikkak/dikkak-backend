@@ -25,7 +25,7 @@ public class WorkspaceController {
 
     /**
      * 클라이언트 작업실 조회 API
-     * @return proposalId, proposalTitle, coworkingId, coworkingDesigner, coworkingStep
+     * @return proposalId, proposalTitle, coworkingId, coworkingDesigner
      */
     @GetMapping("/client/list")
     public Map<String, List<ClientWorkspaceRes>> getClientWorkspace(@AuthenticationPrincipal UserPrincipal principal)
@@ -40,7 +40,7 @@ public class WorkspaceController {
 
     /**
      * 디자이너 작업실 조회 API
-     * @return proposalId, proposalTitle, clientName, coworkingId, coworkingStep
+     * @return proposalId, proposalTitle, clientName, coworkingId
      */
     @GetMapping("/designer/list")
     public DesignerWorkspaceRes getDesignerWorkspace(@AuthenticationPrincipal UserPrincipal principal)

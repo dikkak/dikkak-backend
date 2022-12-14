@@ -29,7 +29,7 @@ public class CoworkingController {
     private final S3Downloader s3Downloader;
 
     /**
-     * 외주작업실의 해당 step의 채팅 목록 조회
+     * 외주작업실의 채팅 목록 조회
      * @param principal 회원 id, 타입
      * @param coworkingId 외주작업실 id
      */
