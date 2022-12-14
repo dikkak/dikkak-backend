@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class DesignerWorkplaceRes {
+public class DesignerWorkspaceRes {
     private List<WorkInfo> complete = new ArrayList<>();
     private List<WorkInfo> progress = new ArrayList<>();
 

@@ -2,8 +2,8 @@ package com.dikkak.controller;
 
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.common.BaseException;
-import com.dikkak.dto.workplace.ClientWorkplaceRes;
-import com.dikkak.dto.workplace.DesignerWorkplaceRes;
+import com.dikkak.dto.workplace.ClientWorkspaceRes;
+import com.dikkak.dto.workplace.DesignerWorkspaceRes;
 import com.dikkak.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,10 +16,10 @@ import java.util.Map;
 
 import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 
-@RequestMapping("/workplace")
+@RequestMapping("/workspace")
 @RestController
 @RequiredArgsConstructor
-public class WorkplaceController {
+public class WorkspaceController {
 
     private final ProposalService proposalService;
 
@@ -28,13 +28,13 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, coworkingId, coworkingDesigner, coworkingStep
      */
     @GetMapping("/client/list")
-    public Map<String, List<ClientWorkplaceRes>> getClientWorkplace(@AuthenticationPrincipal UserPrincipal principal)
+    public Map<String, List<ClientWorkspaceRes>> getClientWorkspace(@AuthenticationPrincipal UserPrincipal principal)
             throws BaseException {
 
         if(principal == null)
             throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        List<ClientWorkplaceRes> workplace = proposalService.getClientWorkplace(principal.getUserId());
+        List<ClientWorkspaceRes> workplace = proposalService.getClientWorkspace(principal.getUserId());
         return Map.of("clientWorkplace", workplace);
     }
 
@@ -43,12 +43,12 @@ public class WorkplaceController {
      * @return proposalId, proposalTitle, clientName, coworkingId, coworkingStep
      */
     @GetMapping("/designer/list")
-    public DesignerWorkplaceRes getDesignerWorkplace(@AuthenticationPrincipal UserPrincipal principal)
+    public DesignerWorkspaceRes getDesignerWorkspace(@AuthenticationPrincipal UserPrincipal principal)
             throws BaseException {
 
         if(principal == null)
             throw new BaseException(INVALID_ACCESS_TOKEN);
 
-        return proposalService.getDesignerWorkplace(principal.getUserId());
+        return proposalService.getDesignerWorkspace(principal.getUserId());
     }
 }

@@ -5,7 +5,7 @@ import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
 @Data
-public class ClientWorkplaceRes {
+public class ClientWorkspaceRes {
     private Long proposalId;
     private String proposalTitle;
 
@@ -14,7 +14,7 @@ public class ClientWorkplaceRes {
     private StepType coworkingStep;
 
     @QueryProjection
-    public ClientWorkplaceRes(Long proposalId, String proposalTitle, Long coworkingId, String designerName, StepType coworkingStep) {
+    public ClientWorkspaceRes(Long proposalId, String proposalTitle, Long coworkingId, String designerName, StepType coworkingStep) {
         this.proposalId = proposalId;
         this.proposalTitle = proposalTitle;
         this.coworkingId = coworkingId;
