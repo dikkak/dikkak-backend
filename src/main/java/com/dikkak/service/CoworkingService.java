@@ -31,7 +31,6 @@ public class CoworkingService {
 
     private final ProposalRepository proposalRepository;
     private final CoworkingRepository coworkingRepository;
-    private final CoworkingStepRepository stepRepository;
     private final CoworkingMessageRepository messageRepository;
     private final CoworkingTaskRepository taskRepository;
     private final CoworkingFileRepository fileRepository;

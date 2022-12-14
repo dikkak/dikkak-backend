@@ -25,4 +25,13 @@ public class CoworkingTask extends BaseEntity {
 
     @ColumnDefault("false")
     private boolean complete = false;
+
+    public static CoworkingTask of(Coworking coworking, String content) {
+        return new CoworkingTask(coworking, content);
+    }
+
+    public CoworkingTask(Coworking coworking, String content) {
+        this.coworking = coworking;
+        this.content = content;
+    }
 }
