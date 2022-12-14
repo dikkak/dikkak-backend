@@ -1,8 +1,8 @@
 package com.dikkak.entity.coworking;
 
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
+import com.dikkak.entity.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -26,10 +26,8 @@ public class Coworking extends BaseEntity {
     @JoinColumn(name = "designer_id")
     private User designer;
 
-    // 현재 진행 단계
-    @ColumnDefault("CHECK_PROPOSAL")
-    @Enumerated(EnumType.STRING)
-    private StepType progress = StepType.CHECK_PROPOSAL;
+    @ColumnDefault("false")
+    private boolean complete;
 
     public Coworking(Proposal proposal, User designer) {
         this.proposal = proposal;

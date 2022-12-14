@@ -55,7 +55,7 @@ class CoworkingServiceTest {
 
         //then
         assertThat(savedCoworking.getDesigner().getId()).isEqualTo(designer.getId());
-        assertThat(savedCoworking.getProgress()).isEqualTo(StepType.CHECK_PROPOSAL);
+        assertThat(savedCoworking.isComplete()).isFalse();
     }
 
     @Test

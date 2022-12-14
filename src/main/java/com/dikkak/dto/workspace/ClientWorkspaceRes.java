@@ -1,6 +1,5 @@
-package com.dikkak.dto.workplace;
+package com.dikkak.dto.workspace;
 
-import com.dikkak.entity.coworking.StepType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 
@@ -11,14 +10,14 @@ public class ClientWorkspaceRes {
 
     private Long coworkingId;
     private String designerName;
-    private StepType coworkingStep;
+    private boolean complete;
 
     @QueryProjection
-    public ClientWorkspaceRes(Long proposalId, String proposalTitle, Long coworkingId, String designerName, StepType coworkingStep) {
+    public ClientWorkspaceRes(Long proposalId, String proposalTitle, Long coworkingId, String designerName, boolean complete) {
         this.proposalId = proposalId;
         this.proposalTitle = proposalTitle;
         this.coworkingId = coworkingId;
         this.designerName = designerName;
-        this.coworkingStep = coworkingStep;
+        this.complete = complete;
     }
 }

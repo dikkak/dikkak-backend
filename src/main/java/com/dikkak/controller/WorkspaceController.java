@@ -2,8 +2,8 @@ package com.dikkak.controller;
 
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.common.BaseException;
-import com.dikkak.dto.workplace.ClientWorkspaceRes;
-import com.dikkak.dto.workplace.DesignerWorkspaceRes;
+import com.dikkak.dto.workspace.ClientWorkspaceRes;
+import com.dikkak.dto.workspace.DesignerWorkspaceRes;
 import com.dikkak.service.ProposalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
