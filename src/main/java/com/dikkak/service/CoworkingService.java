@@ -3,14 +3,11 @@ package com.dikkak.service;
 import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.*;
 import com.dikkak.entity.coworking.Coworking;
-import com.dikkak.entity.coworking.StepType;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.coworking.CoworkingRepository;
-import com.dikkak.repository.coworking.CoworkingStepRepository;
 import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
-import com.dikkak.repository.coworking.schedule.CoworkingScheduleRepository;
 import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +31,6 @@ public class CoworkingService {
     private final CoworkingMessageRepository messageRepository;
     private final CoworkingTaskRepository taskRepository;
     private final CoworkingFileRepository fileRepository;
-    private final CoworkingScheduleRepository scheduleRepository;
 
     // 외주작업실 생성, 디자이너 매칭
     @Transactional
@@ -97,18 +93,6 @@ public class CoworkingService {
     public List<GetFileRes> getFileList(Long coworkingId, Pageable pageable) throws BaseException {
         try {
             return fileRepository.getFileList(coworkingId, pageable);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-    }
-
-    // 일정 조회
-    public GetScheduleRes getSchedule(Long coworkingId, StepType step) throws BaseException {
-        try {
-            if (step.getScheduleStep() != null) {
-                return scheduleRepository.getCoworkingScheduleByStep(coworkingId, step.getScheduleStep()).toDto();
-            }
-            return scheduleRepository.getCoworkingScheduleByStep(coworkingId, step).toDto();
         } catch (Exception e) {
             throw new BaseException(DATABASE_ERROR);
         }
