@@ -11,7 +11,6 @@ import org.springframework.data.domain.Sort;
 import java.util.List;
 
 import static com.dikkak.entity.coworking.QCoworkingFile.coworkingFile;
-import static com.dikkak.entity.coworking.QCoworkingStep.coworkingStep;
 
 @RequiredArgsConstructor
 public class CoworkingFileRepositoryImpl implements CoworkingFileRepositoryCustom {
