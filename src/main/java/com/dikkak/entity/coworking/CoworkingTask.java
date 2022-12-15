@@ -18,11 +18,20 @@ public class CoworkingTask extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coworking_step_id")
-    private CoworkingStep coworkingStep;
+    @JoinColumn(name = "coworking_id")
+    private Coworking coworking;
 
     private String content;
 
     @ColumnDefault("false")
     private boolean complete = false;
+
+    public static CoworkingTask of(Coworking coworking, String content) {
+        return new CoworkingTask(coworking, content);
+    }
+
+    public CoworkingTask(Coworking coworking, String content) {
+        this.coworking = coworking;
+        this.content = content;
+    }
 }

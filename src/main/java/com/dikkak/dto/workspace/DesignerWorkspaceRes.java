@@ -1,6 +1,5 @@
-package com.dikkak.dto.workplace;
+package com.dikkak.dto.workspace;
 
-import com.dikkak.entity.coworking.StepType;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Data;
 import lombok.Getter;
@@ -9,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class DesignerWorkplaceRes {
+public class DesignerWorkspaceRes {
     private List<WorkInfo> complete = new ArrayList<>();
     private List<WorkInfo> progress = new ArrayList<>();
 
@@ -19,15 +18,15 @@ public class DesignerWorkplaceRes {
         private String proposalTitle;
         private String clientName;
         private Long coworkingId;
-        private StepType coworkingStep;
+        private boolean complete;
 
         @QueryProjection
-        public WorkInfo(Long proposalId, String proposalTitle, String clientName, Long coworkingId, StepType coworkingStep) {
+        public WorkInfo(Long proposalId, String proposalTitle, String clientName, Long coworkingId, boolean complete) {
             this.proposalId = proposalId;
             this.proposalTitle = proposalTitle;
             this.clientName = clientName;
             this.coworkingId = coworkingId;
-            this.coworkingStep = coworkingStep;
+            this.complete = complete;
         }
     }
 }

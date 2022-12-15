@@ -1,17 +1,18 @@
 package com.dikkak.service;
 
+import com.dikkak.common.BaseException;
 import com.dikkak.dto.admin.GetProposalListRes;
 import com.dikkak.dto.admin.GetUserProposalsRes;
-import com.dikkak.common.BaseException;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
-import com.dikkak.dto.workplace.ClientWorkplaceRes;
-import com.dikkak.dto.workplace.DesignerWorkplaceRes;
-import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
+import com.dikkak.dto.workspace.ClientWorkspaceRes;
+import com.dikkak.dto.workspace.DesignerWorkspaceRes;
+import com.dikkak.dto.workspace.DesignerWorkspaceRes.WorkInfo;
 import com.dikkak.entity.StatusType;
-import com.dikkak.entity.coworking.StepType;
+import com.dikkak.entity.proposal.Keyword;
+import com.dikkak.entity.proposal.Proposal;
+import com.dikkak.entity.proposal.ProposalKeyword;
 import com.dikkak.entity.user.User;
-import com.dikkak.entity.proposal.*;
 import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.proposal.KeywordRepository;
 import com.dikkak.repository.proposal.ProposalKeywordRepository;
@@ -43,9 +44,9 @@ public class ProposalService {
 
 
     // 클라이언트 작업실 목록 조회
-    public List<ClientWorkplaceRes> getClientWorkplace(Long userId) throws BaseException {
+    public List<ClientWorkspaceRes> getClientWorkspace(Long userId) throws BaseException {
         try {
-            return proposalRepository.getClientWorkplace(userId);
+            return proposalRepository.getClientWorkspace(userId);
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new BaseException(DATABASE_ERROR);
@@ -53,13 +54,15 @@ public class ProposalService {
     }
 
     // 디자이너 작업실 목록 조회
-    public DesignerWorkplaceRes getDesignerWorkplace(Long designerId) throws BaseException{
+    public DesignerWorkspaceRes getDesignerWorkspace(Long designerId) throws BaseException{
         try {
-            DesignerWorkplaceRes res = new DesignerWorkplaceRes();
-            for (WorkInfo workInfo : proposalRepository.getDesignerWorkplace(designerId)) {
-                if(workInfo.getCoworkingStep() == StepType.TERMINATION) // 완료된 작업
+            DesignerWorkspaceRes res = new DesignerWorkspaceRes();
+            for (WorkInfo workInfo : proposalRepository.getDesignerWorkspace(designerId)) {
+                if (workInfo.isComplete()){ // 완료된 작업
                     res.getComplete().add(workInfo);
-                else res.getProgress().add(workInfo);
+                } else {
+                    res.getProgress().add(workInfo);
+                }
             }
             return res;
         } catch (Exception e) {

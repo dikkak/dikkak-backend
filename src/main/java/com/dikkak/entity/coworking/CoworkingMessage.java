@@ -30,6 +30,6 @@ public class CoworkingMessage extends BaseEntity {
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coworking_step_id")
-    private CoworkingStep coworkingStep;
+    @JoinColumn(name = "coworking_id")
+    private Coworking coworking;
 }
