@@ -7,7 +7,7 @@ import com.dikkak.dto.admin.MatchingReq;
 import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
-import com.dikkak.service.CoworkingService;
+import com.dikkak.service.coworking.CoworkingService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.dikkak.service;
+package com.dikkak.service.coworking;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.*;

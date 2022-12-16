@@ -3,6 +3,7 @@ package com.dikkak.entity.coworking;
 import com.dikkak.entity.BaseEntity;
 import com.dikkak.entity.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,4 +33,12 @@ public class CoworkingMessage extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coworking_id")
     private Coworking coworking;
+
+    @Builder
+    public CoworkingMessage(User user, CoworkingFile coworkingFile, String content, Coworking coworking) {
+        this.user = user;
+        this.coworkingFile = coworkingFile;
+        this.content = content;
+        this.coworking = coworking;
+    }
 }

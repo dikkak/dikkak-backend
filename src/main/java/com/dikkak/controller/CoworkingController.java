@@ -9,7 +9,7 @@ import com.dikkak.dto.coworking.Message;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.s3.S3Downloader;
-import com.dikkak.service.CoworkingService;
+import com.dikkak.service.coworking.CoworkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
