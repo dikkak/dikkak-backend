@@ -56,13 +56,13 @@ public class CoworkingService {
     }
 
     // 채팅 목록 조회
-    public List<Message<GetChattingRes>> getMessageList(Long coworkingId) throws BaseException {
+    public List<Message<GetChattingRes>> getMessageList(Coworking coworking) throws BaseException {
         try {
-            return messageRepository.getCoworkingStepMessage(coworkingId)
+            return messageRepository.getCoworkingMessage(coworking)
                     .stream().map(res ->
                             Message.<GetChattingRes>builder()
                                 .type((res.getFileName() == null) ? MessageType.TEXT : MessageType.FILE)
-                                .coworkingId(coworkingId)
+                                .coworkingId(coworking.getId())
                                 .data(res)
                                 .build())
                     .collect(Collectors.toList());
