@@ -2,6 +2,7 @@ package com.dikkak.repository.coworking.message;
 
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.QGetChattingRes;
+import com.dikkak.entity.coworking.Coworking;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +18,9 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
     private final JPAQueryFactory queryFactory;
 
 
-    // 외주 작업실 step의 채팅 조회
+    // 외주 작업실 채팅 조회
     @Override
-    public List<GetChattingRes> getCoworkingStepMessage(Long coworkingId) {
+    public List<GetChattingRes> getCoworkingMessage(Coworking coworking) {
         return queryFactory
                 .select(new QGetChattingRes(
                         user.email, coworkingMessage.content,
@@ -34,7 +35,7 @@ public class CoworkingMessageRepositoryImpl implements CoworkingMessageRepositor
                         coworkingMessage.coworkingFile.id.eq(coworkingFile.id)
                 )
                 .orderBy(coworkingMessage.createdAt.asc())
-                .where(coworkingMessage.coworking.id.eq(coworkingId))
+                .where(coworkingMessage.coworking.eq(coworking))
                 .fetch();
     }
 }

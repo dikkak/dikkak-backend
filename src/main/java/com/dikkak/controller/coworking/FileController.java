@@ -3,6 +3,7 @@ package com.dikkak.controller.coworking;
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.coworking.GetFileRes;
+import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.s3.S3Downloader;
 import com.dikkak.service.coworking.CoworkingService;
 import lombok.RequiredArgsConstructor;
@@ -39,8 +40,13 @@ public class FileController {
                                                 size=10, page=0,
                                                 sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
         if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-        if(!coworkingSupport.checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
-        return coworkingService.getFileList(coworkingId, pageable);
+
+        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
+        if(coworking == null) {
+            throw new BaseException(UNAUTHORIZED_REQUEST);
+        }
+
+        return coworkingService.getFileList(coworking.getId(), pageable);
     }
 
     /**

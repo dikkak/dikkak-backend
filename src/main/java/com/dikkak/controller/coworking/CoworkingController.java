@@ -5,6 +5,7 @@ import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.Message;
+import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.service.coworking.CoworkingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,10 +37,16 @@ public class CoworkingController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestParam Long coworkingId) throws BaseException {
 
-        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-        if(!coworkingSupport.checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+        if(principal == null) {
+            throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
-        return coworkingService.getMessageList(coworkingId);
+        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
+        if(coworking == null) {
+            throw new BaseException(UNAUTHORIZED_REQUEST);
+        }
+
+        return coworkingService.getMessageList(coworking);
     }
 
     /**
@@ -51,7 +58,11 @@ public class CoworkingController {
     public List<Message<GetTaskRes>> getTask(@AuthenticationPrincipal UserPrincipal principal,
                                              @RequestParam Long coworkingId) throws BaseException {
         if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-        if(!coworkingSupport.checkUser(principal, coworkingId)) throw new BaseException(UNAUTHORIZED_REQUEST);
+
+        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
+        if(coworking == null) {
+            throw new BaseException(UNAUTHORIZED_REQUEST);
+        }
 
         return coworkingService.getTaskList(coworkingId);
     }

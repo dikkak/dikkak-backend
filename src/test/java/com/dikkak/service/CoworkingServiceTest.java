@@ -16,6 +16,7 @@ import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
 import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
+import com.dikkak.service.coworking.CoworkingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +93,7 @@ class CoworkingServiceTest {
         CoworkingMessage message3 = messageRepository.save(new CoworkingMessage(3L, user1, file, null, coworking));
 
         //when
-        List<Message<GetChattingRes>> messageList = coworkingService.getMessageList(1L);
+        List<Message<GetChattingRes>> messageList = coworkingService.getMessageList(coworking);
 
         //then
         for (int i = messageList.size() - 3; i < messageList.size(); i++)
