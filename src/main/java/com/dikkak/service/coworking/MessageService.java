@@ -38,7 +38,7 @@ public class MessageService {
      * 텍스트 메시지 저장
      */
     @Transactional
-    public CoworkingMessage saveTextMessage(TextReq req, Coworking coworking) throws BaseException {
+    public CoworkingMessage saveTextMessage(TextReq req, Coworking coworking) {
         User user = getUser(req.getEmail());
 
         // coworking message 저장
@@ -54,7 +54,7 @@ public class MessageService {
      * 파일 메시지 저장
      */
     @Transactional
-    public FileMessage saveFileMessage(FileReq request, Coworking coworking, MultipartFile file) throws BaseException {
+    public FileMessage saveFileMessage(FileReq request, Coworking coworking, MultipartFile file) {
         User user = getUser(request.getEmail());
 
         String fileUrl;
@@ -96,7 +96,7 @@ public class MessageService {
                 .build();
     }
 
-    private User getUser(String email) throws BaseException {
+    private User getUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new BaseException(NON_EXISTENT_EMAIL));
     }

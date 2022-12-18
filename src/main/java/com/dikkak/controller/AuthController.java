@@ -11,7 +11,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -19,7 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
+import static com.dikkak.common.ResponseMessage.INVALID_PROVIDER;
+import static com.dikkak.common.ResponseMessage.INVALID_REFRESH_TOKEN;
 
 @Slf4j
 @RestController
@@ -41,7 +48,7 @@ public class AuthController {
      */
     @GetMapping("/login/{provider}")
     public GetLoginRes login(@PathVariable String provider, @RequestParam String code,
-                                   HttpServletResponse res) throws BaseException {
+                                   HttpServletResponse res) {
         if (providerList.contains(provider)) {
             GetLoginRes loginRes = oauthService.login(provider, code);
 
@@ -65,15 +72,13 @@ public class AuthController {
         }
     }
 
-
-
     /**
      * @param refreshToken cookie에 저장되어 있는 refresh token
      * @return 새로 발행한 access token
      */
     @GetMapping("/refresh")
     public ReissueRes reIssue(
-            @CookieValue(name = "refresh_token", required = false) String refreshToken) throws BaseException {
+            @CookieValue(name = "refresh_token", required = false) String refreshToken) {
 
         // refresh token 없는 경우
         if(refreshToken == null)
@@ -96,7 +101,7 @@ public class AuthController {
      * 소셜 로그아웃 요청
      */
     @GetMapping("/logout")
-    public void logout(@AuthenticationPrincipal UserPrincipal principal, HttpServletResponse res) throws BaseException {
+    public void logout(@AuthenticationPrincipal UserPrincipal principal, HttpServletResponse res) {
 
         if(principal == null)
             throw new BaseException(INVALID_ACCESS_TOKEN);
@@ -115,87 +120,8 @@ public class AuthController {
         oauthService.logout(principal.getUserId());
     }
 
-
-    /**
-     * 사용하지 않음
-     * 회원가입
-     */
-//    @PostMapping("/signup")
-//    @ResponseBody
-//    public ResponseEntity<?> registerUser(@RequestBody PostSignupReq postSignupReq) {
-//
-//        try {
-//            // 필수 사항 미동의
-//            if(!postSignupReq.isTermsConditions() || !postSignupReq.isDataPolicy()) {
-//                return getBadRequestResponse(REQUIRED_ITEM_DISAGREE);
-//            }
-//
-//            // 이메일 형식 검사
-//            if(postSignupReq.getEmail() == null || !isRegexEmail(postSignupReq.getEmail())) {
-//                return getBadRequestResponse(INVALID_FORMAT_EMAIL);
-//            }
-//
-//            // 비밀번호 형식 검사
-//            if(postSignupReq.getPassword() == null) {
-//                return getBadRequestResponse(INVALID_FORMAT_PASSWORD);
-//            }
-//
-//            // 전화번호 형식 검사
-//            if(postSignupReq.getPhoneNumber() == null || !isRegexPhoneNumber(postSignupReq.getPhoneNumber())){
-//                return getBadRequestResponse(INVALID_FORMAT_PHONENUMBER);
-//            }
-//
-//            PostSignupRes postSignupRes = userService.create(new User(postSignupReq));
-//
-//            return getOkResponse(postSignupRes);
-//
-//        } catch(BaseException e) {
-//            return getBadRequestResponse(e.getResponseMessage());
-//        }
-//    }
-
     private boolean isRegexEmail(String email) {
         return EMAIL.matcher(email).find();
     }
-
-
-    /**
-     * 사용하지 않음
-     * 로그인
-     */
-//    @PostMapping("/signin")
-//    @ResponseBody
-//    public ResponseEntity<?> login(@RequestBody PostSigninReq postSigninReq) {
-//
-//        try {
-//            // 이메일 형식 검사
-//            if(postSigninReq.getEmail() == null || !isRegexEmail(postSigninReq.getEmail())) {
-//                return getBadRequestResponse(INVALID_FORMAT_EMAIL);
-//            }
-//
-//            // 비밀번호 형식 검사
-//            if(postSigninReq.getPassword() == null) {
-//                return getBadRequestResponse(INVALID_FORMAT_PASSWORD);
-//            }
-//
-//            User user = userService.authenticate(postSigninReq.getEmail(), postSigninReq.getPassword());
-//
-//            // 토큰 발급
-//            String accessToken = jwtService.createAccessToken(user.getId());
-//            String refreshToken = jwtService.createRefreshToken();
-//
-//            // refreshToken db에 저장
-//            userService.setUserRefreshToken(user, refreshToken);
-//
-//            return getOkResponse(PostSigninRes.builder()
-//                    .accessToken(accessToken)
-//                    .refreshToken(refreshToken)
-//                    .build());
-//
-//        } catch (BaseException e) {
-//            return getBadRequestResponse(e.getResponseMessage());
-//        }
-//    }
-
 
 }

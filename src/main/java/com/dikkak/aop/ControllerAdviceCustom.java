@@ -14,12 +14,20 @@ import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 public class ControllerAdviceCustom {
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<BaseResponse<?>> handleException(BaseException e) {
+    public ResponseEntity<BaseResponse<?>> handleBaseException(BaseException e) {
         ResponseEntity.BodyBuilder res;
-        if(e.getResponseMessage().equals(INVALID_ACCESS_TOKEN))
-             res = ResponseEntity.status(HttpStatus.UNAUTHORIZED);
-        else res = ResponseEntity.badRequest();
+        if(e.getResponseMessage().equals(INVALID_ACCESS_TOKEN)) {
+            res = ResponseEntity.status(HttpStatus.UNAUTHORIZED);
+        } else {
+            res = ResponseEntity.badRequest();
+        }
         return res.body(new BaseResponse<>(e));
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<BaseResponse<?>> handleException(Exception e) {
+        return ResponseEntity.internalServerError()
+                .body(new BaseResponse<>("내부 오류입니다."));
     }
 
     @MessageExceptionHandler(BaseException.class)

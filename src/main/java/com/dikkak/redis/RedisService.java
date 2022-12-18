@@ -21,7 +21,7 @@ public class RedisService {
     // redis에 token 저장
     @Transactional
     public void saveSocialToken(Long userId, ProviderTypeEnum provider, TokenResponse token,
-                                @Nullable String providerUserId) throws BaseException {
+                                @Nullable String providerUserId) {
         try {
             socialTokenRedisRepository.save(SocialToken.builder()
                     .userId(userId)
@@ -38,7 +38,7 @@ public class RedisService {
     }
 
     // redis에서 token 가져오기
-    public SocialToken getToken(Long userId) throws BaseException {
+    public SocialToken getToken(Long userId) {
         try {
             return socialTokenRedisRepository.findById(userId)
                     .orElseThrow(() -> new BaseException(WRONG_USER_ID));
@@ -51,7 +51,7 @@ public class RedisService {
 
     // redis에서 token 삭제
     @Transactional
-    public void deleteToken(SocialToken token) throws BaseException {
+    public void deleteToken(SocialToken token) {
         try {
             socialTokenRedisRepository.delete(token);
         } catch (Exception e) {

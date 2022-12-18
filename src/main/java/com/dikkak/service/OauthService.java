@@ -51,7 +51,7 @@ public class OauthService {
      * 4. Redis에 토큰 저장
      */
     @Transactional
-    public GetLoginRes login(String providerName, String code) throws BaseException {
+    public GetLoginRes login(String providerName, String code) {
 
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
 
@@ -102,7 +102,7 @@ public class OauthService {
     /**
      * 소셜 로그아웃
      */
-    public void logout(Long userId) throws BaseException {
+    public void logout(Long userId) {
 
         SocialToken token = redisService.getToken(userId);
 
@@ -155,7 +155,7 @@ public class OauthService {
      * TOKEN URI에 인가 코드로 토큰을 요청한다.
      * @return TokenResponse
      */
-    private TokenResponse getToken(String code, ClientRegistration provider, String providerName) throws BaseException {
+    private TokenResponse getToken(String code, ClientRegistration provider, String providerName) {
         try {
             if (providerName.equals("facebook")) { // facebook은 get 방식
                 return WebClient
@@ -219,7 +219,7 @@ public class OauthService {
      * Access Token으로 회원 정보를 요청한다.
      * @return 회원 정보
      */
-    private Map<String, Object> getUserProfile(ClientRegistration provider, TokenResponse tokenResponse) throws BaseException {
+    private Map<String, Object> getUserProfile(ClientRegistration provider, TokenResponse tokenResponse) {
         try {
             return WebClient.create()
                     .get()
@@ -234,7 +234,7 @@ public class OauthService {
     }
 
 
-    private String getEmail(String providerName, Map<String, Object> userProfile) throws BaseException {
+    private String getEmail(String providerName, Map<String, Object> userProfile) {
         if(providerName.equals("google")) {
             return (String) userProfile.get("email");
         } else if(providerName.equals("kakao")) {

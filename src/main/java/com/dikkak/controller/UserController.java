@@ -30,10 +30,10 @@ public class UserController {
      */
     @PostMapping("/register")
     public void register(@AuthenticationPrincipal UserPrincipal principal,
-                                      @RequestBody PostRegisterReq req) throws BaseException {
-
-        if(principal == null)
+                         @RequestBody PostRegisterReq req) {
+        if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         if(req.getUsername() == null || req.getUsername().isEmpty())
             throw new BaseException(EMPTY_USER_NAME);
@@ -58,9 +58,10 @@ public class UserController {
      */
     @PostMapping("/type")
     public void setUserType(@AuthenticationPrincipal UserPrincipal principal,
-                                         @RequestBody UserTypeReq req) throws BaseException {
-        if(principal == null)
+                            @RequestBody UserTypeReq req) {
+        if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         userService.setUserType(principal.getUserId(), req.getType());
     }
@@ -70,10 +71,10 @@ public class UserController {
      * @return email, username, type, provider
      */
     @GetMapping("/info")
-    public UserInfoRes getUsername(@AuthenticationPrincipal UserPrincipal principal) throws BaseException {
-
-        if(principal == null)
+    public UserInfoRes getUsername(@AuthenticationPrincipal UserPrincipal principal) {
+        if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         User user = userService.getUser(principal.getUserId());
         return new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),

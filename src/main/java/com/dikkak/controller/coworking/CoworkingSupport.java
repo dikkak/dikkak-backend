@@ -1,6 +1,5 @@
 package com.dikkak.controller.coworking;
 
-import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.user.UserTypeEnum;
@@ -16,7 +15,7 @@ public class CoworkingSupport {
 
     // 작업실 접근권한이 있는 회원인지 검사 후 Coworking 반환
     @Nullable
-    public Coworking checkUserAndGetCoworking(UserPrincipal principal, Long coworkingId) throws BaseException {
+    public Coworking checkUserAndGetCoworking(UserPrincipal principal, Long coworkingId) {
         UserTypeEnum type = principal.getType();
         if (type.equals(UserTypeEnum.UNDEFINED)) return null;
 
@@ -32,7 +31,6 @@ public class CoworkingSupport {
             if (!principal.getUserId().equals(coworking.getDesigner().getId())) {
                 return null;
             }
-
         }
         return coworking;
     }

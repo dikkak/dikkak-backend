@@ -18,7 +18,7 @@ public class ReferenceService {
     private final ReferenceRepository referenceRepository;
 
     @Transactional
-    public void create(Reference reference) throws BaseException {
+    public void create(Reference reference) {
         try {
             referenceRepository.save(reference);
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class ReferenceService {
         }
     }
 
-    public List<Reference> getRefList(Long proposalId) throws BaseException {
+    public List<Reference> getRefList(Long proposalId) {
         try {
             return referenceRepository.findByProposalId(proposalId);
         } catch (Exception e) {

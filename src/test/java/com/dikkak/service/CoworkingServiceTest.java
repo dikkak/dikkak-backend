@@ -1,6 +1,5 @@
 package com.dikkak.service;
 
-import com.dikkak.common.BaseException;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.GetTaskRes;
 import com.dikkak.dto.coworking.Message;
@@ -51,7 +50,7 @@ class CoworkingServiceTest {
     @Test
     @DisplayName("디자이너 매칭 & 외주작업실 생성")
     @Transactional
-    void create() throws BaseException {
+    void create() {
         //given
         User designer = userRepository.save(User.builder()
                 .email("user1@naver.com")
@@ -70,7 +69,7 @@ class CoworkingServiceTest {
     @Test
     @DisplayName("채팅 목록 조회")
     @Transactional
-    void getMessageList() throws BaseException, InterruptedException {
+    void getMessageList() throws InterruptedException {
         //given
         User user1 = userRepository.save(User.builder()
                 .email("user1@naver.com")
@@ -113,7 +112,7 @@ class CoworkingServiceTest {
     @Test
     @DisplayName("task 목록 조회")
     @Transactional
-    void getTaskList() throws BaseException {
+    void getTaskList() {
         //given
         Coworking coworking = coworkingRepository.findById(1L).get();
         String content = "할 일1";

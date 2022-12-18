@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.dikkak.common.BaseException;
-import com.dikkak.common.ResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,16 +23,14 @@ public class S3Downloader {
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
 
-    public byte[] downloadFile(String filePath) throws BaseException {
+    public byte[] downloadFile(String filePath) {
         try {
             S3Object object = amazonS3Client.getObject(new GetObjectRequest(bucketName, filePath));
             S3ObjectInputStream s3ObjectInputStream = object.getObjectContent();
             return IOUtils.toByteArray(s3ObjectInputStream);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new BaseException(FILE_DOWNLOAD_FAILED);
         }
-
     }
-
 
 }

@@ -36,10 +36,10 @@ public class FileController {
     @GetMapping("/file")
     public List<GetFileRes> getFileList(@AuthenticationPrincipal UserPrincipal principal,
                                         @RequestParam Long coworkingId,
-                                        @PageableDefault(
-                                                size=10, page=0,
-                                                sort="createdAt", direction = DESC) Pageable pageable) throws BaseException {
-        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
+                                        @PageableDefault(size=10, page=0, sort="createdAt", direction = DESC) Pageable pageable) {
+        if(principal == null) {
+            throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
         if(coworking == null) {
@@ -54,7 +54,7 @@ public class FileController {
      * @param fileName 파일 이름
      */
     @GetMapping("/file/{fileName}")
-    public byte[] getFile(@PathVariable String fileName) throws BaseException {
+    public byte[] getFile(@PathVariable String fileName) {
         return s3Downloader.downloadFile("coworking/" + fileName);
     }
 }

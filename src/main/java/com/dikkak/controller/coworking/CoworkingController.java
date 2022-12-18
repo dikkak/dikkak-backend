@@ -35,7 +35,7 @@ public class CoworkingController {
     @GetMapping("/chat")
     public List<Message<GetChattingRes>> getChatList(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam Long coworkingId) throws BaseException {
+            @RequestParam Long coworkingId) {
 
         if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
@@ -56,7 +56,7 @@ public class CoworkingController {
      */
     @GetMapping("/task")
     public List<Message<GetTaskRes>> getTask(@AuthenticationPrincipal UserPrincipal principal,
-                                             @RequestParam Long coworkingId) throws BaseException {
+                                             @RequestParam Long coworkingId) {
         if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
 
         Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
@@ -66,9 +66,4 @@ public class CoworkingController {
 
         return coworkingService.getTaskList(coworkingId);
     }
-
-
-
-
-
 }
