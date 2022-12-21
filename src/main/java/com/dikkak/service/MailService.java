@@ -1,6 +1,6 @@
 package com.dikkak.service;
 
-import com.dikkak.dto.MailDto;
+import com.dikkak.dto.mail.MailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

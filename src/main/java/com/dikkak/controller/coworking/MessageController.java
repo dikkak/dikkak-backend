@@ -2,13 +2,7 @@ package com.dikkak.controller.coworking;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.coworking.GetChattingRes;
-import com.dikkak.dto.message.FileMessage;
-import com.dikkak.dto.message.FileReq;
-import com.dikkak.dto.message.Message;
-import com.dikkak.dto.message.MessageType;
-import com.dikkak.dto.message.TextMessage;
-import com.dikkak.dto.message.TextReq;
+import com.dikkak.dto.message.*;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingMessage;
 import com.dikkak.service.coworking.CoworkingService;
@@ -19,14 +13,10 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 import static com.dikkak.common.ResponseMessage.UNAUTHORIZED_REQUEST;
@@ -42,26 +32,6 @@ public class MessageController {
     private final CoworkingService coworkingService;
     private final MessageService messageService;
     private final CoworkingSupport coworkingSupport;
-
-    /**
-     * 외주작업실 채팅 목록 조회
-     * @param principal 회원 id, 타입
-     * @param coworkingId 외주작업실 id
-     */
-    @GetMapping("/message/list")
-    public List<com.dikkak.dto.coworking.Message<GetChattingRes>> getChatList(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestParam Long coworkingId) {
-
-        if(principal == null) throw new BaseException(INVALID_ACCESS_TOKEN);
-
-        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
-        if(coworking == null) {
-            throw new BaseException(UNAUTHORIZED_REQUEST);
-        }
-
-        return coworkingService.getMessageList(coworking);
-    }
 
     /**
      * 외주작업실 텍스트 메시지 전송

@@ -2,7 +2,7 @@ package com.dikkak.controller;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.MailDto;
+import com.dikkak.dto.mail.MailDto;
 import com.dikkak.dto.proposal.DeleteProposalReq;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
