@@ -18,7 +18,7 @@ public class OtherFileService {
     private final OtherFileRepository otherFileRepository;
 
     @Transactional
-    public void create(Otherfile otherfile) throws BaseException {
+    public void create(Otherfile otherfile) {
         try {
             otherFileRepository.save(otherfile);
         } catch (Exception e) {
@@ -26,7 +26,7 @@ public class OtherFileService {
         }
     }
 
-    public List<Otherfile> getOtherFileList(Long proposalId) throws BaseException {
+    public List<Otherfile> getOtherFileList(Long proposalId) {
         try {
             return otherFileRepository.findByProposalId(proposalId);
         } catch (Exception e) {

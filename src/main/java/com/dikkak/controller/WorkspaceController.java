@@ -28,11 +28,10 @@ public class WorkspaceController {
      * @return proposalId, proposalTitle, coworkingId, coworkingDesigner
      */
     @GetMapping("/client/list")
-    public Map<String, List<ClientWorkspaceRes>> getClientWorkspace(@AuthenticationPrincipal UserPrincipal principal)
-            throws BaseException {
-
-        if(principal == null)
+    public Map<String, List<ClientWorkspaceRes>> getClientWorkspace(@AuthenticationPrincipal UserPrincipal principal) {
+        if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         List<ClientWorkspaceRes> workplace = proposalService.getClientWorkspace(principal.getUserId());
         return Map.of("clientWorkplace", workplace);
@@ -43,11 +42,10 @@ public class WorkspaceController {
      * @return proposalId, proposalTitle, clientName, coworkingId
      */
     @GetMapping("/designer/list")
-    public DesignerWorkspaceRes getDesignerWorkspace(@AuthenticationPrincipal UserPrincipal principal)
-            throws BaseException {
-
-        if(principal == null)
+    public DesignerWorkspaceRes getDesignerWorkspace(@AuthenticationPrincipal UserPrincipal principal) {
+        if(principal == null) {
             throw new BaseException(INVALID_ACCESS_TOKEN);
+        }
 
         return proposalService.getDesignerWorkspace(principal.getUserId());
     }

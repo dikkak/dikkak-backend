@@ -47,7 +47,7 @@ public class JwtService {
     }
 
     // access token 검사 및 userId 추출
-    public Long validateToken(String token) throws BaseException {
+    public Long validateToken(String token) {
         Claims claims;
         try {
             claims = extractClaims(token);
@@ -71,7 +71,7 @@ public class JwtService {
     }
 
     // 만료된 access token에서 userId 추출
-    private Long validateExpiredAccessToken(String token) throws BaseException {
+    private Long validateExpiredAccessToken(String token) {
         Claims claims;
         try {
             claims = extractClaims(token);

@@ -7,7 +7,7 @@ import com.dikkak.dto.admin.MatchingReq;
 import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
-import com.dikkak.service.CoworkingService;
+import com.dikkak.service.coworking.CoworkingService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class AdminController {
      */
     @PostMapping("/user/proposals")
     public List<GetUserProposalsRes> getProposals(@AuthenticationPrincipal UserPrincipal principal,
-                                          @RequestBody Map<String, String> req) throws BaseException {
+                                          @RequestBody Map<String, String> req) {
 
             // admin 계정이 아닌 경우
             if(!isAdminUser(principal))
@@ -69,7 +69,7 @@ public class AdminController {
      */
     @PostMapping("/proposal/designer")
     public void matching(@AuthenticationPrincipal UserPrincipal principal,
-                                      @RequestBody MatchingReq req) throws BaseException {
+                                      @RequestBody MatchingReq req) {
             // admin 계정이 아닌 경우
             if (!isAdminUser(principal))
                 throw new BaseException(ADMIN_REQUIRED);
@@ -100,7 +100,7 @@ public class AdminController {
     @GetMapping("/proposal/list")
     public GetProposalListRes getProposalList(@AuthenticationPrincipal UserPrincipal principal,
                                               @RequestParam(defaultValue = "0") int page,
-                                              @RequestParam(defaultValue = "15") int size) throws BaseException {
+                                              @RequestParam(defaultValue = "15") int size) {
         // admin 계정이 아닌 경우
         if (!isAdminUser(principal))
             throw new BaseException(ADMIN_REQUIRED);

@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
-import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
 import static com.dikkak.common.ResponseMessage.WRONG_USER_ID;
 import static com.dikkak.entity.user.UserTypeEnum.ADMIN;
 
@@ -22,63 +20,35 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-
-    public User create(User user) throws BaseException {
-        try {
-            return userRepository.save(user);
-
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public User create(User user) {
+        return userRepository.save(user);
     }
 
-    public User getUser(Long userId) throws BaseException {
+    public User getUser(Long userId) {
         return findUserById(userId);
     }
 
-    public User getUserByEmail(String email) throws BaseException {
-        try{
-            return userRepository.findByEmail(email).orElse(null);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
     }
 
     @Transactional
-    public void registerUser(Long userId, PostRegisterReq req) throws BaseException {
-        User user = findUserById(userId);
-        try{
-            user.register(req);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public void registerUser(Long userId, PostRegisterReq req) {
+        findUserById(userId).register(req);
     }
 
     @Transactional
-    public void setUserType(Long userId, UserTypeEnum type) throws BaseException {
-        User user = findUserById(userId);
-        try {
-            user.setUserType(type);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public void setUserType(Long userId, UserTypeEnum type) {
+        findUserById(userId).setUserType(type);
     }
 
     private boolean checkUserEmailExist(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        return user != null;
+        return userRepository.findByEmail(email).isPresent();
     }
 
-    private User findUserById(Long userId) throws BaseException {
-        Optional<User> user;
-        try{
-            user = userRepository.findById(userId);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
-        if(user.isEmpty()) throw new BaseException(WRONG_USER_ID);
-        return user.get();
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new BaseException(WRONG_USER_ID));
     }
 
     // 관리자 이메일 목록 조회
@@ -91,7 +61,7 @@ public class UserService {
      * 로컬 로그인
      */
     // 로그인
-//    public User authenticate(String email, String password) throws BaseException {
+//    public User authenticate(String email, String password) {
 //
 //        User user;
 //        try{
@@ -119,7 +89,7 @@ public class UserService {
      * 로컬 회원가입
      */
     // 회원 생성
-//    public PostSignupRes create(User user) throws BaseException {
+//    public PostSignupRes create(User user) {
 //
 //        if(checkUserEmailExist(user.getEmail())) { //이메일이 이미 존재하는 경우
 //            throw new BaseException(ResponseMessage.DUPLICATED_USER_EMAIL);

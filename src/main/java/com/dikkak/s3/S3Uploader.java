@@ -1,7 +1,6 @@
 package com.dikkak.s3;
 
 import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
@@ -35,7 +34,7 @@ public class S3Uploader {
     }
 
     // s3에 파일을 업로드 후, 파일 url을 반환한다.
-    private String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
+    public String uploadFile(MultipartFile multipartFile, String dirName) throws IOException {
         String fileName = dirName + "/" + UUID.randomUUID() + multipartFile.getOriginalFilename();
 
         ObjectMetadata objectMetadata = new ObjectMetadata();

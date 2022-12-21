@@ -1,4 +1,4 @@
-package com.dikkak.dto;
+package com.dikkak.dto.mail;
 
 import lombok.Builder;
 import lombok.Data;

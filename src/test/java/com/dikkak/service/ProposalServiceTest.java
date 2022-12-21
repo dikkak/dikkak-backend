@@ -9,10 +9,10 @@ import com.dikkak.entity.user.UserTypeEnum;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
-@Transactional
+@ActiveProfiles("test")
 class ProposalServiceTest {
 
     @Autowired
@@ -23,7 +23,7 @@ class ProposalServiceTest {
     @Test
     void getProposalList() {
         try {
-
+            //given
             User saveUser = userService.create(User.builder().email("test@gmail.com").providerType(ProviderTypeEnum.GOOGLE).build());
             System.out.println("saveUser = " + saveUser.getId());
 

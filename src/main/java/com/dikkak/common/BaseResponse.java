@@ -8,13 +8,9 @@ import lombok.Getter;
 public class BaseResponse<T> {
 
     private String message;
-    private T data;
 
     public BaseResponse(ResponseMessage message) {
         this.message = message.getMessage();
-    }
-    public BaseResponse(T data) {
-        this.data = data;
     }
 
     public BaseResponse(String message) {

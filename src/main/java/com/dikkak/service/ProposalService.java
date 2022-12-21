@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
 import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
@@ -44,63 +43,42 @@ public class ProposalService {
 
 
     // 클라이언트 작업실 목록 조회
-    public List<ClientWorkspaceRes> getClientWorkspace(Long userId) throws BaseException {
-        try {
-            return proposalRepository.getClientWorkspace(userId);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public List<ClientWorkspaceRes> getClientWorkspace(Long userId) {
+        return proposalRepository.getClientWorkspace(userId);
     }
 
     // 디자이너 작업실 목록 조회
-    public DesignerWorkspaceRes getDesignerWorkspace(Long designerId) throws BaseException{
-        try {
-            DesignerWorkspaceRes res = new DesignerWorkspaceRes();
-            for (WorkInfo workInfo : proposalRepository.getDesignerWorkspace(designerId)) {
-                if (workInfo.isComplete()){ // 완료된 작업
-                    res.getComplete().add(workInfo);
-                } else {
-                    res.getProgress().add(workInfo);
-                }
+    public DesignerWorkspaceRes getDesignerWorkspace(Long designerId){
+        DesignerWorkspaceRes res = new DesignerWorkspaceRes();
+        for (WorkInfo workInfo : proposalRepository.getDesignerWorkspace(designerId)) {
+            if (workInfo.isComplete()){ // 완료된 작업
+                res.getComplete().add(workInfo);
+            } else {
+                res.getProgress().add(workInfo);
             }
-            return res;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BaseException(DATABASE_ERROR);
         }
+        return res;
     }
 
     @Transactional
-    public Proposal create(User client, PostProposalReq req) throws BaseException {
-        try {
-            // 제안서 저장
-            return proposalRepository.save(new Proposal(client, req));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public Proposal create(User client, PostProposalReq req) {
+        // 제안서 저장
+        return proposalRepository.save(new Proposal(client, req));
     }
 
     @Transactional
-    public void saveKeyword(Proposal proposal, String keywordName) throws BaseException {
-        try {
-            // 키워드 찾기 or 저장
-            Keyword keyword = keywordRepository.findByName(keywordName).orElseGet(() -> keywordRepository.save(new Keyword(keywordName)));
+    public void saveKeyword(Proposal proposal, String keywordName) {
+        // 키워드 찾기 or 저장
+        Keyword keyword = keywordRepository.findByName(keywordName).orElseGet(() -> keywordRepository.save(new Keyword(keywordName)));
 
-            // 제안서와 키워드 매핑 정보 저장
-            proposalKeywordRepository.save(
-                    ProposalKeyword
-                            .builder()
-                            .keyword(keyword)
-                            .proposal(proposal)
-                            .build()
-            );
-
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
-
+        // 제안서와 키워드 매핑 정보 저장
+        proposalKeywordRepository.save(
+                ProposalKeyword
+                        .builder()
+                        .keyword(keyword)
+                        .proposal(proposal)
+                        .build()
+        );
     }
 
     // 회원의 제안서 목록 조회
@@ -110,20 +88,15 @@ public class ProposalService {
     }
 
     // 제안서 목록 조회
-    public GetProposalListRes getProposalList(int page, int size) throws BaseException {
-        try {
-            Page<Proposal> proposalPage = proposalRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "createdAt"));
-            return GetProposalListRes.builder()
-                    .totalPages(proposalPage.getTotalPages())
-                    .totalCount(proposalPage.getTotalElements())
-                    .page(proposalPage.getNumber())
-                    .size(proposalPage.getSize())
-                    .contents(proposalPage.getContent())
-                    .build();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public GetProposalListRes getProposalList(int page, int size) {
+        Page<Proposal> proposalPage = proposalRepository.findAll(PageRequest.of(page, size, Sort.Direction.DESC, "createdAt"));
+        return GetProposalListRes.builder()
+                .totalPages(proposalPage.getTotalPages())
+                .totalCount(proposalPage.getTotalElements())
+                .page(proposalPage.getNumber())
+                .size(proposalPage.getSize())
+                .contents(proposalPage.getContent())
+                .build();
     }
 
     public boolean existUserProposal(User designer, Long proposalId) {
@@ -131,43 +104,30 @@ public class ProposalService {
     }
 
     // 제안서 조회
-    public GetProposalRes getProposal(Long proposalId) throws BaseException {
+    public GetProposalRes getProposal(Long proposalId) {
 
         Proposal proposal = proposalRepository.findById(proposalId)
                 .orElseThrow(() -> new BaseException(WRONG_PROPOSAL_ID));
 
-        try {
-            GetProposalRes res = new GetProposalRes(proposal);
+        GetProposalRes res = new GetProposalRes(proposal);
 
-            // reference file 조회
-            referenceService.getRefList(proposalId).forEach(res::addReferenceFile);
+        // reference file 조회
+        referenceService.getRefList(proposalId).forEach(res::addReferenceFile);
 
-            // etc file 조회
-            otherFileService.getOtherFileList(proposalId).forEach(res::addEtcFile);
+        // etc file 조회
+        otherFileService.getOtherFileList(proposalId).forEach(res::addEtcFile);
 
-            // keyword 조회
-            proposalKeywordRepository.findByProposalId(proposalId).forEach(proposalKeyword -> {
-                res.getKeywords().add(proposalKeyword.getKeyword().getName());
-            });
-            return res;
-        } catch (Exception e) {
-            log.info(e.getMessage());
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-        }
+        // keyword 조회
+        proposalKeywordRepository.findByProposalId(proposalId).forEach(proposalKeyword -> {
+            res.getKeywords().add(proposalKeyword.getKeyword().getName());
+        });
+        return res;
     }
 
     // 제안서 목록 삭제
     @Transactional
-    public long deleteProposalList(List<Long> proposalList, Long clientId) throws BaseException {
-        try {
-            return proposalRepository.updateProposalsInactive(clientId, proposalList);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new BaseException(DATABASE_ERROR);
-        }
+    public long deleteProposalList(List<Long> proposalList, Long clientId) {
+        return proposalRepository.updateProposalsInactive(clientId, proposalList);
     }
-
 
 }

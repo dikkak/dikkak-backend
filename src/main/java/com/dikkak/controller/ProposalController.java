@@ -2,7 +2,7 @@ package com.dikkak.controller;
 
 import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.MailDto;
+import com.dikkak.dto.mail.MailDto;
 import com.dikkak.dto.proposal.DeleteProposalReq;
 import com.dikkak.dto.proposal.GetProposalRes;
 import com.dikkak.dto.proposal.PostProposalReq;
@@ -58,7 +58,7 @@ public class ProposalController {
             @AuthenticationPrincipal UserPrincipal principal,
             @RequestPart PostProposalReq jsonData,
             @RequestPart(required = false) List<MultipartFile> referenceFile,
-            @RequestPart(required = false) List<MultipartFile> etcFile) throws BaseException {
+            @RequestPart(required = false) List<MultipartFile> etcFile) {
 
         try {
             if (principal == null)
@@ -144,7 +144,7 @@ public class ProposalController {
      * @param proposalId 제안서 id
      */
     @GetMapping("/{proposalId}")
-    public GetProposalRes getProposals(@PathVariable Long proposalId) throws BaseException {
+    public GetProposalRes getProposals(@PathVariable Long proposalId) {
         return proposalService.getProposal(proposalId);
     }
 
@@ -156,7 +156,7 @@ public class ProposalController {
     @PatchMapping("/inactive")
     public Map<String,Long> deleteProposals(
             @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody DeleteProposalReq req) throws BaseException {
+            @RequestBody DeleteProposalReq req) {
 
         if(principal == null)
             throw new BaseException(INVALID_ACCESS_TOKEN);
@@ -174,7 +174,7 @@ public class ProposalController {
      * @return byte 배열
      */
     @GetMapping("/file/reference/{fileName}")
-    public byte[] getReferenceFile(@PathVariable String fileName) throws BaseException {
+    public byte[] getReferenceFile(@PathVariable String fileName) {
         return s3Downloader.downloadFile("reference/" + fileName);
     }
 
@@ -184,7 +184,7 @@ public class ProposalController {
      * @return blob
      */
     @GetMapping("/file/otherFile/{fileName}")
-    public byte[] getOtherFile(@PathVariable String fileName) throws BaseException {
+    public byte[] getOtherFile(@PathVariable String fileName) {
         return s3Downloader.downloadFile("otherFile/" + fileName);
     }
 }
