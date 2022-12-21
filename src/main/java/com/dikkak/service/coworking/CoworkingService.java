@@ -1,6 +1,7 @@
 package com.dikkak.service.coworking;
 
 import com.dikkak.common.BaseException;
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.*;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.proposal.Proposal;
@@ -12,6 +13,7 @@ import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.WRONG_COWORKING_ID;
+import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -48,14 +51,27 @@ public class CoworkingService {
     }
 
     // 채팅 목록 조회
-    public List<Message<GetChattingRes>> getMessageList(Coworking coworking) {
-        return messageRepository.getCoworkingMessage(coworking)
-                .stream().map(res ->
-                        Message.<GetChattingRes>builder()
-                            .type((res.getFileName() == null) ? MessageType.TEXT : MessageType.FILE)
-                            .coworkingId(coworking.getId())
-                            .data(res)
-                            .build())
+    public PageCustom<Message<GetChattingRes>> getMessageList(Coworking coworking, Pageable pageable) {
+        Page<GetChattingRes> messages = messageRepository.getCoworkingMessage(coworking, pageable);
+        System.out.println(pageable);
+        System.out.println(messages);
+        return PageCustom.<Message<GetChattingRes>>builder()
+                .content(mapToMessage(coworking, messages.getContent()))
+                .hasNext(messages.hasNext())
+                .hasPrev(messages.hasPrevious())
+                .next(pageable.getPageNumber()+1)
+                .prev(pageable.getPageNumber()-1)
+                .build();
+    }
+
+    private static List<Message<GetChattingRes>> mapToMessage(Coworking coworking, List<GetChattingRes> messages) {
+        return messages
+                .stream()
+                .map(res -> Message.<GetChattingRes>builder()
+                        .type((res.getFileName() == null) ? MessageType.TEXT : MessageType.FILE)
+                        .coworkingId(coworking.getId())
+                        .data(res)
+                        .build())
                 .collect(Collectors.toList());
     }
 
