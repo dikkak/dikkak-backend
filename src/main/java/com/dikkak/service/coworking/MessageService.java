@@ -1,6 +1,7 @@
 package com.dikkak.service.coworking;
 
 import com.dikkak.common.BaseException;
+import com.dikkak.controller.coworking.CoworkingSupport;
 import com.dikkak.dto.message.FileMessage;
 import com.dikkak.dto.message.FileReq;
 import com.dikkak.dto.message.TextReq;
@@ -20,8 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Objects;
 
-import static com.dikkak.common.ResponseMessage.FILE_UPLOAD_FAILED;
-import static com.dikkak.common.ResponseMessage.NON_EXISTENT_EMAIL;
+import static com.dikkak.common.ResponseMessage.*;
 import static org.apache.http.entity.ContentType.*;
 
 @Service
@@ -33,6 +33,7 @@ public class MessageService {
     private final CoworkingFileRepository fileRepository;
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
+    private final CoworkingSupport coworkingSupport;
 
     /**
      * 텍스트 메시지 저장
@@ -40,6 +41,10 @@ public class MessageService {
     @Transactional
     public CoworkingMessage saveTextMessage(TextReq req, Coworking coworking) {
         User user = getUser(req.getEmail());
+
+        if (!coworkingSupport.checkUser(user, coworking)) {
+            throw new BaseException(UNAUTHORIZED_REQUEST);
+        }
 
         // coworking message 저장
         return messageRepository.save(

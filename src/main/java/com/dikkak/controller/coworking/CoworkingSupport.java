@@ -2,6 +2,7 @@ package com.dikkak.controller.coworking;
 
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.service.coworking.CoworkingService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,22 @@ public class CoworkingSupport {
             }
         }
         return coworking;
+    }
+
+    public boolean checkUser(User user, Coworking coworking) {
+        if (user.getUserType().equals(UserTypeEnum.UNDEFINED)) return false;
+
+        if (user.getUserType().equals(UserTypeEnum.ADMIN)) return true;
+        if (user.getUserType().equals(UserTypeEnum.CLIENT)) {
+            if (!user.getId().equals(coworking.getProposal().getClient().getId())) {
+                return false;
+            }
+        }
+        if (user.getUserType().equals(UserTypeEnum.DESIGNER)) {
+            if (!user.getId().equals(coworking.getDesigner().getId())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
