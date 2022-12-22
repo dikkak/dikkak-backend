@@ -12,6 +12,6 @@ fi
 
 
 echo "> 새 애플리케이션 배포"
-nohup java -jar /home/ec2-user/dikkak-deploy/build/libs/dikkak-0.0.1-SNAPSHOT.jar > /home/ec2-user/nohup.out 2>&1 &
+nohup java -jar /home/ec2-user/dikkak-deploy/build/libs/dikkak-0.0.1-SNAPSHOT.jar --spring.profiles.active=$profile > /home/ec2-user/nohup.out 2>&1 &
 
 exit 0
