@@ -3,12 +3,7 @@ package com.dikkak.controller.coworking;
 import com.dikkak.common.BaseException;
 import com.dikkak.common.ResponseMessage;
 import com.dikkak.config.UserPrincipal;
-import com.dikkak.dto.message.FileMessage;
-import com.dikkak.dto.message.FileReq;
-import com.dikkak.dto.message.Message;
-import com.dikkak.dto.message.MessageType;
-import com.dikkak.dto.message.TextMessage;
-import com.dikkak.dto.message.TextReq;
+import com.dikkak.dto.message.*;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingMessage;
 import com.dikkak.service.coworking.CoworkingService;
@@ -18,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
