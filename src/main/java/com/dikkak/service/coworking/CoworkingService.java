@@ -46,7 +46,7 @@ public class CoworkingService {
     }
 
     public Coworking getCoworking(Long coworkingId) {
-        return coworkingRepository.findById(coworkingId)
+        return coworkingRepository.findWithProposalById(coworkingId)
                 .orElseThrow(() -> new BaseException(WRONG_COWORKING_ID));
     }
 
