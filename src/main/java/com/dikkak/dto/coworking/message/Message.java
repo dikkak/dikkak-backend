@@ -1,4 +1,4 @@
-package com.dikkak.dto.message;
+package com.dikkak.dto.coworking.message;
 
 import lombok.Builder;
 import lombok.Data;

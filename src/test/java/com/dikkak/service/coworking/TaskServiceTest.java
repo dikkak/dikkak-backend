@@ -1,17 +1,18 @@
-package com.dikkak.service;
+package com.dikkak.service.coworking;
 
+import com.dikkak.dto.coworking.GetTaskRes;
+import com.dikkak.dto.coworking.message.Message;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.coworking.CoworkingTask;
 import com.dikkak.entity.proposal.CategoryEnum;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
-import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
-import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
+import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
-import com.dikkak.service.coworking.CoworkingService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,37 +20,38 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class CoworkingServiceTest {
-
+class TaskServiceTest {
     @Autowired
-    CoworkingService coworkingService;
-
+    TaskService taskService;
     @Autowired
-    CoworkingRepository coworkingRepository;
-
-    @Autowired
-    CoworkingMessageRepository messageRepository;
-
-    @Autowired
-    UserRepository userRepository;
-
+    CoworkingTaskRepository taskRepository;
     @Autowired
     ProposalRepository proposalRepository;
-
-    private Proposal proposal;
+    @Autowired
+    CoworkingRepository coworkingRepository;
+    @Autowired
+    UserRepository userRepository;
+    private Coworking coworking;
 
     @BeforeEach
+    @Transactional
     void init() {
         User client = userRepository.save(User.builder()
                 .email("client@naver.com")
                 .providerType(ProviderTypeEnum.KAKAO)
                 .build());
-        client.setUserType(UserTypeEnum.CLIENT);
+        User designer = userRepository.save(User.builder()
+                .email("designer@gmail.com")
+                .providerType(ProviderTypeEnum.KAKAO)
+                .build());
 
         PostProposalReq req = new PostProposalReq();
         req.setCategory(CategoryEnum.LOGO_OR_CARD);
@@ -57,31 +59,32 @@ class CoworkingServiceTest {
         req.setTitle("제목");
         req.setMainColor("#ffffff");
         req.setPurpose("목적");
-        proposal = proposalRepository.save(new Proposal(client, req));
+        Proposal proposal = proposalRepository.save(new Proposal(client, req));
+        coworking = coworkingRepository.save(new Coworking(proposal, designer));
     }
 
     @AfterEach
-    void teardown() {
+    void tearDown() {
+        taskRepository.deleteAll();
         coworkingRepository.deleteAll();
         proposalRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    @DisplayName("디자이너 매칭 & 외주작업실 생성")
-    void create() {
+    @DisplayName("task 목록 조회")
+    void getTaskList() {
         //given
-        User designer = userRepository.save(User.builder()
-                .email("user1@naver.com")
-                .providerType(ProviderTypeEnum.KAKAO)
-                .build());
-        designer.setUserType(UserTypeEnum.DESIGNER);
+        String content = "할 일1";
+        taskRepository.save(CoworkingTask.of(coworking, content));
 
         //when
-        Coworking savedCoworking = coworkingService.create(designer, proposal.getId());
+        List<Message<GetTaskRes>> taskList = taskService.getTaskList(coworking.getId());
 
         //then
-        assertThat(savedCoworking.getDesigner().getId()).isEqualTo(designer.getId());
-        assertThat(savedCoworking.isComplete()).isFalse();
+        assertThat(taskList.size()).isEqualTo(1);
+        assertThat(taskList.get(0).getData().getContent().equals(content)).isTrue();
+        assertThat(taskList.get(0).getData().isChecked()).isFalse();
     }
+
 }

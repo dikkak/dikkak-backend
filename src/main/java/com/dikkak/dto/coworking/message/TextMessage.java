@@ -1,4 +1,4 @@
-package com.dikkak.dto.message;
+package com.dikkak.dto.coworking.message;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

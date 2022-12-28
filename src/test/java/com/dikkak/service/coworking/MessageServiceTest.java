@@ -1,9 +1,13 @@
 package com.dikkak.service.coworking;
 
 import com.dikkak.common.BaseException;
-import com.dikkak.dto.message.TextReq;
+import com.dikkak.dto.PageCustom;
+import com.dikkak.dto.coworking.GetChattingRes;
+import com.dikkak.dto.coworking.message.Message;
+import com.dikkak.dto.coworking.message.TextReq;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.entity.coworking.CoworkingMessage;
 import com.dikkak.entity.proposal.CategoryEnum;
 import com.dikkak.entity.proposal.Proposal;
@@ -12,6 +16,7 @@ import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
+import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.message.CoworkingMessageRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +25,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +51,9 @@ class MessageServiceTest {
 
     @Autowired
     ProposalRepository proposalRepository;
+
+    @Autowired
+    CoworkingFileRepository fileRepository;
 
     private Proposal proposal;
     private Coworking coworking;
@@ -77,6 +86,45 @@ class MessageServiceTest {
         coworkingRepository.deleteAll();
         proposalRepository.deleteAll();
         userRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("채팅 목록을 최신순으로 조회한다.")
+    @Transactional
+    void getMessageList() throws InterruptedException {
+        //given
+        User client  = proposal.getClient();
+        User designer = coworking.getDesigner();
+
+        CoworkingMessage message1 = messageRepository.save(new CoworkingMessage(1L, client, null, "텍스트 메시지1", coworking));
+        Thread.sleep(1000);
+
+        CoworkingMessage message2 = messageRepository.save(new CoworkingMessage(2L, designer, null, "텍스트 메시지2", coworking));
+        Thread.sleep(1000);
+
+        CoworkingFile file = fileRepository.save(CoworkingFile.builder().fileUrl("url1").fileName("파일 이름").coworking(coworking).build());
+        CoworkingMessage message3 = messageRepository.save(new CoworkingMessage(3L, client, file, null, coworking));
+
+        //when
+        PageCustom<Message<GetChattingRes>> messageList1 = messageService.getMessageList(coworking, PageRequest.of(0, 2));
+        PageCustom<Message<GetChattingRes>> messageList2 = messageService.getMessageList(coworking, PageRequest.of(1, 2));
+
+        //then
+        assertThat(messageList1.getContent().size()).isEqualTo(2);
+        assertThat(messageList1.isHasNext()).isTrue();
+        assertThat(messageList1.isHasPrev()).isFalse();
+
+        assertThat(messageList1.getContent().get(1).getData().getEmail()).isEqualTo(designer.getEmail());
+        assertThat(messageList1.getContent().get(1).getData().getContent()).isEqualTo(message2.getContent());
+        assertThat(messageList1.getContent().get(0).getData().getEmail()).isEqualTo(client.getEmail());
+        assertThat(messageList1.getContent().get(0).getData().getFileUrl()).isEqualTo(message3.getCoworkingFile().getFileUrl());
+        assertThat(messageList1.getContent().get(0).getData().getFileName()).isEqualTo(message3.getCoworkingFile().getFileName());
+
+        assertThat(messageList2.getContent().size()).isEqualTo(1);
+        assertThat(messageList2.isHasNext()).isFalse();
+        assertThat(messageList2.isHasPrev()).isTrue();
+        assertThat(messageList2.getContent().get(0).getData().getEmail()).isEqualTo(client.getEmail());
+        assertThat(messageList2.getContent().get(0).getData().getContent()).isEqualTo(message1.getContent());
     }
 
     @Test
