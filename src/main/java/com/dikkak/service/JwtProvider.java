@@ -6,7 +6,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.Date;
@@ -14,8 +14,8 @@ import java.util.Date;
 import static com.dikkak.common.ResponseMessage.EXPIRED_TOKEN;
 import static com.dikkak.common.ResponseMessage.INVALID_TOKEN;
 
-@Service
-public class JwtService {
+@Component
+public class JwtProvider {
 
     private static final int ACCESS_TOKEN_MILLISECONDS = 1000 * 60 * 60;               // 1시간
     private static final int REFRESH_TOKEN_MILLISECONDS = 1000 * 60 * 60 * 24 * 14;    // 2주

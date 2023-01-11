@@ -4,7 +4,7 @@ import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
-import com.dikkak.service.JwtService;
+import com.dikkak.service.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +20,7 @@ import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 @Component
 @RequiredArgsConstructor
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
         String token = extractToken(authorization);
 
         // 토큰 검사 및 회원 아이디 추출
-        Long userId = jwtService.validateToken(token);
+        Long userId = jwtProvider.validateToken(token);
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BaseException(INVALID_ACCESS_TOKEN));
 

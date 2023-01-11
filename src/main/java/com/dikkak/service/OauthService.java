@@ -43,7 +43,7 @@ public class OauthService {
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final RedisService redisService;
 
 
@@ -88,8 +88,8 @@ public class OauthService {
         }
 
         // 토큰 발급
-        String accessToken = jwtService.createAccessToken(user.getId());
-        String refreshToken = jwtService.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId());
+        String refreshToken = jwtProvider.createRefreshToken(user.getId());
 
         return GetLoginRes.builder()
                 .username(user.getName())

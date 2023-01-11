@@ -4,7 +4,7 @@ import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.auth.GetLoginRes;
 import com.dikkak.dto.auth.ReissueRes;
-import com.dikkak.service.JwtService;
+import com.dikkak.service.JwtProvider;
 import com.dikkak.service.OauthService;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class AuthController {
 
     private final UserService userService;
     private final OauthService oauthService;
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final List<String> providerList = new ArrayList<>(Arrays.asList("kakao", "google", "facebook"));
 
     /**
@@ -77,13 +77,13 @@ public class AuthController {
             throw new BaseException(INVALID_REFRESH_TOKEN);
 
         // refresh 토큰 유효성 검사 및 userId 추출
-        Long userId = jwtService.validateToken(refreshToken);
+        Long userId = jwtProvider.validateToken(refreshToken);
 
         // 존재하는 회원인지 검사
         userService.getUser(userId);
 
         // access token 재발급
-        String newAccessToken = jwtService.createAccessToken(userId);
+        String newAccessToken = jwtProvider.createAccessToken(userId);
         return new ReissueRes(newAccessToken);
     }
 

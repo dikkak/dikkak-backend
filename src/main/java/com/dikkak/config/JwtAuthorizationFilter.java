@@ -4,7 +4,7 @@ import com.dikkak.common.BaseException;
 import com.dikkak.common.BaseResponse;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
-import com.dikkak.service.JwtService;
+import com.dikkak.service.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,12 +25,12 @@ import java.util.Optional;
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
-    private JwtService jwtService;
+    private JwtProvider jwtProvider;
 
-    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtService jwtService) {
+    public JwtAuthorizationFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtProvider jwtProvider) {
         super(authenticationManager);
         this.userRepository = userRepository;
-        this.jwtService = jwtService;
+        this.jwtProvider = jwtProvider;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         // 토큰 검사 및 회원 아이디 추출
         Long userId = null;
         try {
-            userId = jwtService.validateToken(token);
+            userId = jwtProvider.validateToken(token);
         } catch (BaseException e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf8");

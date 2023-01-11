@@ -3,7 +3,7 @@ package com.dikkak.config;
 import com.dikkak.common.BaseException;
 import com.dikkak.common.ResponseMessage;
 import com.dikkak.repository.UserRepository;
-import com.dikkak.service.JwtService;
+import com.dikkak.service.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -19,7 +19,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 @RequiredArgsConstructor
 public class StompInterceptor implements ChannelInterceptor {
 
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final UserRepository userRepository;
 
     @Override
@@ -35,7 +35,7 @@ public class StompInterceptor implements ChannelInterceptor {
         }
         String token = authorization.substring(BEARER.length());
 
-        Long userId = jwtService.validateToken(token);
+        Long userId = jwtProvider.validateToken(token);
         if (userRepository.findById(userId).isEmpty()) {
             throw new BaseException(ResponseMessage.UNAUTHORIZED_REQUEST);
         }
