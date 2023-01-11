@@ -33,6 +33,7 @@ import static com.dikkak.common.ResponseMessage.WRONG_PROPOSAL_ID;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class ProposalService {
     private final ProposalRepository proposalRepository;
     private final ProposalKeywordRepository proposalKeywordRepository;
