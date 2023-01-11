@@ -2,9 +2,11 @@ package com.dikkak.repository.coworking.file;
 
 import com.dikkak.dto.coworking.GetFileRes;
 import com.dikkak.dto.coworking.QGetFileRes;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -19,21 +21,33 @@ public class CoworkingFileRepositoryImpl implements CoworkingFileRepositoryCusto
 
     // 파일 목록 조회
     @Override
-    public List<GetFileRes> getFileList(Long coworkingId, Pageable pageable) {
-
+    public PageImpl<GetFileRes> getFileList(Long coworkingId, Pageable pageable) {
         JPAQuery<GetFileRes> query = queryFactory
                 .select(new QGetFileRes(coworkingFile.id, coworkingFile.fileName, coworkingFile.fileUrl, coworkingFile.isImageFile))
                 .from(coworkingFile)
-                .where(coworkingFile.coworking.id.eq(coworkingId))
+                .where(coworkingEq(coworkingId))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize());
 
-        Sort.Order order = pageable.getSort().getOrderFor("createdAt");
+        Sort.Order order = pageable.getSort().getOrderFor(coworkingFile.createdAt.getMetadata().getName());
         if (order == null || order.isDescending()) {
-            return query.orderBy(coworkingFile.createdAt.desc()).fetch();
+            query.orderBy(coworkingFile.createdAt.desc());
         } else {
-            return query.orderBy(coworkingFile.createdAt.asc()).fetch();
+            query.orderBy(coworkingFile.createdAt.asc());
         }
 
+        List<GetFileRes> content = query.fetch();
+        long total = queryFactory
+                .select(coworkingFile.count())
+                .from(coworkingFile)
+                .where(coworkingEq(coworkingId))
+                .fetchFirst();
+
+        return new PageImpl<>(content, pageable, total);
+
+    }
+
+    private static BooleanExpression coworkingEq(Long coworkingId) {
+        return coworkingFile.coworking.id.eq(coworkingId);
     }
 }

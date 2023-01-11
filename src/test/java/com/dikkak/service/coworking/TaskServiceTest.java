@@ -1,8 +1,8 @@
 package com.dikkak.service.coworking;
 
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.AddTaskReq;
 import com.dikkak.dto.coworking.TaskRes;
-import com.dikkak.dto.coworking.message.Message;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
@@ -22,10 +22,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,14 +82,36 @@ class TaskServiceTest {
         //given
         String content = "할 일1";
         taskRepository.save(CoworkingTask.builder().coworking(coworking).content(content).build());
+        PageRequest pageRequest = PageRequest.of(0, 10);
 
         //when
-        List<Message<TaskRes>> taskList = taskService.getTaskList(coworking.getId());
+        PageCustom<TaskRes> taskList = taskService.getTaskList(coworking.getId(), null, pageRequest);
 
         //then
-        assertThat(taskList).hasSize(1);
-        assertThat(taskList.get(0).getData().getContent()).isEqualTo(content);
-        assertThat(taskList.get(0).getData().isChecked()).isFalse();
+        assertThat(taskList.getContent()).hasSize(1);
+        assertThat(taskList.getContent().get(0).getContent()).isEqualTo(content);
+        assertThat(taskList.getContent().get(0).isChecked()).isFalse();
+    }
+
+    @Test
+    @DisplayName("완료 여부에 따라 task를 조회할 수 있다")
+    void getCompleteTaskList() {
+        //given
+        String content = "할 일1";
+        taskRepository.save(CoworkingTask.builder().coworking(coworking).content(content).build());
+
+        //when
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        PageCustom<TaskRes> completeList = taskService.getTaskList(coworking.getId(), true, pageRequest);
+        PageCustom<TaskRes> incompleteList = taskService.getTaskList(coworking.getId(), false, pageRequest);
+
+        //then
+        assertThat(completeList.getContent()).isEmpty();
+        assertThat(incompleteList.getContent()).hasSize(1);
+        assertThat(incompleteList.getContent().get(0).getContent()).isEqualTo(content);
+        assertThat(incompleteList.getContent().get(0).isChecked()).isFalse();
+        assertThat(incompleteList.isHasPrev()).isFalse();
+        assertThat(incompleteList.isHasNext()).isFalse();
     }
 
     @Test

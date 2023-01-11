@@ -1,10 +1,10 @@
 package com.dikkak.repository.coworking.task;
 
 import com.dikkak.dto.coworking.TaskRes;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CoworkingTaskRepositoryCustom {
 
-    List<TaskRes> getCoworkingTask(Long coworkingId);
+    Page<TaskRes> getCoworkingTask(Long coworkingId, Boolean complete, Pageable pageable);
 }

@@ -2,18 +2,25 @@ package com.dikkak.controller.coworking;
 
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.controller.LoginUser;
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.AddTaskReq;
 import com.dikkak.dto.coworking.TaskRes;
-import com.dikkak.dto.coworking.message.Message;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.service.coworking.CoworkingService;
 import com.dikkak.service.coworking.FileService;
 import com.dikkak.service.coworking.TaskService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RequestMapping("/coworking/task")
 @RestController
@@ -31,11 +38,13 @@ public class TaskController {
      * @param coworkingId 외주작업실 id
      */
     @GetMapping
-    public List<Message<TaskRes>> getTask(@LoginUser UserPrincipal principal,
-                                          @RequestParam Long coworkingId) {
+    public PageCustom<TaskRes> getTask(@LoginUser UserPrincipal principal,
+                                                @RequestParam Long coworkingId,
+                                                @RequestParam(required = false) Boolean complete,
+                                                @PageableDefault(size = 10, page = 0, sort = "createdAt", direction = DESC) Pageable pageable) {
         Coworking coworking = coworkingService.getCoworking(coworkingId);
         coworkingSupport.checkCoworkingUser(principal, coworking);
-        return taskService.getTaskList(coworkingId);
+        return taskService.getTaskList(coworkingId, complete, pageable);
     }
 
     /**

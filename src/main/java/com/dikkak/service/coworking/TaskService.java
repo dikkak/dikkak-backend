@@ -1,20 +1,18 @@
 package com.dikkak.service.coworking;
 
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.AddTaskReq;
 import com.dikkak.dto.coworking.TaskRes;
-import com.dikkak.dto.coworking.message.Message;
-import com.dikkak.dto.coworking.message.MessageType;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.entity.coworking.CoworkingTask;
 import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,16 +22,15 @@ public class TaskService {
     private final CoworkingTaskRepository taskRepository;
 
     // task 목록 조회
-    public List<Message<TaskRes>> getTaskList(Long coworkingId) {
-        return taskRepository.getCoworkingTask(coworkingId)
-                .stream()
-                .map(res ->
-                        Message.<TaskRes>builder()
-                                .type(MessageType.TASK)
-                                .coworkingId(coworkingId)
-                                .data(res)
-                                .build())
-                .collect(Collectors.toList());
+    public PageCustom<TaskRes> getTaskList(Long coworkingId, @Nullable Boolean complete, Pageable pageable) {
+        Page<TaskRes> page = taskRepository.getCoworkingTask(coworkingId, complete, pageable);
+        return PageCustom.<TaskRes>builder()
+                .content(page.getContent())
+                .hasNext(page.hasNext())
+                .hasPrev(page.hasPrevious())
+                .next(pageable.getPageNumber()+1)
+                .prev(pageable.getPageNumber()-1)
+                .build();
     }
 
     @Transactional

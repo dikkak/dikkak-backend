@@ -2,6 +2,7 @@ package com.dikkak.controller.coworking;
 
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.controller.LoginUser;
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.GetFileRes;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.s3.S3Downloader;
@@ -15,8 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static com.dikkak.common.Const.COWORKING_FILE_PATH;
 import static org.springframework.data.domain.Sort.Direction.DESC;
@@ -38,9 +37,9 @@ public class FileController {
      * @param pageable page, size, sort
      */
     @GetMapping
-    public List<GetFileRes> getFileList(@LoginUser UserPrincipal principal,
-                                        @RequestParam Long coworkingId,
-                                        @PageableDefault(size=10, page=0, sort="createdAt", direction = DESC) Pageable pageable) {
+    public PageCustom<GetFileRes> getFileList(@LoginUser UserPrincipal principal,
+                                              @RequestParam Long coworkingId,
+                                              @PageableDefault(size=10, page=0, sort="createdAt", direction = DESC) Pageable pageable) {
         Coworking coworking = coworkingService.getCoworking(coworkingId);
         coworkingSupport.checkCoworkingUser(principal, coworking);
         return fileService.getFileList(coworking.getId(), pageable);
