@@ -1,19 +1,20 @@
 package com.dikkak.controller;
 
-import com.dikkak.config.UserPrincipal;
 import com.dikkak.common.BaseException;
+import com.dikkak.common.ResponseMessage;
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.user.PostRegisterReq;
 import com.dikkak.dto.user.UserInfoRes;
 import com.dikkak.dto.user.UserTypeReq;
-import com.dikkak.entity.user.User;
 import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.regex.Pattern;
-
-import static com.dikkak.common.ResponseMessage.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,25 +30,21 @@ public class UserController {
      * @param principal 회원 id, 타입
      */
     @PostMapping("/register")
-    public void register(@AuthenticationPrincipal UserPrincipal principal,
+    public void register(@LoginUser UserPrincipal principal,
                          @RequestBody PostRegisterReq req) {
-        if(principal == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
         if(req.getUsername() == null || req.getUsername().isEmpty())
-            throw new BaseException(EMPTY_USER_NAME);
+            throw new BaseException(ResponseMessage.EMPTY_USER_NAME);
 
         if(req.getPhoneNumber() == null || req.getPhoneNumber().isEmpty())
-            throw new BaseException(EMPTY_PHONE_NUMBER);
+            throw new BaseException(ResponseMessage.EMPTY_PHONE_NUMBER);
 
         // 전화번호 형식 검사
         if(!isRegexPhoneNumber(req.getPhoneNumber()))
-            throw new BaseException(INVALID_FORMAT_PHONE_NUMBER);
+            throw new BaseException(ResponseMessage.INVALID_FORMAT_PHONE_NUMBER);
 
         // 필수 항목 동의 여부 검사
         if(!req.isTermsConditions() || !req.isDataPolicy())
-            throw new BaseException(REQUIRED_ITEM_DISAGREE);
+            throw new BaseException(ResponseMessage.REQUIRED_ITEM_DISAGREE);
 
         userService.registerUser(principal.getUserId(), req);
     }
@@ -57,12 +54,8 @@ public class UserController {
      * @param req - type: CLIENT, DESIGNER
      */
     @PostMapping("/type")
-    public void setUserType(@AuthenticationPrincipal UserPrincipal principal,
+    public void setUserType(@LoginUser UserPrincipal principal,
                             @RequestBody UserTypeReq req) {
-        if(principal == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
         userService.setUserType(principal.getUserId(), req.getType());
     }
 
@@ -71,14 +64,8 @@ public class UserController {
      * @return email, username, type, provider
      */
     @GetMapping("/info")
-    public UserInfoRes getUsername(@AuthenticationPrincipal UserPrincipal principal) {
-        if(principal == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
-        User user = userService.getUser(principal.getUserId());
-        return new UserInfoRes(user.getEmail(), user.getName(), user.getUserType(), user.getProviderType(),
-                user.getPhoneNumber(), user.isMarketingMessage(), user.isPopUpMessage());
+    public UserInfoRes getUsername(@LoginUser UserPrincipal principal) {
+        return UserInfoRes.fromUser(userService.getUser(principal.getUserId()));
     }
 
     private boolean isRegexPhoneNumber(String phoneNumber) {

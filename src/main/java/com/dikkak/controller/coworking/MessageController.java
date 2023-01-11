@@ -1,8 +1,7 @@
 package com.dikkak.controller.coworking;
 
-import com.dikkak.common.BaseException;
-import com.dikkak.common.ResponseMessage;
 import com.dikkak.config.UserPrincipal;
+import com.dikkak.controller.LoginUser;
 import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.message.FileMessage;
@@ -21,12 +20,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
-import static com.dikkak.common.ResponseMessage.UNAUTHORIZED_REQUEST;
 
 
 @RestController
@@ -46,18 +46,11 @@ public class MessageController {
      * @param coworkingId 외주작업실 id
      */
     @GetMapping("/chat")
-    public PageCustom<Message<GetChattingRes>> getChatList(@AuthenticationPrincipal UserPrincipal principal,
+    public PageCustom<Message<GetChattingRes>> getChatList(@LoginUser UserPrincipal principal,
                                                            @RequestParam Long coworkingId,
                                                            @PageableDefault(size = 20, page = 0) Pageable pageable) {
-        if(principal == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
-        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
-        if(coworking == null) {
-            throw new BaseException(UNAUTHORIZED_REQUEST);
-        }
-
+        Coworking coworking = coworkingService.getCoworking(coworkingId);
+        coworkingSupport.checkCoworkingUser(principal, coworking);
         return messageService.getMessageList(coworking, pageable);
     }
 
@@ -70,9 +63,6 @@ public class MessageController {
     @MessageMapping("/text")
     public void saveTextMessage(TextReq request) {
         Coworking coworking = coworkingService.getCoworking(request.getCoworkingId());
-        if(coworking == null) {
-            throw new BaseException(ResponseMessage.WRONG_COWORKING_ID);
-        }
 
         log.info("request= {}", request);
         CoworkingMessage message = messageService.saveTextMessage(request, coworking);
@@ -97,18 +87,11 @@ public class MessageController {
      * @param request email, coworkingId
      */
     @PostMapping("/pub/file")
-    public void saveFileMessage(@AuthenticationPrincipal UserPrincipal principal,
+    public void saveFileMessage(@LoginUser UserPrincipal principal,
                                 @RequestPart FileReq request,
                                 @RequestPart MultipartFile file) {
-
-        if(principal == null) {
-            throw new BaseException(ResponseMessage.INVALID_ACCESS_TOKEN);
-        }
-
-        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, request.getCoworkingId());
-        if(coworking == null) {
-            throw new BaseException(ResponseMessage.UNAUTHORIZED_REQUEST);
-        }
+        Coworking coworking = coworkingService.getCoworking(request.getCoworkingId());
+        coworkingSupport.checkCoworkingUser(principal, coworking);
 
         // 파일 저장 & 메시지 저장
         FileMessage message = messageService.saveFileMessage(request, coworking, file);
@@ -121,5 +104,4 @@ public class MessageController {
                         .build()
         );
     }
-
 }

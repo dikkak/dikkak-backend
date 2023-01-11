@@ -1,10 +1,15 @@
 package com.dikkak.service.coworking;
 
 import com.dikkak.common.BaseException;
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.controller.coworking.CoworkingSupport;
 import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.GetChattingRes;
-import com.dikkak.dto.coworking.message.*;
+import com.dikkak.dto.coworking.message.FileMessage;
+import com.dikkak.dto.coworking.message.FileReq;
+import com.dikkak.dto.coworking.message.Message;
+import com.dikkak.dto.coworking.message.MessageType;
+import com.dikkak.dto.coworking.message.TextReq;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.entity.coworking.CoworkingMessage;
@@ -25,8 +30,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.dikkak.common.ResponseMessage.*;
-import static org.apache.http.entity.ContentType.*;
+import static com.dikkak.common.ResponseMessage.FILE_UPLOAD_FAILED;
+import static com.dikkak.common.ResponseMessage.NON_EXISTENT_EMAIL;
+import static org.apache.http.entity.ContentType.IMAGE_BMP;
+import static org.apache.http.entity.ContentType.IMAGE_GIF;
+import static org.apache.http.entity.ContentType.IMAGE_JPEG;
+import static org.apache.http.entity.ContentType.IMAGE_PNG;
+import static org.apache.http.entity.ContentType.IMAGE_TIFF;
+import static org.apache.http.entity.ContentType.IMAGE_WEBP;
 
 @Service
 @Transactional(readOnly = true)
@@ -44,8 +55,6 @@ public class MessageService {
      */
     public PageCustom<Message<GetChattingRes>> getMessageList(Coworking coworking, Pageable pageable) {
         Page<GetChattingRes> messages = messageRepository.getCoworkingMessage(coworking, pageable);
-        System.out.println(pageable);
-        System.out.println(messages);
         return PageCustom.<Message<GetChattingRes>>builder()
                 .content(mapToMessage(coworking, messages.getContent()))
                 .hasNext(messages.hasNext())
@@ -72,10 +81,7 @@ public class MessageService {
     @Transactional
     public CoworkingMessage saveTextMessage(TextReq req, Coworking coworking) {
         User user = getUser(req.getEmail());
-
-        if (!coworkingSupport.checkUser(user, coworking)) {
-            throw new BaseException(UNAUTHORIZED_REQUEST);
-        }
+        coworkingSupport.checkCoworkingUser(new UserPrincipal(user), coworking);
 
         // coworking message 저장
         return messageRepository.save(
