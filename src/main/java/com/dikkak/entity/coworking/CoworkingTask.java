@@ -22,7 +22,7 @@ public class CoworkingTask extends BaseEntity {
     @JoinColumn(name = "coworking_id")
     private Coworking coworking;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coworking_file_id")
     private CoworkingFile file;
 
