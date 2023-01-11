@@ -1,10 +1,10 @@
 package com.dikkak.repository.coworking.task;
 
-import com.dikkak.dto.coworking.GetTaskRes;
+import com.dikkak.dto.coworking.TaskRes;
 
 import java.util.List;
 
 public interface CoworkingTaskRepositoryCustom {
 
-    List<GetTaskRes> getCoworkingTask(Long coworkingId);
+    List<TaskRes> getCoworkingTask(Long coworkingId);
 }

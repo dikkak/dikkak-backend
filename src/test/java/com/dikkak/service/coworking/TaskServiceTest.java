@@ -1,9 +1,11 @@
 package com.dikkak.service.coworking;
 
-import com.dikkak.dto.coworking.GetTaskRes;
+import com.dikkak.dto.coworking.AddTaskReq;
+import com.dikkak.dto.coworking.TaskRes;
 import com.dikkak.dto.coworking.message.Message;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
+import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.entity.coworking.CoworkingTask;
 import com.dikkak.entity.proposal.CategoryEnum;
 import com.dikkak.entity.proposal.Proposal;
@@ -11,6 +13,7 @@ import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
+import com.dikkak.repository.coworking.file.CoworkingFileRepository;
 import com.dikkak.repository.coworking.task.CoworkingTaskRepository;
 import com.dikkak.repository.proposal.ProposalRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -37,6 +40,8 @@ class TaskServiceTest {
     ProposalRepository proposalRepository;
     @Autowired
     CoworkingRepository coworkingRepository;
+    @Autowired
+    CoworkingFileRepository fileRepository;
     @Autowired
     UserRepository userRepository;
     private Coworking coworking;
@@ -66,6 +71,7 @@ class TaskServiceTest {
     @AfterEach
     void tearDown() {
         taskRepository.deleteAll();
+        fileRepository.deleteAll();
         coworkingRepository.deleteAll();
         proposalRepository.deleteAll();
         userRepository.deleteAll();
@@ -76,15 +82,47 @@ class TaskServiceTest {
     void getTaskList() {
         //given
         String content = "할 일1";
-        taskRepository.save(CoworkingTask.of(coworking, content));
+        taskRepository.save(CoworkingTask.builder().coworking(coworking).content(content).build());
 
         //when
-        List<Message<GetTaskRes>> taskList = taskService.getTaskList(coworking.getId());
+        List<Message<TaskRes>> taskList = taskService.getTaskList(coworking.getId());
 
         //then
-        assertThat(taskList.size()).isEqualTo(1);
-        assertThat(taskList.get(0).getData().getContent().equals(content)).isTrue();
+        assertThat(taskList).hasSize(1);
+        assertThat(taskList.get(0).getData().getContent()).isEqualTo(content);
         assertThat(taskList.get(0).getData().isChecked()).isFalse();
     }
 
+    @Test
+    @DisplayName("task를 추가할 수 있다")
+    void addTask() {
+        // given
+        AddTaskReq request = new AddTaskReq();
+        request.setContent("내용");
+
+        // when
+        TaskRes task = taskService.createTask(request, coworking, null);
+
+        // then
+        assertThat(task.getTaskId()).isNotNull();
+        assertThat(task.getContent()).isEqualTo(request.getContent());
+        assertThat(task.isChecked()).isFalse();
+    }
+
+    @Test
+    @DisplayName("file 관련 task를 추가할 수 있다")
+    void addFileTask() {
+        // given
+        AddTaskReq request = new AddTaskReq();
+        request.setContent("내용");
+        CoworkingFile file = fileRepository.save(CoworkingFile.builder().coworking(coworking).fileName("file").isImageFile(true).fileUrl("url").build());
+
+        // when
+        TaskRes task = taskService.createTask(request, coworking, file);
+
+        // then
+        assertThat(task.getTaskId()).isNotNull();
+        assertThat(task.getContent()).isEqualTo(request.getContent());
+        assertThat(task.isChecked()).isFalse();
+    }
 }

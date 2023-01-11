@@ -8,7 +8,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.dikkak.common.ResponseMessage.WRONG_USER_ID;
+import static com.dikkak.common.ResponseMessage.EXPIRED_TOKEN;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class RedisService {
     // redis에서 token 가져오기
     public SocialToken getToken(Long userId) {
         return socialTokenRedisRepository.findById(userId)
-                .orElseThrow(() -> new BaseException(WRONG_USER_ID));
+                .orElseThrow(() -> new BaseException(EXPIRED_TOKEN));
     }
 
     // redis에서 token 삭제

@@ -43,27 +43,26 @@ public class AuthController {
      */
     @GetMapping("/login/{provider}")
     public GetLoginRes login(@PathVariable String provider, @RequestParam String code, HttpServletResponse res) {
-        if (providerList.contains(provider)) {
-            GetLoginRes loginRes = oauthService.login(provider, code);
-
-            // refresh token을 cookie에 저장
-            String refreshToken = loginRes.getRefreshToken();
-            ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
-                    .maxAge(60L * 60 * 24 * 14)
-                    .path("/")
-                    .sameSite("none")
-                    .secure(true)
-                    .httpOnly(true)
-                    .build();
-
-            res.setHeader("Set-Cookie", cookie.toString());
-
-            // response body에서 refresh token 제거하기
-            loginRes.setRefreshToken(null);
-            return loginRes;
-        } else {
+        if (!providerList.contains(provider)) {
             throw new BaseException(INVALID_PROVIDER);
         }
+        GetLoginRes loginRes = oauthService.login(provider, code);
+
+        // refresh token을 cookie에 저장
+        String refreshToken = loginRes.getRefreshToken();
+        ResponseCookie cookie = ResponseCookie.from("refresh_token", refreshToken)
+                .maxAge(60L * 60 * 24 * 14)
+                .path("/")
+                .sameSite("none")
+                .secure(true)
+                .httpOnly(true)
+                .build();
+
+        res.setHeader("Set-Cookie", cookie.toString());
+
+        // response body에서 refresh token 제거하기
+        loginRes.setRefreshToken(null);
+        return loginRes;
     }
 
     /**
@@ -73,8 +72,9 @@ public class AuthController {
     @GetMapping("/refresh")
     public ReissueRes reIssue(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
         // refresh token 없는 경우
-        if(refreshToken == null)
+        if(refreshToken == null) {
             throw new BaseException(INVALID_REFRESH_TOKEN);
+        }
 
         // refresh 토큰 유효성 검사 및 userId 추출
         Long userId = jwtProvider.validateToken(refreshToken);

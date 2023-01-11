@@ -4,7 +4,7 @@ import com.dikkak.common.BaseException;
 import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.GetChattingRes;
 import com.dikkak.dto.coworking.message.Message;
-import com.dikkak.dto.coworking.message.TextReq;
+import com.dikkak.dto.coworking.TextReq;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
