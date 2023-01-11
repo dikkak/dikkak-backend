@@ -77,29 +77,29 @@ public class AdminController {
      */
     @PostMapping("/proposal/designer")
     public void matching(@LoginUser UserPrincipal principal, @RequestBody MatchingReq req) {
-            // admin 계정이 아닌 경우
-            if (!isAdminUser(principal)) {
-                throw new BaseException(ADMIN_REQUIRED);
-            }
+        // admin 계정이 아닌 경우
+        if (!isAdminUser(principal)) {
+            throw new BaseException(ADMIN_REQUIRED);
+        }
 
-            // email 유효성 검사
-            String email = req.getDesignerEmail();
-            if (email == null || !isRegexEmail(email)) {
-                throw new BaseException(INVALID_FORMAT_EMAIL);
-            }
+        // email 유효성 검사
+        String email = req.getDesignerEmail();
+        if (email == null || !isRegexEmail(email)) {
+            throw new BaseException(INVALID_FORMAT_EMAIL);
+        }
 
-            // 존재하지 않는 회원이거나 디자이너 회원이 아닌 경우
-            User designer = userService.getUserByEmail(email);
-            if (designer == null || !designer.getUserType().equals(UserTypeEnum.DESIGNER)) {
-                throw new BaseException(NON_EXISTENT_EMAIL);
-            }
+        // 존재하지 않는 회원이거나 디자이너 회원이 아닌 경우
+        User designer = userService.getUserByEmail(email);
+        if (designer == null || !designer.getUserType().equals(UserTypeEnum.DESIGNER)) {
+            throw new BaseException(NON_EXISTENT_EMAIL);
+        }
 
-            // 이미 매칭된 디자이너인 경우
-            if (proposalService.existUserProposal(designer, req.getProposalId())) {
-                throw new BaseException(DUPLICATED_DESIGNER);
-            }
+        // 이미 매칭된 디자이너인 경우
+        if (proposalService.existUserProposal(designer, req.getProposalId())) {
+            throw new BaseException(DUPLICATED_DESIGNER);
+        }
 
-            coworkingService.create(designer, req.getProposalId());
+        coworkingService.create(designer, req.getProposalId());
     }
 
     /**

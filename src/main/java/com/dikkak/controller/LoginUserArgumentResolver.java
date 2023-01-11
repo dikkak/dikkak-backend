@@ -14,6 +14,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import static com.dikkak.common.Const.BEARER;
 import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 
 @Component
@@ -21,8 +22,6 @@ import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
     private final JwtService jwtService;
     private final UserRepository userRepository;
-
-    static final String BEARER = "Bearer";
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {

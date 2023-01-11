@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.dikkak.common.Const.COWORKING_FILE_PATH;
 import static com.dikkak.common.ResponseMessage.FILE_UPLOAD_FAILED;
 import static com.dikkak.common.ResponseMessage.NON_EXISTENT_EMAIL;
 import static org.apache.http.entity.ContentType.IMAGE_BMP;
@@ -101,7 +102,7 @@ public class MessageService {
 
         String fileUrl;
         try {
-            fileUrl = s3Uploader.uploadFile(file, "coworking");
+            fileUrl = s3Uploader.uploadFile(file, COWORKING_FILE_PATH);
         } catch (IOException e) {
             throw new BaseException(FILE_UPLOAD_FAILED);
         }

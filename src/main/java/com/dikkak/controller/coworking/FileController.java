@@ -10,10 +10,15 @@ import com.dikkak.service.coworking.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.dikkak.common.Const.COWORKING_FILE_PATH;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -25,7 +30,6 @@ public class FileController {
     private final CoworkingSupport coworkingSupport;
     private final CoworkingService coworkingService;
     private final S3Downloader s3Downloader;
-    private static final String COWORKING_FILE_PATH = "coworking/";
 
     /**
      * 외주작업실 파일 목록 조회
