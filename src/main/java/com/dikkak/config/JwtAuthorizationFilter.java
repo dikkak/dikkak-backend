@@ -1,7 +1,7 @@
 package com.dikkak.config;
 
 import com.dikkak.common.BaseException;
-import com.dikkak.common.BaseResponse;
+import com.dikkak.common.ErrorResponse;
 import com.dikkak.entity.user.User;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.service.JwtProvider;
@@ -50,7 +50,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().print(new ObjectMapper().writeValueAsString(new BaseResponse(e)));
+            response.getWriter().print(new ObjectMapper().writeValueAsString(new ErrorResponse(e)));
             return;
         }
         Optional<User> user = userRepository.findById(userId);

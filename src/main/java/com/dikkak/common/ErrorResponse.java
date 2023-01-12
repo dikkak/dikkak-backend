@@ -5,19 +5,15 @@ import lombok.Getter;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseResponse<T> {
+public class ErrorResponse {
 
-    private String message;
+    private final String message;
 
-    public BaseResponse(ResponseMessage message) {
-        this.message = message.getMessage();
-    }
-
-    public BaseResponse(String message) {
+    public ErrorResponse(String message) {
         this.message = message;
     }
 
-    public BaseResponse(BaseException e) {
+    public ErrorResponse(BaseException e) {
         this.message = e.getResponseMessage().getMessage();
     }
 

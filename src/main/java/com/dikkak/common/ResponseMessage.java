@@ -48,6 +48,7 @@ public enum ResponseMessage {
     WRONG_COWORKING_ID("잘못된 외주작업실 아이디입니다."),
     DUPLICATED_DESIGNER("이미 매칭된 디자이너입니다."),
     WRONG_FILE_ID("잘못된 파일 아이디입니다."),
+    WRONG_TASK_ID("잘못된 테스크 아이디입니다."),
 
     // admin
     ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),
