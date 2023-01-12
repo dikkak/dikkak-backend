@@ -45,7 +45,7 @@ public class MessageController {
      * @param principal 회원 id, 타입
      * @param coworkingId 외주작업실 id
      */
-    @GetMapping("/chat")
+    @GetMapping("/coworking/chat")
     public PageCustom<Message<GetChattingRes>> getChatList(@LoginUser UserPrincipal principal,
                                                            @RequestParam Long coworkingId,
                                                            @PageableDefault(size = 20, page = 0) Pageable pageable) {
