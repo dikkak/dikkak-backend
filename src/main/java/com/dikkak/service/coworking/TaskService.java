@@ -1,8 +1,12 @@
 package com.dikkak.service.coworking;
 
+import com.dikkak.common.BaseException;
+import com.dikkak.config.UserPrincipal;
+import com.dikkak.controller.coworking.CoworkingSupport;
 import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.AddTaskReq;
 import com.dikkak.dto.coworking.TaskRes;
+import com.dikkak.dto.coworking.UpdateTaskReq;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
 import com.dikkak.entity.coworking.CoworkingTask;
@@ -14,12 +18,15 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.dikkak.common.ResponseMessage.WRONG_TASK_ID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class TaskService {
 
     private final CoworkingTaskRepository taskRepository;
+    private final CoworkingSupport coworkingSupport;
 
     // task 목록 조회
     public PageCustom<TaskRes> getTaskList(Long coworkingId, @Nullable Boolean complete, Pageable pageable) {
@@ -41,5 +48,17 @@ public class TaskService {
                 .content(req.getContent())
                 .build());
         return TaskRes.fromEntity(task);
+    }
+
+    public CoworkingTask getTask(Long taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new BaseException(WRONG_TASK_ID));
+    }
+
+    @Transactional
+    public void updateTask(UpdateTaskReq req, UserPrincipal principal) {
+        CoworkingTask task = getTask(req.getTaskId());
+        coworkingSupport.checkCoworkingUser(principal, task.getCoworking());
+        task.updateComplete(req.getChecked());
     }
 }

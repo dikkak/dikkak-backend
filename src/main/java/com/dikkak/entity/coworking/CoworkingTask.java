@@ -37,4 +37,8 @@ public class CoworkingTask extends BaseEntity {
         this.file = file;
         this.content = content;
     }
+
+    public void updateComplete(boolean complete) {
+        this.complete = complete;
+    }
 }

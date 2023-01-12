@@ -1,8 +1,10 @@
 package com.dikkak.service.coworking;
 
+import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.AddTaskReq;
 import com.dikkak.dto.coworking.TaskRes;
+import com.dikkak.dto.coworking.UpdateTaskReq;
 import com.dikkak.dto.proposal.PostProposalReq;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.entity.coworking.CoworkingFile;
@@ -11,6 +13,7 @@ import com.dikkak.entity.proposal.CategoryEnum;
 import com.dikkak.entity.proposal.Proposal;
 import com.dikkak.entity.user.ProviderTypeEnum;
 import com.dikkak.entity.user.User;
+import com.dikkak.entity.user.UserTypeEnum;
 import com.dikkak.repository.UserRepository;
 import com.dikkak.repository.coworking.CoworkingRepository;
 import com.dikkak.repository.coworking.file.CoworkingFileRepository;
@@ -52,10 +55,13 @@ class TaskServiceTest {
                 .email("client@naver.com")
                 .providerType(ProviderTypeEnum.KAKAO)
                 .build());
+        client.setUserType(UserTypeEnum.CLIENT);
+
         User designer = userRepository.save(User.builder()
                 .email("designer@gmail.com")
                 .providerType(ProviderTypeEnum.KAKAO)
                 .build());
+        designer.setUserType(UserTypeEnum.DESIGNER);
 
         PostProposalReq req = new PostProposalReq();
         req.setCategory(CategoryEnum.LOGO_OR_CARD);
@@ -145,5 +151,21 @@ class TaskServiceTest {
         assertThat(task.getTaskId()).isNotNull();
         assertThat(task.getContent()).isEqualTo(request.getContent());
         assertThat(task.isChecked()).isFalse();
+    }
+
+    @Test
+    @DisplayName("task를 해결 상태로 변경할 수 있다.")
+    void changeTaskToComplete() {
+        // given
+        Long taskId = taskRepository.save(CoworkingTask.builder().coworking(coworking).content("할 일").build()).getId();
+        UpdateTaskReq request = new UpdateTaskReq();
+        request.setTaskId(taskId);
+        request.setChecked(true);
+
+        // when
+        taskService.updateTask(request, new UserPrincipal(coworking.getDesigner()));
+
+        // then
+        assertThat(taskRepository.findById(taskId).orElseThrow().isComplete()).isTrue();
     }
 }
