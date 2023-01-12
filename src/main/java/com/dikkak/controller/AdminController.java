@@ -1,25 +1,32 @@
 package com.dikkak.controller;
 
+import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
 import com.dikkak.dto.admin.GetProposalListRes;
 import com.dikkak.dto.admin.GetUserProposalsRes;
 import com.dikkak.dto.admin.MatchingReq;
-import com.dikkak.common.BaseException;
 import com.dikkak.entity.user.User;
 import com.dikkak.entity.user.UserTypeEnum;
-import com.dikkak.service.coworking.CoworkingService;
 import com.dikkak.service.ProposalService;
 import com.dikkak.service.UserService;
+import com.dikkak.service.coworking.CoworkingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.ADMIN_REQUIRED;
+import static com.dikkak.common.ResponseMessage.DUPLICATED_DESIGNER;
+import static com.dikkak.common.ResponseMessage.INVALID_FORMAT_EMAIL;
+import static com.dikkak.common.ResponseMessage.NON_EXISTENT_EMAIL;
 
 @RequestMapping("/admin")
 @Slf4j
@@ -39,12 +46,12 @@ public class AdminController {
      * @return 제안서 목록
      */
     @PostMapping("/user/proposals")
-    public List<GetUserProposalsRes> getProposals(@AuthenticationPrincipal UserPrincipal principal,
-                                          @RequestBody Map<String, String> req) {
-
+    public List<GetUserProposalsRes> getProposals(@LoginUser UserPrincipal principal,
+                                                  @RequestBody Map<String, String> req) {
             // admin 계정이 아닌 경우
-            if(!isAdminUser(principal))
+            if (!isAdminUser(principal)) {
                 throw new BaseException(ADMIN_REQUIRED);
+            }
 
             // client email 유효성 검사
             String email = req.get("email");
@@ -55,8 +62,9 @@ public class AdminController {
             User client = userService.getUserByEmail(email);
 
             // 존재하지 않는 회원이거나 클라이언트 회원이 아닌 경우
-            if(client == null || !client.getUserType().equals(UserTypeEnum.CLIENT))
+            if (client == null || !client.getUserType().equals(UserTypeEnum.CLIENT)) {
                 throw new BaseException(NON_EXISTENT_EMAIL);
+            }
 
             // 회원의 전체 제안서 목록
             return proposalService.getUserProposalList(client.getId());
@@ -68,27 +76,30 @@ public class AdminController {
      * @param req 제안서 id, 디자이너 email
      */
     @PostMapping("/proposal/designer")
-    public void matching(@AuthenticationPrincipal UserPrincipal principal,
-                                      @RequestBody MatchingReq req) {
-            // admin 계정이 아닌 경우
-            if (!isAdminUser(principal))
-                throw new BaseException(ADMIN_REQUIRED);
+    public void matching(@LoginUser UserPrincipal principal, @RequestBody MatchingReq req) {
+        // admin 계정이 아닌 경우
+        if (!isAdminUser(principal)) {
+            throw new BaseException(ADMIN_REQUIRED);
+        }
 
-            // email 유효성 검사
-            String email = req.getDesignerEmail();
-            if (email == null || !isRegexEmail(email))
-                throw new BaseException(INVALID_FORMAT_EMAIL);
+        // email 유효성 검사
+        String email = req.getDesignerEmail();
+        if (email == null || !isRegexEmail(email)) {
+            throw new BaseException(INVALID_FORMAT_EMAIL);
+        }
 
-            // 존재하지 않는 회원이거나 디자이너 회원이 아닌 경우
-            User designer = userService.getUserByEmail(email);
-            if(designer == null || !designer.getUserType().equals(UserTypeEnum.DESIGNER))
-                throw new BaseException(NON_EXISTENT_EMAIL);
+        // 존재하지 않는 회원이거나 디자이너 회원이 아닌 경우
+        User designer = userService.getUserByEmail(email);
+        if (designer == null || !designer.getUserType().equals(UserTypeEnum.DESIGNER)) {
+            throw new BaseException(NON_EXISTENT_EMAIL);
+        }
 
-            // 이미 매칭된 디자이너인 경우
-            if(proposalService.existUserProposal(designer, req.getProposalId()))
-                throw new BaseException(DUPLICATED_DESIGNER);
+        // 이미 매칭된 디자이너인 경우
+        if (proposalService.existUserProposal(designer, req.getProposalId())) {
+            throw new BaseException(DUPLICATED_DESIGNER);
+        }
 
-            coworkingService.create(designer, req.getProposalId());
+        coworkingService.create(designer, req.getProposalId());
     }
 
     /**
@@ -98,12 +109,13 @@ public class AdminController {
      * @param size 페이지당 제안서 개수
      */
     @GetMapping("/proposal/list")
-    public GetProposalListRes getProposalList(@AuthenticationPrincipal UserPrincipal principal,
+    public GetProposalListRes getProposalList(@LoginUser UserPrincipal principal,
                                               @RequestParam(defaultValue = "0") int page,
                                               @RequestParam(defaultValue = "15") int size) {
         // admin 계정이 아닌 경우
-        if (!isAdminUser(principal))
+        if (!isAdminUser(principal)) {
             throw new BaseException(ADMIN_REQUIRED);
+        }
 
         return proposalService.getProposalList(page, size);
     }

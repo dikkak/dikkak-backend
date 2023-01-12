@@ -25,12 +25,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.ALREADY_REGISTERED_SOCIAL_LOGIN;
+import static com.dikkak.common.ResponseMessage.EXPIRED_TOKEN;
+import static com.dikkak.common.ResponseMessage.INVALID_PROVIDER;
+import static com.dikkak.common.ResponseMessage.LOGIN_FAILURE;
+import static com.dikkak.common.ResponseMessage.LOGOUT_FAILURE;
 
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class OauthService {
 
     // application-oauth properties 정보를 담고 있음
@@ -38,7 +43,7 @@ public class OauthService {
 
     private final UserRepository userRepository;
     private final UserService userService;
-    private final JwtService jwtService;
+    private final JwtProvider jwtProvider;
     private final RedisService redisService;
 
 
@@ -50,9 +55,7 @@ public class OauthService {
      * 3. 회원 정보를 통해 로그인 및 회원가입을 진행한다.
      * 4. Redis에 토큰 저장
      */
-    @Transactional
     public GetLoginRes login(String providerName, String code) {
-
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
 
         // 1. 토큰을 받아온다.
@@ -63,34 +66,30 @@ public class OauthService {
         String email = getEmail(providerName, userProfile);
 
         // 3. 로그인 및 회원가입
-        Optional<User> userByEmail = getUserByEmail(email);
-        User user;
+        User user = getUserByEmail(email)
+                .orElseGet(() -> userService.create(
+                        User.builder()
+                                .email(email)
+                                .providerType(ProviderTypeEnum.valueOf(providerName.toUpperCase()))
+                                .build()
+                        )
+                );
 
-        // 존재하는 회원인 경우
-        if(userByEmail.isPresent()) {
-            user = userByEmail.get();
-            // 다른 provider로 등록되어 있는 경우
-            if (!user.getProviderType().toString().equals(providerName.toUpperCase())) {
-                throw new BaseException(ALREADY_REGISTERED_SOCIAL_LOGIN);
-            }
-        }
-        // 존재하지 않는 회원인 경우 - 회원가입
-        else {
-            user = userService.create(User.builder()
-                    .email(email)
-                    .providerType(ProviderTypeEnum.valueOf(providerName.toUpperCase()))
-                    .build());
+        // 다른 provider 로 등록되어 있는 경우
+        if (!user.getProviderType().toString().equals(providerName.toUpperCase())) {
+            throw new BaseException(ALREADY_REGISTERED_SOCIAL_LOGIN);
         }
 
         // 4. Redis에 토큰 저장
-        if(userProfile.get("id") != null)
+        if(userProfile.get("id") != null) {
             redisService.saveSocialToken(user.getId(), user.getProviderType(), token, userProfile.get("id").toString());
-        else redisService.saveSocialToken(user.getId(), user.getProviderType(), token, null);
-
+        } else {
+            redisService.saveSocialToken(user.getId(), user.getProviderType(), token, null);
+        }
 
         // 토큰 발급
-        String accessToken = jwtService.createAccessToken(user.getId());
-        String refreshToken = jwtService.createRefreshToken(user.getId());
+        String accessToken = jwtProvider.createAccessToken(user.getId());
+        String refreshToken = jwtProvider.createRefreshToken(user.getId());
 
         return GetLoginRes.builder()
                 .username(user.getName())
@@ -103,7 +102,6 @@ public class OauthService {
      * 소셜 로그아웃
      */
     public void logout(Long userId) {
-
         SocialToken token = redisService.getToken(userId);
 
         try {
@@ -123,7 +121,7 @@ public class OauthService {
             // 페이스북 로그아웃
             else if (token.getProvider().equals(ProviderTypeEnum.FACEBOOK)) {
                 String providerUserId = token.getProviderUserId();
-                Boolean success = Objects.requireNonNull(
+                boolean success = Objects.requireNonNull(
                         WebClient.create()
                                 .delete()
                                 .uri("https://graph.facebook.com/" + providerUserId + "/permissions?access_token=" + token.getToken())
@@ -132,24 +130,19 @@ public class OauthService {
                                 .block())
                         .get("success");
 
-                if (!success) //로그아웃 실패
+                if (!success) { //로그아웃 실패
                     throw new BaseException(LOGOUT_FAILURE);
+                }
             }
-
             // 토큰 삭제
             redisService.deleteToken(token);
-
         } catch (BaseException e) {
             throw e;
         } catch (Exception e) {
             log.error(e.getMessage());
-            e.printStackTrace();
             throw new BaseException(EXPIRED_TOKEN);
         }
-
-
     }
-
 
     /**
      * TOKEN URI에 인가 코드로 토큰을 요청한다.
@@ -184,7 +177,6 @@ public class OauthService {
                         .block();
             }
         } catch (Exception e) {
-            log.error(e.getMessage());
             throw new BaseException(LOGIN_FAILURE);
         }
     }

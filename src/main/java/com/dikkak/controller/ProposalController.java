@@ -13,12 +13,22 @@ import com.dikkak.entity.proposal.Reference;
 import com.dikkak.entity.user.User;
 import com.dikkak.s3.S3Downloader;
 import com.dikkak.s3.S3Uploader;
-import com.dikkak.service.*;
+import com.dikkak.service.MailService;
+import com.dikkak.service.OtherFileService;
+import com.dikkak.service.ProposalService;
+import com.dikkak.service.ReferenceService;
+import com.dikkak.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -26,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dikkak.common.ResponseMessage.*;
+import static com.dikkak.common.ResponseMessage.FILE_UPLOAD_FAILED;
+import static com.dikkak.common.ResponseMessage.REQUEST_ERROR;
 
 @RestController
 @RequestMapping("/proposal")
@@ -54,16 +65,11 @@ public class ProposalController {
      * @return proposalId 생성된 제안서 id
      */
     @PostMapping("")
-    public PostProposalRes createProposal(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestPart PostProposalReq jsonData,
-            @RequestPart(required = false) List<MultipartFile> referenceFile,
-            @RequestPart(required = false) List<MultipartFile> etcFile) {
-
+    public PostProposalRes createProposal(@LoginUser UserPrincipal principal,
+                                          @RequestPart PostProposalReq jsonData,
+                                          @RequestPart(required = false) List<MultipartFile> referenceFile,
+                                          @RequestPart(required = false) List<MultipartFile> etcFile) {
         try {
-            if (principal == null)
-                throw new BaseException(INVALID_ACCESS_TOKEN);
-
             User user = userService.getUser(principal.getUserId());
 
             // 제안서 저장
@@ -154,15 +160,10 @@ public class ProposalController {
      * @return 삭제된 제안서 개수
      */
     @PatchMapping("/inactive")
-    public Map<String,Long> deleteProposals(
-            @AuthenticationPrincipal UserPrincipal principal,
-            @RequestBody DeleteProposalReq req) {
-
-        if(principal == null)
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-
-        if(req.getProposalList() == null || req.getProposalList().isEmpty())
+    public Map<String,Long> deleteProposals(@LoginUser UserPrincipal principal, @RequestBody DeleteProposalReq req) {
+        if (req.getProposalList() == null || req.getProposalList().isEmpty()) {
             throw new BaseException(REQUEST_ERROR);
+        }
 
         long count = proposalService.deleteProposalList(req.getProposalList(), principal.getUserId());
         return Map.of("count", count);

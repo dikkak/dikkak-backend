@@ -1,21 +1,23 @@
 package com.dikkak.controller.coworking;
 
-import com.dikkak.common.BaseException;
 import com.dikkak.config.UserPrincipal;
+import com.dikkak.controller.LoginUser;
+import com.dikkak.dto.PageCustom;
 import com.dikkak.dto.coworking.GetFileRes;
 import com.dikkak.entity.coworking.Coworking;
 import com.dikkak.s3.S3Downloader;
 import com.dikkak.service.coworking.CoworkingService;
+import com.dikkak.service.coworking.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-import static com.dikkak.common.ResponseMessage.INVALID_ACCESS_TOKEN;
-import static com.dikkak.common.ResponseMessage.UNAUTHORIZED_REQUEST;
+import static com.dikkak.common.Const.COWORKING_FILE_PATH;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 
 @RestController
@@ -23,8 +25,9 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 @RequiredArgsConstructor
 public class FileController {
 
-    private final CoworkingService coworkingService;
+    private final FileService fileService;
     private final CoworkingSupport coworkingSupport;
+    private final CoworkingService coworkingService;
     private final S3Downloader s3Downloader;
 
     /**
@@ -33,28 +36,21 @@ public class FileController {
      * @param coworkingId 외주작업실 id
      * @param pageable page, size, sort
      */
-    @GetMapping("/file")
-    public List<GetFileRes> getFileList(@AuthenticationPrincipal UserPrincipal principal,
-                                        @RequestParam Long coworkingId,
-                                        @PageableDefault(size=10, page=0, sort="createdAt", direction = DESC) Pageable pageable) {
-        if(principal == null) {
-            throw new BaseException(INVALID_ACCESS_TOKEN);
-        }
-
-        Coworking coworking = coworkingSupport.checkUserAndGetCoworking(principal, coworkingId);
-        if(coworking == null) {
-            throw new BaseException(UNAUTHORIZED_REQUEST);
-        }
-
-        return coworkingService.getFileList(coworking.getId(), pageable);
+    @GetMapping
+    public PageCustom<GetFileRes> getFileList(@LoginUser UserPrincipal principal,
+                                              @RequestParam Long coworkingId,
+                                              @PageableDefault(size=10, page=0, sort="createdAt", direction = DESC) Pageable pageable) {
+        Coworking coworking = coworkingService.getCoworking(coworkingId);
+        coworkingSupport.checkCoworkingUser(principal, coworking);
+        return fileService.getFileList(coworking.getId(), pageable);
     }
 
     /**
      * 외주작업실 파일 다운로드
      * @param fileName 파일 이름
      */
-    @GetMapping("/file/{fileName}")
+    @GetMapping("/{fileName}")
     public byte[] getFile(@PathVariable String fileName) {
-        return s3Downloader.downloadFile("coworking/" + fileName);
+        return s3Downloader.downloadFile(COWORKING_FILE_PATH + fileName);
     }
 }

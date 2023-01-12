@@ -1,4 +1,4 @@
-package com.dikkak.dto.message;
+package com.dikkak.dto.coworking.message;
 
 public enum MessageType {
     TEXT, FILE, TASK

@@ -9,7 +9,7 @@ import lombok.Getter;
 public enum ResponseMessage {
 
     SUCCESS("요청에 성공하였습니다."),
-    REQUEST_ERROR("입력값을 확인해주세요."),
+    REQUEST_ERROR("잘못된 요청입니다."),
 
     DUPLICATED_USER_EMAIL("중복된 이메일입니다."),
     NON_EXISTENT_EMAIL("존재하지 않는 이메일입니다."),
@@ -47,6 +47,8 @@ public enum ResponseMessage {
     // 외주 작업실
     WRONG_COWORKING_ID("잘못된 외주작업실 아이디입니다."),
     DUPLICATED_DESIGNER("이미 매칭된 디자이너입니다."),
+    WRONG_FILE_ID("잘못된 파일 아이디입니다."),
+    WRONG_TASK_ID("잘못된 테스크 아이디입니다."),
 
     // admin
     ADMIN_REQUIRED("관리자 계정으로 로그인하세요"),

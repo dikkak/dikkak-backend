@@ -1,6 +1,5 @@
 package com.dikkak.service;
 
-import com.dikkak.common.BaseException;
 import com.dikkak.entity.proposal.Otherfile;
 import com.dikkak.repository.proposal.OtherFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,28 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.dikkak.common.ResponseMessage.DATABASE_ERROR;
-
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class OtherFileService {
 
     private final OtherFileRepository otherFileRepository;
 
     @Transactional
     public void create(Otherfile otherfile) {
-        try {
-            otherFileRepository.save(otherfile);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+        otherFileRepository.save(otherfile);
     }
 
     public List<Otherfile> getOtherFileList(Long proposalId) {
-        try {
-            return otherFileRepository.findByProposalId(proposalId);
-        } catch (Exception e) {
-            throw new BaseException(DATABASE_ERROR);
-        }
+        return otherFileRepository.findByProposalId(proposalId);
     }
 }
