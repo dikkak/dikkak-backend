@@ -52,7 +52,7 @@ jobs:
       run: SPRING_PROFILES_ACTIVE=dev ./gradlew clean build
 
     - name: Build with Gradle (Prod)
-      if: contains(github.ref, 'prod')
+      if: contains(github.ref, 'main')
       run: SPRING_PROFILES_ACTIVE=prod ./gradlew clean build
 
     # zip 파일로 압축
