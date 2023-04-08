@@ -1,13 +1,13 @@
 package com.dikkak.repository.proposal;
 
-import com.dikkak.dto.workspace.ClientWorkspaceRes;
-import com.dikkak.dto.workspace.DesignerWorkspaceRes;
+import com.dikkak.dto.workplace.ClientWorkplaceRes;
+import com.dikkak.dto.workplace.DesignerWorkplaceRes.WorkInfo;
 
 import java.util.List;
 
 public interface ProposalRepositoryCustom {
-    List<ClientWorkspaceRes> getClientWorkspace(Long clientId);
-    List<DesignerWorkspaceRes.WorkInfo> getDesignerWorkspace(Long designerId);
+    List<ClientWorkplaceRes> getClientWorkplace(Long clientId);
+    List<WorkInfo> getDesignerWorkplace(Long designerId);
     long updateProposalsInactive(Long clientId, List<Long> proposalList);
 
 

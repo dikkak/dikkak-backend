@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT_NAME=dikkak-0.0.1
+PROJECT_NAME=dikkak
 CURRENT_PID=$(pgrep -f ${PROJECT_NAME}.*.jar)
 
 if [ -z "$CURRENT_PID" ]; then

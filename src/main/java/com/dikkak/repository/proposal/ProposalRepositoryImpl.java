@@ -1,9 +1,9 @@
 package com.dikkak.repository.proposal;
 
-import com.dikkak.dto.workspace.ClientWorkspaceRes;
-import com.dikkak.dto.workspace.DesignerWorkspaceRes;
-import com.dikkak.dto.workspace.QClientWorkspaceRes;
-import com.dikkak.dto.workspace.QDesignerWorkspaceRes_WorkInfo;
+import com.dikkak.dto.workplace.ClientWorkplaceRes;
+import com.dikkak.dto.workplace.DesignerWorkplaceRes;
+import com.dikkak.dto.workplace.QClientWorkplaceRes;
+import com.dikkak.dto.workplace.QDesignerWorkplaceRes_WorkInfo;
 import com.dikkak.entity.StatusType;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -24,9 +24,9 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
 
     // 클라이언트 작업실 조회 - 제안서, 외주작업실
     @Override
-    public List<ClientWorkspaceRes> getClientWorkspace(Long clientId) {
-        return queryFactory.select(new QClientWorkspaceRes(
-                    proposal.id, proposal.title, coworking.id, user.name, coworking.complete
+    public List<ClientWorkplaceRes> getClientWorkplace(Long clientId) {
+        return queryFactory.select(new QClientWorkplaceRes(
+                    proposal.id, proposal.title, coworking.id, user.name, coworking.progress
                 ))
                 .from(proposal)
                 .leftJoin(coworking).on(coworking.proposal.eq(proposal))
@@ -40,9 +40,9 @@ public class ProposalRepositoryImpl implements ProposalRepositoryCustom {
 
     // 디자이너 작업실 조회
     @Override
-    public List<DesignerWorkspaceRes.WorkInfo> getDesignerWorkspace(Long designerId) {
-        return queryFactory.select(new QDesignerWorkspaceRes_WorkInfo(
-                        proposal.id, proposal.title, proposal.client.name, coworking.id, coworking.complete
+    public List<DesignerWorkplaceRes.WorkInfo> getDesignerWorkplace(Long designerId) {
+        return queryFactory.select(new QDesignerWorkplaceRes_WorkInfo(
+                        proposal.id, proposal.title, proposal.client.name, coworking.id, coworking.progress
                  ))
                 .from(coworking)
                 .join(proposal).on(coworking.proposal.eq(proposal))

@@ -40,6 +40,8 @@ application*
 Secret.java
 generated
 
+### test ###
+test/
 
 template.txt
 .DS_Store
