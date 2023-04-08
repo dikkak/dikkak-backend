@@ -1,9 +1,8 @@
 package com.dikkak.entity.coworking;
 
 import com.dikkak.entity.BaseEntity;
-import com.dikkak.entity.user.User;
 import com.dikkak.entity.proposal.Proposal;
-import lombok.Builder;
+import com.dikkak.entity.user.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
@@ -27,9 +26,8 @@ public class Coworking extends BaseEntity {
     @JoinColumn(name = "designer_id")
     private User designer;
 
-    // 현재 진행 단계: 0~9
-    @ColumnDefault("0")
-    private int progress = 0;
+    @ColumnDefault("false")
+    private boolean complete;
 
     public Coworking(Proposal proposal, User designer) {
         this.proposal = proposal;

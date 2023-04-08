@@ -1,0 +1,109 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [ "develop", "main" ]
+
+permissions:
+  contents: read
+
+env:
+  PROJECT_NAME: dikkak-server
+  
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # jdk setting
+    - uses: actions/checkout@v3
+    - name: Set up JDK 11
+      uses: actions/setup-java@v3
+      with:
+        java-version: '11'
+        distribution: 'temurin'
+
+    # gradle caching
+    - name: Gradle Caching
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+
+    # properties 파일 생성
+    - name: make application.yml
+      run: |
+        if [ ! -d ./src/main/resources ]; then
+          mkdir ./src/main/resources
+        fi
+        cd ./src/main/resources
+        touch ./application.yml
+        echo "${{ secrets.APPLICATION_YML }}" > ./application.yml
+      shell: bash
+
+    # 빌드
+    - name: Build with Gradle (Dev)
+      if: contains(github.ref, 'develop')
+      run: SPRING_PROFILES_ACTIVE=dev ./gradlew clean build
+
+    - name: Build with Gradle (Prod)
+      if: contains(github.ref, 'prod')
+      run: SPRING_PROFILES_ACTIVE=prod ./gradlew clean build
+
+    # zip 파일로 압축
+    - name: Make zip file
+      run: zip -qq -r ./$GITHUB_SHA.zip ./build/libs/dikkak-0.0.1-SNAPSHOT.jar appspec.yml ./scripts/*
+      shell: bash
+
+    # AWS 설정
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+       aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+       aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+       aws-region: ${{ secrets.AWS_REGION }}
+
+    # S3에 파일 업로드
+    - name: Upload to S3 (Dev)
+      if: contains(github.ref, 'develop')
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME_DEV }}/$PROJECT_NAME/$GITHUB_SHA.zip
+
+    - name: Upload to S3 (Prod)
+      if: contains(github.ref, 'main')
+      run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://${{ secrets.S3_BUCKET_NAME_PROD }}/$PROJECT_NAME/$GITHUB_SHA.zip
+
+  deploy:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    steps:
+    # AWS 설정
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1-node16
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
+    # CodeDeploy 배포
+    - name: Code Deploy (Dev)
+      if: contains(github.ref, 'develop')
+      run: |
+        aws deploy create-deployment \
+        --application-name dikkak-deploy \
+        --deployment-config-name CodeDeployDefault.AllAtOnce \
+        --deployment-group-name dikkak-dev-deploy \
+        --s3-location bucket=${{ secrets.S3_BUCKET_NAME_DEV }},bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip
+
+    - name: Code Deploy (Prod)
+      if: contains(github.ref, 'main')
+      run: |
+        aws deploy create-deployment \
+        --application-name dikkak-deploy \
+        --deployment-config-name CodeDeployDefault.AllAtOnce \
+        --deployment-group-name dikkak-prod-deploy \
+        --s3-location bucket=${{ secrets.S3_BUCKET_NAME_PROD }},bundleType=zip,key=$PROJECT_NAME/$GITHUB_SHA.zip

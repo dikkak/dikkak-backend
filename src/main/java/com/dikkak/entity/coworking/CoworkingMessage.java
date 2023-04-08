@@ -3,6 +3,7 @@ package com.dikkak.entity.coworking;
 import com.dikkak.entity.BaseEntity;
 import com.dikkak.entity.user.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,21 +15,30 @@ import javax.persistence.*;
 @AllArgsConstructor
 public class CoworkingMessage extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "coworking_message_id")
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "coworking_step_id")
-    private CoworkingStep coworkingStep;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coworking_file_id")
+    private CoworkingFile coworkingFile;
+
     @Column(length = 1000)
     private String content;
 
-    @Column(length = 500)
-    private String fileUrl;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "coworking_id")
+    private Coworking coworking;
+
+    @Builder
+    public CoworkingMessage(User user, CoworkingFile coworkingFile, String content, Coworking coworking) {
+        this.user = user;
+        this.coworkingFile = coworkingFile;
+        this.content = content;
+        this.coworking = coworking;
+    }
 }
