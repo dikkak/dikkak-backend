@@ -37,3 +37,9 @@
 <img width="500px" src="https://user-images.githubusercontent.com/75151848/206829409-be9ca671-2d3e-424d-9344-51dd036a9dac.png"/>
 <img width="500px" src="https://user-images.githubusercontent.com/75151848/206829419-fe1fad90-a531-4aa5-a6ae-d2c20db53866.png"/>
 
+## 4. 외주 작업실
+
+- 외주 작업실을 통해 클라이언트와 디자이너가 소통하고 니즈를 빠르게 파악할 수 있는 작업 툴을 제공합니다.
+
+<img width="500px" src="https://user-images.githubusercontent.com/83197138/230636290-a82447dc-98bb-41fc-a63e-c8218cb0af1f.png"/>
+
