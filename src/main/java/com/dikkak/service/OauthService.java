@@ -55,6 +55,7 @@ public class OauthService {
      * 3. 회원 정보를 통해 로그인 및 회원가입을 진행한다.
      * 4. Redis에 토큰 저장
      */
+    @Transactional
     public GetLoginRes login(String providerName, String code) {
         ClientRegistration provider = inMemoryRepository.findByRegistrationId(providerName);
 
